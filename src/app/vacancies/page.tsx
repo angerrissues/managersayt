@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import LeadForms from "@/components/LeadForms";
 
@@ -54,6 +54,16 @@ function AdvantageCard({ adv, index, isEven }: { adv: any, index: number, isEven
 
 export default function VacanciesPage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
   
   // Отслеживаем скролл только для текстовых заголовков (если нужно)
   const { scrollYProgress } = useScroll({
@@ -66,12 +76,16 @@ export default function VacanciesPage() {
   const flyRight = useTransform(scrollYProgress, [0, 1], ["0vw", "50vw"]);
   const fadeOut = useTransform(scrollYProgress, [0, 0.5], [1, 0.3]);
 
+  // Кондиционально отключаем горизонтальный параллакс на мобилках
+  const xLeft = !isMounted ? "0vw" : (isMobile ? "0vw" : flyLeft);
+  const xRight = !isMounted ? "0vw" : (isMobile ? "0vw" : flyRight);
+
   return (
     <main ref={containerRef} className="min-h-screen pt-40 bg-black text-white selection:bg-white selection:text-black overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-6 pb-20 relative z-0">
         
         {/* Заголовок улетает влево */}
-        <motion.div style={{ x: flyLeft, opacity: fadeOut }}>
+        <motion.div style={{ x: xLeft, opacity: fadeOut }}>
           <motion.h1 
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -84,7 +98,7 @@ export default function VacanciesPage() {
         
         <div className="mb-20">
           {/* Подзаголовок улетает вправо */}
-          <motion.div style={{ x: flyRight, opacity: fadeOut }}>
+          <motion.div style={{ x: xRight, opacity: fadeOut }}>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -106,7 +120,7 @@ export default function VacanciesPage() {
 
         {/* Мотивирующая фраза */}
         <div className="text-center mt-32 mb-10 overflow-hidden">
-          <motion.div style={{ x: flyLeft, opacity: fadeOut }}>
+          <motion.div style={{ x: xLeft, opacity: fadeOut }}>
             <motion.h2 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -118,7 +132,7 @@ export default function VacanciesPage() {
             </motion.h2>
           </motion.div>
           
-          <motion.div style={{ x: flyRight, opacity: fadeOut }}>
+          <motion.div style={{ x: xRight, opacity: fadeOut }}>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
