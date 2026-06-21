@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function KoreanFocusSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
@@ -21,19 +21,19 @@ export default function KoreanFocusSection() {
   const words = text.split(" ");
 
   return (
-    <section 
-      ref={containerRef} 
+    <section
+      ref={containerRef}
       className="py-20 md:py-32 px-4 md:px-6 bg-black relative z-20 border-t border-white/5 overflow-hidden flex flex-col items-center justify-center min-h-[60vh] md:min-h-[80vh]"
     >
       {/* Massive Background Text with Parallax */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center justify-center pointer-events-none select-none z-0 opacity-20">
-        <motion.h2 
+        <motion.h2
           style={{ x: xLeft, y, rotate: rotateLeft }}
           className="text-[20vw] md:text-[20vw] font-black uppercase tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 blur-md"
         >
           SEOUL
         </motion.h2>
-        <motion.h2 
+        <motion.h2
           style={{ x: xRight, y, rotate: rotateRight }}
           className="text-[20vw] md:text-[20vw] font-black uppercase tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-l from-red-500 via-purple-500 to-blue-500 blur-md"
         >
@@ -44,7 +44,7 @@ export default function KoreanFocusSection() {
       <div className="max-w-5xl mx-auto relative z-10 text-center">
 
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 mb-8 md:mb-12">
-          <motion.img 
+          <motion.img
             src="https://hatscripts.github.io/circle-flags/flags/kr.svg"
             alt="South Korea Flag Left"
             className="w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] shrink-0"
@@ -52,12 +52,12 @@ export default function KoreanFocusSection() {
             transition={{ repeat: Infinity, duration: 12, ease: "linear" }}
           />
           <h3 className="text-2xl md:text-4xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tight leading-[1.1] text-center">
-            <span className="block">Мы нацелены на</span>
+            <span className="block">мы нацелены на</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500">
-              Корейских блогеров
+              азиатские тренды
             </span>
           </h3>
-          <motion.img 
+          <motion.img
             src="https://hatscripts.github.io/circle-flags/flags/kr.svg"
             alt="South Korea Flag Right"
             className="w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] shrink-0 hidden md:block"
@@ -73,10 +73,10 @@ export default function KoreanFocusSection() {
               initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ 
-                duration: 0.8, 
-                delay: i * 0.03, 
-                ease: [0.16, 1, 0.3, 1] 
+              transition={{
+                duration: 0.8,
+                delay: i * 0.03,
+                ease: [0.16, 1, 0.3, 1]
               }}
             >
               {word}
