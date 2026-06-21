@@ -8,6 +8,7 @@ import Navbar from "@/components/ui/Navbar";
 import FloatingContact from "@/components/FloatingContact";
 import Footer from "@/components/ui/Footer";
 import AdminProvider from "@/components/AdminProvider";
+import BraidDecoration from "@/components/BraidDecoration";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
           <SmoothScroll>
             <CustomCursor />
             <Navbar />
+            <BraidDecoration />
             {children}
             <Footer />
             <FloatingContact />
