@@ -44,7 +44,9 @@ export default function CaseEditModal({
       data.append("file", file);
       
       const res: any = await uploadMedia(data);
-      if (res.url) {
+      if (res?.error) {
+        alert("Ошибка от сервера: " + res.error);
+      } else if (res?.url) {
         setFormData({ ...formData, coverImage: res.url });
       }
     } catch (err) {

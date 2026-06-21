@@ -84,25 +84,29 @@ export async function deleteCase(id: string) {
 
 // -- CLOUDINARY UPLOAD --
 export async function uploadMedia(formData: FormData) {
-  const isAdmin = await checkIsAdmin();
-  if (!isAdmin) throw new Error("Unauthorized");
+  try {
+    const isAdmin = await checkIsAdmin();
+    if (!isAdmin) return { error: "Unauthorized" };
 
-  const file = formData.get("file") as File;
-  if (!file) throw new Error("No file provided");
+    const file = formData.get("file") as File;
+    if (!file) return { error: "No file provided" };
 
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream(
-      { resource_type: "auto" },
-      (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve({ url: result?.secure_url });
+    return await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { resource_type: "auto" },
+        (error, result) => {
+          if (error) {
+            resolve({ error: error.message || "Cloudinary upload error" });
+          } else {
+            resolve({ url: result?.secure_url });
+          }
         }
-      }
-    ).end(buffer);
-  });
+      ).end(buffer);
+    });
+  } catch (err: any) {
+    return { error: err.message || "Unknown server error" };
+  }
 }

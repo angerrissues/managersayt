@@ -44,7 +44,9 @@ export default function BloggerEditModal({
       data.append("file", file);
       
       const res: any = await uploadMedia(data);
-      if (res.url) {
+      if (res?.error) {
+        alert("Ошибка от сервера: " + res.error);
+      } else if (res?.url) {
         setFormData({ ...formData, avatarPath: res.url });
       }
     } catch (err) {
