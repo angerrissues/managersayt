@@ -145,10 +145,10 @@ export default function BloggerModal({ blogger, onClose }: { blogger: Blogger; o
 
             {/* Detailed Info */}
             {blogger.details && (
-              <div className="mt-2 p-4 bg-white/5 border border-white/10 rounded-2xl">
-                {blogger.details.title && <h4 className="text-lg md:text-xl font-bold mb-3 text-white uppercase tracking-tight">{blogger.details.title}</h4>}
+              <div className="mt-4 p-5 bg-white/5 border border-white/10 rounded-2xl">
+                {blogger.details.title && <h4 className="text-xl md:text-2xl font-bold mb-3 text-white uppercase tracking-tight">{blogger.details.title}</h4>}
                 
-                <div className="space-y-2 text-xs md:text-sm text-white/80">
+                <div className="space-y-3 text-sm md:text-base text-white/80">
                   {blogger.details.positioning && (
                     <p><span className="font-bold text-white">Позиционирование:</span> {blogger.details.positioning}</p>
                   )}
