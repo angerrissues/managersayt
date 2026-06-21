@@ -26,6 +26,8 @@ export async function checkIsAdmin() {
   return cookieStore.get("admin_token")?.value === "true";
 }
 
+import { revalidatePath } from "next/cache";
+
 // -- BLOGGERS --
 export async function getBloggers() {
   return prisma.blogger.findMany({ orderBy: { createdAt: 'asc' } });
@@ -35,18 +37,22 @@ export async function saveBlogger(data: any) {
   const isAdmin = await checkIsAdmin();
   if (!isAdmin) throw new Error("Unauthorized");
   
-  return prisma.blogger.upsert({
+  const result = await prisma.blogger.upsert({
     where: { id: data.id },
     update: data,
     create: data,
   });
+  revalidatePath("/blogers");
+  return result;
 }
 
 export async function deleteBlogger(id: string) {
   const isAdmin = await checkIsAdmin();
   if (!isAdmin) throw new Error("Unauthorized");
   
-  return prisma.blogger.delete({ where: { id } });
+  const result = await prisma.blogger.delete({ where: { id } });
+  revalidatePath("/blogers");
+  return result;
 }
 
 // -- CASES --
@@ -58,18 +64,22 @@ export async function saveCase(data: any) {
   const isAdmin = await checkIsAdmin();
   if (!isAdmin) throw new Error("Unauthorized");
   
-  return prisma.case.upsert({
+  const result = await prisma.case.upsert({
     where: { id: data.id },
     update: data,
     create: data,
   });
+  revalidatePath("/cases");
+  return result;
 }
 
 export async function deleteCase(id: string) {
   const isAdmin = await checkIsAdmin();
   if (!isAdmin) throw new Error("Unauthorized");
   
-  return prisma.case.delete({ where: { id } });
+  const result = await prisma.case.delete({ where: { id } });
+  revalidatePath("/cases");
+  return result;
 }
 
 // -- CLOUDINARY UPLOAD --
