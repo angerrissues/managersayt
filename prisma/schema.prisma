@@ -26,6 +26,7 @@ model AdvertiserLead {
 model BloggerLead {
   id          String   @id @default(uuid()) @db.Uuid
   name        String
+  nickname    String
   email       String
   phone       String
   socialLinks String   @map("social_links")

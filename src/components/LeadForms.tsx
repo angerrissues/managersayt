@@ -155,6 +155,17 @@ export default function LeadForms() {
                 className="w-full bg-white text-black text-base md:text-lg py-3.5 md:py-4 px-4 md:px-5 outline-none rounded-md placeholder:text-gray-400"
               />
 
+              {/* Nickname (only for Blogger) */}
+              {activeTab === "blogger" && (
+                <input
+                  type="text"
+                  name="nickname"
+                  required
+                  placeholder="Никнейм"
+                  className="w-full bg-white text-black text-base md:text-lg py-3.5 md:py-4 px-4 md:px-5 outline-none rounded-md placeholder:text-gray-400"
+                />
+              )}
+
               {/* Email */}
               <input
                 type="email"

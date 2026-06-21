@@ -59,6 +59,7 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
 
 export async function submitBloggerLead(formData: FormData): Promise<ActionResult> {
   const name = formData.get("name") as string;
+  const nickname = formData.get("nickname") as string;
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
   const socialLinks = formData.get("socialLinks") as string;
@@ -66,6 +67,9 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
   // Валидация
   if (!name || name.trim().length < 2) {
     return { success: false, message: "Укажите ваше имя." };
+  }
+  if (!nickname || nickname.trim().length < 2) {
+    return { success: false, message: "Укажите ваш никнейм." };
   }
   if (!email || !email.includes("@")) {
     return { success: false, message: "Укажите корректный Email." };
@@ -81,6 +85,7 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
     await prisma.bloggerLead.create({
       data: {
         name: name.trim(),
+        nickname: nickname.trim(),
         email: email.trim(),
         phone: phone.trim(),
         socialLinks: socialLinks.trim(),
@@ -92,6 +97,7 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
 📢 <b>Новая заявка: Блогер</b>
 ━━━━━━━━━━━━━━━━━━
 👤 <b>Имя:</b> ${name.trim()}
+⭐ <b>Никнейм:</b> ${nickname.trim()}
 📱 <b>Телефон:</b> ${phone.trim()}
 ✉️ <b>Email:</b> ${email.trim()}
 🔗 <b>Соцсети:</b> 
