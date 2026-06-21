@@ -22,19 +22,49 @@ const advantages = [
   }
 ];
 
+function AdvantageCard({ adv, index, isEven }: { adv: any, index: number, isEven: boolean }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"]
+  });
+
+  const x = useTransform(
+    scrollYProgress, 
+    [0, 0.3, 0.7, 1], 
+    [isEven ? "-30%" : "30%", "0%", "0%", isEven ? "-30%" : "30%"]
+  );
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.1, 1, 1, 0.1]);
+  const scale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.8, 1, 1, 0.8]);
+
+  return (
+    <motion.div 
+      ref={cardRef}
+      style={{ x, opacity, scale }}
+      className="h-full p-8 md:p-10 border border-white/10 bg-white/[0.02] rounded-3xl backdrop-blur-sm hover:bg-white/[0.05] transition-colors group"
+    >
+      <div className="text-white/20 font-black text-5xl mb-4 group-hover:text-white/40 transition-colors duration-500">
+        0{index + 1}
+      </div>
+      <h3 className="text-2xl font-bold mb-3 uppercase tracking-wide">{adv.title}</h3>
+      <p className="text-white/60 leading-relaxed font-light text-lg">{adv.description}</p>
+    </motion.div>
+  );
+}
+
 export default function VacanciesPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Отслеживаем скролл по всему контейнеру страницы
+  // Отслеживаем скролл только для текстовых заголовков (если нужно)
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  // Настраиваем отлёт по бокам
-  const flyLeft = useTransform(scrollYProgress, [0.3, 0.9], ["0vw", "-100vw"]);
-  const flyRight = useTransform(scrollYProgress, [0.3, 0.9], ["0vw", "100vw"]);
-  const fadeOut = useTransform(scrollYProgress, [0.4, 0.8], [1, 0]);
+  // Настраиваем отлёт по бокам для заголовков (делаем более плавным)
+  const flyLeft = useTransform(scrollYProgress, [0, 1], ["0vw", "-50vw"]);
+  const flyRight = useTransform(scrollYProgress, [0, 1], ["0vw", "50vw"]);
+  const fadeOut = useTransform(scrollYProgress, [0, 0.5], [1, 0.3]);
 
   return (
     <main ref={containerRef} className="min-h-screen pt-40 bg-black text-white selection:bg-white selection:text-black overflow-hidden relative">
@@ -66,31 +96,11 @@ export default function VacanciesPage() {
             </motion.div>
           </motion.div>
           
-          {/* Карточки разлетаются в разные стороны */}
+          {/* Карточки теперь анимируются индивидуально */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            {advantages.map((adv, index) => {
-              const isEven = index % 2 === 0;
-              return (
-                <motion.div 
-                  key={index} 
-                  style={{ x: isEven ? flyLeft : flyRight, opacity: fadeOut }}
-                >
-                  <motion.div 
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="h-full p-8 md:p-10 border border-white/10 bg-white/[0.02] rounded-3xl backdrop-blur-sm hover:bg-white/[0.05] transition-colors group"
-                  >
-                    <div className="text-white/20 font-black text-5xl mb-4 group-hover:text-white/40 transition-colors duration-500">
-                      0{index + 1}
-                    </div>
-                    <h3 className="text-2xl font-bold mb-3 uppercase tracking-wide">{adv.title}</h3>
-                    <p className="text-white/60 leading-relaxed font-light text-lg">{adv.description}</p>
-                  </motion.div>
-                </motion.div>
-              );
-            })}
+            {advantages.map((adv, index) => (
+              <AdvantageCard key={index} adv={adv} index={index} isEven={index % 2 === 0} />
+            ))}
           </div>
         </div>
 
@@ -122,7 +132,7 @@ export default function VacanciesPage() {
         </div>
       </div>
       
-      {/* Форма заявки - остается на месте, выплывает снизу */}
+      {/* Форма заявки */}
       <div className="relative z-10 bg-black">
         <LeadForms />
       </div>
