@@ -81,7 +81,8 @@ function Word({
   isRed?: boolean;
 }) {
   const opacity = useTransform(progress, range, [0.25, 1]);
-  const targetColor = isRed ? "#990000" : "#ffffff";
+  // Бордовый (burgundy) цвет: #800020
+  const targetColor = isRed ? "#800020" : "#ffffff";
   const color = useTransform(progress, range, ["#555555", targetColor]);
 
   return (
