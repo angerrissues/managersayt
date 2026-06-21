@@ -1,5 +1,5 @@
 "use client";
-import { useScroll, motion, useSpring } from "framer-motion";
+import { useScroll, motion, useSpring, useTransform } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -18,7 +18,9 @@ export default function BraidDecoration() {
 
   const { scrollYProgress } = useScroll();
   // Делаем отрисовку очень плавной, с небольшой задержкой/инерцией
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 40, damping: 20 });
+  const springProgress = useSpring(scrollYProgress, { stiffness: 40, damping: 20 });
+  // Ограничиваем значения от 0 до 1, чтобы пружина (spring) не уходила в минус и не рисовала конец косы в начале
+  const smoothProgress = useTransform(springProgress, (val) => Math.max(0, Math.min(1, val)));
 
   if (!isVisible) return null;
 
