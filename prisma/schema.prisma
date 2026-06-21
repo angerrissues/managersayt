@@ -63,3 +63,12 @@ model Case {
 
   @@map("cases")
 }
+
+model TelegramSubscriber {
+  id        String   @id @default(uuid()) @db.Uuid
+  chatId    String   @unique @map("chat_id")
+  username  String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("telegram_subscribers")
+}

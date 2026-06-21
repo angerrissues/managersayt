@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { broadcastLeadNotification } from "@/lib/telegram";
 
 type ActionResult = {
   success: boolean;
@@ -36,6 +37,19 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
         brandName: brandName.trim(),
       },
     });
+
+    // Отправляем уведомление в Telegram
+    const tgMessage = `
+📢 <b>Новая заявка: Рекламодатель</b>
+━━━━━━━━━━━━━━━━━━
+👤 <b>Имя:</b> ${name.trim()}
+📱 <b>Телефон:</b> ${phone.trim()}
+✉️ <b>Email:</b> ${email.trim()}
+💼 <b>Бренд:</b> ${brandName.trim()}
+━━━━━━━━━━━━━━━━━━
+`;
+    await broadcastLeadNotification(tgMessage);
+
     return { success: true, message: "Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время." };
   } catch (error) {
     console.error("AdvertiserLead error:", error);
@@ -72,6 +86,20 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
         socialLinks: socialLinks.trim(),
       },
     });
+
+    // Отправляем уведомление в Telegram
+    const tgMessage = `
+📢 <b>Новая заявка: Блогер</b>
+━━━━━━━━━━━━━━━━━━
+👤 <b>Имя:</b> ${name.trim()}
+📱 <b>Телефон:</b> ${phone.trim()}
+✉️ <b>Email:</b> ${email.trim()}
+🔗 <b>Соцсети:</b> 
+${socialLinks.trim()}
+━━━━━━━━━━━━━━━━━━
+`;
+    await broadcastLeadNotification(tgMessage);
+
     return { success: true, message: "Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время." };
   } catch (error) {
     console.error("BloggerLead error:", error);
