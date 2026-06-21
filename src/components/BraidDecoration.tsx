@@ -30,13 +30,13 @@ export default function BraidDecoration() {
   return (
     <>
       {/* Левая коса */}
-      <div className="fixed top-0 left-0 md:left-2 lg:left-6 h-screen w-[30px] md:w-[50px] lg:w-[80px] pointer-events-none z-0 opacity-80 mix-blend-screen">
-        <svg width="100%" height="100%" viewBox="0 0 100 1000" preserveAspectRatio="none" className="absolute top-0 left-0 drop-shadow-2xl">
+      <div className="fixed top-0 left-0 md:left-4 lg:left-8 h-screen w-[60px] md:w-[100px] lg:w-[140px] pointer-events-none z-0">
+        <svg width="100%" height="100%" viewBox="0 0 100 1000" preserveAspectRatio="none" className="absolute top-0 left-0">
           <motion.path 
             d={path1} 
             fill="transparent" 
-            stroke="rgba(255,255,255,0.06)" 
-            strokeWidth="3" 
+            stroke="rgba(255,255,255,0.15)" 
+            strokeWidth="4" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             style={{ pathLength: smoothProgress }} 
@@ -44,8 +44,8 @@ export default function BraidDecoration() {
           <motion.path 
             d={path2} 
             fill="transparent" 
-            stroke="rgba(255,255,255,0.06)" 
-            strokeWidth="3" 
+            stroke="rgba(255,255,255,0.15)" 
+            strokeWidth="4" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             style={{ pathLength: smoothProgress }} 
@@ -53,8 +53,8 @@ export default function BraidDecoration() {
           <motion.path 
             d={path3} 
             fill="transparent" 
-            stroke="rgba(255,255,255,0.12)" 
-            strokeWidth="2" 
+            stroke="rgba(255,255,255,0.25)" 
+            strokeWidth="3" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             style={{ pathLength: smoothProgress }} 
@@ -63,13 +63,13 @@ export default function BraidDecoration() {
       </div>
 
       {/* Правая коса (отзеркаленная) */}
-      <div className="fixed top-0 right-0 md:right-2 lg:right-6 h-screen w-[30px] md:w-[50px] lg:w-[80px] pointer-events-none z-0 opacity-80 mix-blend-screen scale-x-[-1]">
-        <svg width="100%" height="100%" viewBox="0 0 100 1000" preserveAspectRatio="none" className="absolute top-0 left-0 drop-shadow-2xl">
+      <div className="fixed top-0 right-0 md:right-4 lg:right-8 h-screen w-[60px] md:w-[100px] lg:w-[140px] pointer-events-none z-0 scale-x-[-1]">
+        <svg width="100%" height="100%" viewBox="0 0 100 1000" preserveAspectRatio="none" className="absolute top-0 left-0">
           <motion.path 
             d={path1} 
             fill="transparent" 
-            stroke="rgba(255,255,255,0.06)" 
-            strokeWidth="3" 
+            stroke="rgba(255,255,255,0.15)" 
+            strokeWidth="4" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             style={{ pathLength: smoothProgress }} 
@@ -77,8 +77,8 @@ export default function BraidDecoration() {
           <motion.path 
             d={path2} 
             fill="transparent" 
-            stroke="rgba(255,255,255,0.06)" 
-            strokeWidth="3" 
+            stroke="rgba(255,255,255,0.15)" 
+            strokeWidth="4" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             style={{ pathLength: smoothProgress }} 
@@ -86,8 +86,8 @@ export default function BraidDecoration() {
           <motion.path 
             d={path3} 
             fill="transparent" 
-            stroke="rgba(255,255,255,0.12)" 
-            strokeWidth="2" 
+            stroke="rgba(255,255,255,0.25)" 
+            strokeWidth="3" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             style={{ pathLength: smoothProgress }} 
