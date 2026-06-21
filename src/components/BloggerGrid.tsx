@@ -38,6 +38,16 @@ export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
 
   return (
     <>
+      {isAdmin && (
+        <div className="flex justify-end mb-4">
+          <button 
+            onClick={() => { /* TODO: Open Add Modal */ }} 
+            className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-colors flex items-center gap-2"
+          >
+            <span className="text-xl leading-none">+</span> Добавить блогера
+          </button>
+        </div>
+      )}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
         {bloggers.map((blogger, i) => (
           <motion.div

@@ -17,6 +17,7 @@ export default function AdminProvider({ children }: { children: ReactNode }) {
   const [showModal, setShowModal] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     // Check initially
@@ -56,14 +57,23 @@ export default function AdminProvider({ children }: { children: ReactNode }) {
         <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center backdrop-blur-sm p-4">
           <div className="bg-[#111] border border-white/10 p-8 rounded-3xl w-full max-w-sm flex flex-col gap-4">
             <h2 className="text-2xl font-bold text-white mb-2 uppercase tracking-wide">Админ-Панель</h2>
-            <input 
-              type="password" 
-              placeholder="Пароль" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white outline-none focus:border-red-500 transition-colors"
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            />
+            <div className="relative">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                placeholder="Пароль" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 p-3 pr-10 rounded-xl text-white outline-none focus:border-red-500 transition-colors"
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white"
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <button 
               onClick={handleLogin}
