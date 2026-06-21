@@ -1,0 +1,871 @@
+[
+  {
+    "id": "arka",
+    "name": "ARKA",
+    "avatarPath": "/blogersphoto/arka.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@arkac993",
+        "followers": "1.3М",
+        "views": "от 700к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@arkac993",
+        "followers": "440к",
+        "horizontalViews": "от 100к",
+        "verticalViews": "от 500к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/arkac993",
+        "followers": "119к",
+        "reelsViews": "от 100к",
+        "storiesViews": "от 10к"
+      },
+      "telegram": {
+        "url": "https://t.me/arkac03",
+        "followers": "75к",
+        "dailyViews": "от 30к",
+        "monthlyViews": "от 70к"
+      },
+      "vk": {
+        "url": "https://vk.ru/club232992199"
+      }
+    }
+  },
+  {
+    "id": "ruslanyouguy",
+    "name": "Руслан",
+    "avatarPath": "/blogersphoto/ruslan.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@ruslanyouguy",
+        "followers": "935к",
+        "views": "от 500к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@ruslanyouguy",
+        "followers": "896к",
+        "horizontalViews": "от 150к",
+        "verticalViews": "от 700к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/ruslanyouguy",
+        "followers": "179к",
+        "reelsViews": "от 150к",
+        "storiesViews": "от 15к"
+      },
+      "telegram": {
+        "url": "https://t.me/youguyruslan",
+        "followers": "50к",
+        "dailyViews": "от 17к",
+        "monthlyViews": "от 40к"
+      }
+    }
+  },
+  {
+    "id": "reoo3131",
+    "name": "Рео",
+    "avatarPath": "/blogersphoto/reo.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@reo.175",
+        "followers": "686к",
+        "views": "от 500к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@reoo3131",
+        "followers": "7к",
+        "verticalViews": "от 5к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/reoo3131",
+        "followers": "46к",
+        "reelsViews": "от 50к",
+        "storiesViews": "от 5к"
+      },
+      "telegram": {
+        "url": "https://t.me/reoo3131",
+        "followers": "58к",
+        "dailyViews": "от 10к",
+        "monthlyViews": "от 40к"
+      },
+      "vk": {
+        "url": "https://vk.ru/reoo3131"
+      }
+    }
+  },
+  {
+    "id": "dnl_tg",
+    "name": "Даниил",
+    "avatarPath": "/blogersphoto/daniel.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@dnl__tg",
+        "followers": "711к",
+        "views": "от 400к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@dnl_tg04",
+        "followers": "35к",
+        "verticalViews": "от 50к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/dnl_tg",
+        "followers": "72к",
+        "reelsViews": "от 70к",
+        "storiesViews": "от 7к"
+      },
+      "telegram": {
+        "url": "https://t.me/dnl_tg",
+        "followers": "47к",
+        "dailyViews": "от 10к",
+        "monthlyViews": "от 30к"
+      },
+      "vk": {
+        "url": "https://vk.ru/club238187753"
+      }
+    }
+  },
+  {
+    "id": "yimsultan",
+    "name": "Султан",
+    "avatarPath": "/blogersphoto/sultan.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@yim.sultan",
+        "followers": "486к",
+        "views": "от 200к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@yim.sultan",
+        "followers": "119к",
+        "verticalViews": "от 30к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/yim.night",
+        "followers": "93к",
+        "reelsViews": "от 80к",
+        "storiesViews": "от 8к"
+      },
+      "telegram": {
+        "url": "https://t.me/yimsultan",
+        "followers": "31к",
+        "dailyViews": "от 13к",
+        "monthlyViews": "от 20к"
+      }
+    }
+  },
+  {
+    "id": "maximka",
+    "name": "Максимка",
+    "avatarPath": "/blogersphoto/maximka.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@yanemaximka",
+        "followers": "277к",
+        "views": "от 150к"
+      },
+      "telegram": {
+        "url": "https://t.me/maximkawaterfall",
+        "followers": "17к",
+        "dailyViews": "от 8к",
+        "monthlyViews": "от 20к"
+      }
+    }
+  },
+  {
+    "id": "yooslmw",
+    "name": "yooslmw",
+    "avatarPath": "/blogersphoto/alenameow.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@yooslmw",
+        "followers": "223К",
+        "views": "от 200к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/yo.slmw",
+        "followers": "27к",
+        "reelsViews": "от 50к",
+        "storiesViews": "от 5к"
+      },
+      "telegram": {
+        "url": "https://t.me/yoslmw",
+        "followers": "22к",
+        "dailyViews": "от 12к",
+        "monthlyViews": "от 20к"
+      }
+    }
+  },
+  {
+    "id": "moonlliss",
+    "name": "moonlliss",
+    "avatarPath": "/blogersphoto/moonliss.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@moonlliss",
+        "followers": "180К",
+        "views": "от 200к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/soul.meow",
+        "followers": "8к",
+        "reelsViews": "от 15к",
+        "storiesViews": "от 2к"
+      },
+      "telegram": {
+        "url": "https://t.me/altushkaw",
+        "followers": "10к",
+        "dailyViews": "от 3к",
+        "monthlyViews": "от 9к"
+      }
+    }
+  },
+  {
+    "id": "sorrykatana",
+    "name": "sorrykatana",
+    "avatarPath": "/blogersphoto/katana.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@sorrykatana",
+        "followers": "1.6М",
+        "views": "от 500к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@sorrykatana",
+        "followers": "433к",
+        "horizontalViews": "от 150к",
+        "verticalViews": "от 250к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/sorrykatana",
+        "followers": "184к",
+        "reelsViews": "от 200к",
+        "storiesViews": "от 20к"
+      },
+      "telegram": {
+        "url": "https://t.me/sorryykatana",
+        "followers": "90к",
+        "dailyViews": "от 20к",
+        "monthlyViews": "от 35к"
+      }
+    }
+  },
+  {
+    "id": "pruna_lim",
+    "name": "pruna_lim",
+    "avatarPath": "/blogersphoto/prunalim.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@pruna_llim",
+        "followers": "220к",
+        "views": "от 200к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/pruna_lim",
+        "followers": "27к",
+        "reelsViews": "от 50к",
+        "storiesViews": "от 5к"
+      },
+      "telegram": {
+        "url": "https://t.me/pruna_lim",
+        "followers": "15к",
+        "dailyViews": "от 6к",
+        "monthlyViews": "от 13к"
+      }
+    }
+  },
+  {
+    "id": "abmilena",
+    "name": "abmilena",
+    "avatarPath": "/blogersphoto/admilenka.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@abmilena",
+        "followers": "32к",
+        "views": "от 50к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/abmilena7",
+        "followers": "4к",
+        "reelsViews": "от 10к",
+        "storiesViews": "от 1к"
+      },
+      "telegram": {
+        "url": "https://t.me/abmilenka",
+        "followers": "5к",
+        "dailyViews": "от 2к",
+        "monthlyViews": "от 5к"
+      }
+    }
+  },
+  {
+    "id": "ekaterinakorea",
+    "name": "Екатерина",
+    "avatarPath": "/blogersphoto/ekaterinakorea.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@ekaterinakorea",
+        "followers": "2.1М",
+        "views": "от 800к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@EkaterinaKorea",
+        "followers": "1.3М",
+        "horizontalViews": "от 200к",
+        "verticalViews": "от 500к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/ekaterinakorea",
+        "followers": "766к",
+        "reelsViews": "от 500к",
+        "storiesViews": "от 150к"
+      },
+      "telegram": {
+        "url": "https://t.me/ekaterinakoreatg",
+        "followers": "126к",
+        "dailyViews": "от 15к",
+        "monthlyViews": "от 50к"
+      },
+      "vk": {
+        "url": "https://vk.ru/ekaterinakoreavk"
+      }
+    }
+  },
+  {
+    "id": "keynece",
+    "name": "keynece",
+    "avatarPath": "/blogersphoto/keynece.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@keynece",
+        "followers": "657к",
+        "views": "от 500к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@keynece1",
+        "followers": "851к",
+        "horizontalViews": "от 300к",
+        "verticalViews": "от 1М"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/keynece",
+        "followers": "176к",
+        "reelsViews": "от 200к",
+        "storiesViews": "от 20к"
+      },
+      "telegram": {
+        "url": "https://t.me/keynece",
+        "followers": "48к",
+        "dailyViews": "от 12к",
+        "monthlyViews": "от 30к"
+      }
+    }
+  },
+  {
+    "id": "riheyoni",
+    "name": "Хеён Ри",
+    "avatarPath": "/blogersphoto/riheyoni.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@riheyoni",
+        "followers": "1.2М",
+        "views": "от 400к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/riheyoni",
+        "followers": "54к",
+        "reelsViews": "от 50к",
+        "storiesViews": "от 10к"
+      },
+      "telegram": {
+        "url": "https://t.me/riheyoni",
+        "followers": "43к",
+        "dailyViews": "от 8к",
+        "monthlyViews": "от 20к"
+      }
+    }
+  },
+  {
+    "id": "dur_alin",
+    "name": "dur_alin",
+    "avatarPath": "/blogersphoto/duralina.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@dur_alin",
+        "followers": "1.6М",
+        "views": "от 500к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@dur_alinaa",
+        "followers": "3к",
+        "horizontalViews": "от 15к",
+        "verticalViews": "от 5к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/dur_alin",
+        "followers": "48к",
+        "reelsViews": "от 30к",
+        "storiesViews": "от 3к"
+      },
+      "telegram": {
+        "url": "https://t.me/dur_alinaa",
+        "followers": "22к",
+        "dailyViews": "от 3к",
+        "monthlyViews": "от 8к"
+      }
+    }
+  },
+  {
+    "id": "kris",
+    "name": "Кристина (Крисс Креветка)",
+    "avatarPath": "/blogersphoto/krisskrevetrka.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@kris_121794",
+        "followers": "1.9М",
+        "views": "от 800к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/_mihirika_",
+        "followers": "400к",
+        "reelsViews": "от 400к",
+        "storiesViews": "от 150к"
+      },
+      "telegram": {
+        "url": "https://t.me/sosedkaandkriss",
+        "followers": "8к",
+        "dailyViews": "от 2к",
+        "monthlyViews": "от 5к"
+      }
+    }
+  },
+  {
+    "id": "kissmarkizz",
+    "name": "kissmarkizz",
+    "avatarPath": "/blogersphoto/kissmarkizz.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@kissmarkizz3",
+        "followers": "625к",
+        "views": "от 600к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@kissmarkizz",
+        "followers": "32к",
+        "horizontalViews": "от 5к",
+        "verticalViews": "от 1М"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/kisssmarkizz",
+        "followers": "2к",
+        "storiesViews": "от 1к"
+      },
+      "telegram": {
+        "url": "https://t.me/kissmarkizz3",
+        "followers": "1.4к",
+        "dailyViews": "от 100",
+        "monthlyViews": "от 300"
+      }
+    }
+  },
+  {
+    "id": "katya_korea",
+    "name": "Катя (katya_korea)",
+    "avatarPath": "/blogersphoto/katia_korea.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@katya_korea_",
+        "followers": "440к",
+        "views": "от 200к"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@KatyaKorea",
+        "followers": "1М",
+        "horizontalViews": "от 100к",
+        "verticalViews": "от 200к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/korastina.katya",
+        "followers": "530к",
+        "reelsViews": "от 300к",
+        "storiesViews": "от 150к"
+      },
+      "telegram": {
+        "url": "https://t.me/koreakatya",
+        "followers": "130к",
+        "dailyViews": "от 40к",
+        "monthlyViews": "от 60к"
+      }
+    }
+  },
+  {
+    "id": "alexbageba",
+    "name": "alexbageba",
+    "avatarPath": "/blogersphoto/alexbageba.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@alexbageba",
+        "followers": "193к",
+        "views": "от 700к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/channel/UCKWlouY4F_yYOeI3iM2WPnQ",
+        "followers": "53к",
+        "verticalViews": "от 30к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/alexbageba/",
+        "followers": "21к",
+        "reelsViews": "от 60к",
+        "storiesViews": "от 4к"
+      }
+    }
+  },
+  {
+    "id": "pol_asikk",
+    "name": "pol_asikk",
+    "avatarPath": "/blogersphoto/polasik.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@pol_asikk",
+        "followers": "207к",
+        "views": "от 600к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/pol_asik",
+        "followers": "205к",
+        "reelsViews": "от 450к",
+        "storiesViews": "от 100к"
+      },
+      "telegram": {
+        "url": "https://t.me/pol_asikk",
+        "followers": "23.5к",
+        "dailyViews": "11к",
+        "monthlyViews": "21к"
+      }
+    }
+  },
+  {
+    "id": "wwwhite_ryu",
+    "name": "wwwhite_ryu",
+    "avatarPath": "/blogersphoto/whiteryu.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@wwwhite_ryu",
+        "followers": "505к",
+        "views": "от 300к"
+      },
+      "telegram": {
+        "url": "https://t.me/wwwhite_ryu",
+        "followers": "10к",
+        "dailyViews": "от 5к",
+        "monthlyViews": "от 7к"
+      }
+    }
+  },
+  {
+    "id": "tokkipu",
+    "name": "tokkipu",
+    "avatarPath": "/blogersphoto/tokkipu.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "http://tiktok.com/@tokkipu",
+        "followers": "50к",
+        "views": "от 100к"
+      },
+      "telegram": {
+        "url": "https://t.me/tokkipu",
+        "followers": "2.2к",
+        "dailyViews": "от 1.5к",
+        "monthlyViews": "от 3к"
+      }
+    }
+  },
+  {
+    "id": "ravilovafro",
+    "name": "ravilovafro",
+    "avatarPath": "/blogersphoto/ravilova.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@ravilovafro",
+        "followers": "415к",
+        "views": "от 70к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@ravilova1",
+        "followers": "184к",
+        "horizontalViews": "от 25к",
+        "verticalViews": "от 30к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/ravilova.1",
+        "followers": "186к",
+        "reelsViews": "от 80к",
+        "storiesViews": "от 20к"
+      },
+      "telegram": {
+        "url": "https://t.me/ravilovafros",
+        "followers": "12к",
+        "dailyViews": "от 5к",
+        "monthlyViews": "от 10к"
+      }
+    }
+  },
+  {
+    "id": "iribaby",
+    "name": "iribaby",
+    "avatarPath": "/blogersphoto/iribaby.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@iribabylife",
+        "followers": "441к / 651к",
+        "views": "от 300к / 500к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@IRIBABYLIFE",
+        "followers": "704к",
+        "horizontalViews": "от 8к",
+        "verticalViews": "от 200к"
+      },
+      "instagram": {
+        "url": "https://instagram.com/_iribaby_",
+        "followers": "316к",
+        "reelsViews": "от 100к",
+        "storiesViews": "от 10к"
+      },
+      "telegram": {
+        "url": "https://t.me/iribabyy",
+        "followers": "17.3к",
+        "dailyViews": "от 3к",
+        "monthlyViews": "от 16к"
+      }
+    }
+  },
+  {
+    "id": "salkins",
+    "name": "salkins",
+    "avatarPath": "/blogersphoto/salavat.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@salkins",
+        "followers": "280к / 3.2М",
+        "views": "от 200к / 500к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/just_salkin",
+        "followers": "107к",
+        "reelsViews": "от 300к",
+        "storiesViews": "от 10к"
+      },
+      "telegram": {
+        "url": "https://t.me/+0pUmWBMLOJ1jZTFi",
+        "followers": "27к",
+        "dailyViews": "от 3к",
+        "monthlyViews": "от 10к"
+      }
+    }
+  },
+  {
+    "id": "negoniika",
+    "name": "negoniika",
+    "avatarPath": "/blogersphoto/negonika.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@negoniika",
+        "followers": "458к",
+        "views": "от 390к"
+      },
+      "telegram": {
+        "url": "https://t.me/negonikaaaaa",
+        "followers": "14к",
+        "dailyViews": "от 3к",
+        "monthlyViews": "от 10к"
+      }
+    }
+  },
+  {
+    "id": "medic",
+    "name": "medic",
+    "avatarPath": "/blogersphoto/medic.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@medlci13",
+        "followers": "272к",
+        "views": "от 200к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/medlci13",
+        "followers": "75к",
+        "reelsViews": "от 50к",
+        "storiesViews": "от 10к"
+      },
+      "telegram": {
+        "url": "https://t.me/medlci13",
+        "followers": "43к",
+        "dailyViews": "от 8к",
+        "monthlyViews": "от 40к"
+      }
+    }
+  },
+  {
+    "id": "tennoo",
+    "name": "tennoo",
+    "avatarPath": "/blogersphoto/tenno.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@tennoo10",
+        "followers": "107к",
+        "views": "от 200к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/tennno01",
+        "followers": "316",
+        "reelsViews": "от 100к",
+        "storiesViews": "от 300"
+      },
+      "telegram": {
+        "url": "https://t.me/WATRUDOINGAA",
+        "followers": "718",
+        "dailyViews": "от 1к",
+        "monthlyViews": "от 3к"
+      }
+    }
+  },
+  {
+    "id": "smolarchan",
+    "name": "smolarchan",
+    "avatarPath": "/blogersphoto/mariachan.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@smolarchan",
+        "followers": "1М / 600к",
+        "views": "от 800к / 600к"
+      },
+      "youtube": {
+        "url": "https://youtube.com/@mariiachan",
+        "followers": "28к",
+        "verticalViews": "от 100к"
+      },
+      "instagram": {
+        "url": "https://www.instagram.com/manlyxss",
+        "followers": "61к",
+        "storiesViews": "от 50к"
+      },
+      "telegram": {
+        "url": "https://t.me/mariiasmollar",
+        "followers": "80к",
+        "dailyViews": "от 19к",
+        "monthlyViews": "от 60к"
+      }
+    }
+  },
+  {
+    "id": "hehehe_spaghetti",
+    "name": "hehehe_spaghetti",
+    "avatarPath": "/blogersphoto/spaghetti.jpg",
+    "geo": "Россия",
+    "rknStatus": true,
+    "contact": "@manager_hanguki",
+    "socials": {
+      "tiktok": {
+        "url": "https://www.tiktok.com/@hehehe_spaghetti",
+        "followers": "134к",
+        "views": "от 900к"
+      },
+      "telegram": {
+        "url": "https://t.me/guipipeanut",
+        "followers": "12к",
+        "dailyViews": "от 13к",
+        "monthlyViews": "от 17к"
+      }
+    }
+  }
+]

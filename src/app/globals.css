@@ -16,8 +16,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, sans-serif;
   overflow-x: hidden;
-  /* Для кастомного курсора скрываем дефолтный */
-  cursor: none; 
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Стилизация скроллбара на случай если lenis отключат/сломается */
@@ -34,7 +33,18 @@ body {
   background: #555; 
 }
 
-/* Скрываем дефолтный курсор на ссылках и кнопках */
-a, button, [role="button"] {
-  cursor: none;
+/* Remove 300ms tap delay on interactive elements for mobile */
+a, button, [role="button"], input, textarea, select {
+  touch-action: manipulation;
+}
+
+/* Скрываем дефолтный курсор только на устройствах с мышью/трекпадом */
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
+
+  a, button, [role="button"] {
+    cursor: none;
+  }
 }

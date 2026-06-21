@@ -5,6 +5,8 @@ import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/ui/CustomCursor";
 import Navbar from "@/components/ui/Navbar";
 
+import FloatingContact from "@/components/FloatingContact";
+
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
@@ -24,6 +26,7 @@ export default function RootLayout({
           <CustomCursor />
           <Navbar />
           {children}
+          <FloatingContact />
         </SmoothScroll>
       </body>
     </html>

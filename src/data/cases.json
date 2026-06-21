@@ -1,0 +1,31 @@
+[
+  {
+    "id": "tornado-asian-mix",
+    "brand": "Tornado Max Energy",
+    "lineup": "Tornado Asian Mix",
+    "agency": "Digital Church",
+    "description": "Масштабная интеграция нового вкуса энергетического напитка Tornado Asian Mix в контент топовых блогеров. Яркий визуальный стиль кампании, динамичные видео с мощной энергетикой и нативный сторителлинг позволили добиться высокой вовлеченности и повысить узнаваемость бренда среди молодой целевой аудитории.",
+    "platforms": ["TikTok"],
+    "bloggers": [
+      "Султан (yim.sultan)",
+      "Рео (reoo3131)",
+      "Руслан Югай (janmentle)",
+      "Кореец Аркаша (arkac993)",
+      "Катя Катана (sorrykatana)",
+      "Alena meow (yooslmw)",
+      "PRUNA (pruna_llim)",
+      "Саша Щербаков (alexbageba)"
+    ],
+    "coverImage": "/casesphoto/tornado.jpg",
+    "videos": [
+      "/bloggersvideo/IMG_2051.MOV",
+      "/bloggersvideo/IMG_3930.MOV",
+      "/bloggersvideo/IMG_4143.MOV",
+      "/bloggersvideo/IMG_5327.MOV",
+      "/bloggersvideo/IMG_5397.MOV",
+      "/bloggersvideo/IMG_7344.MOV",
+      "/bloggersvideo/IMG_7826.MOV",
+      "/bloggersvideo/Sececec.mp4"
+    ]
+  }
+]
