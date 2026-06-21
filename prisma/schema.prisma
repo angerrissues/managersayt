@@ -34,3 +34,32 @@ model BloggerLead {
 
   @@map("blogger_leads")
 }
+
+model Blogger {
+  id         String   @id
+  name       String
+  avatarPath String   @map("avatar_path")
+  geo        String
+  rknStatus  Boolean  @map("rkn_status")
+  contact    String
+  socials    Json
+  details    Json
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("bloggers")
+}
+
+model Case {
+  id          String   @id
+  brand       String
+  lineup      String
+  agency      String
+  description String
+  platforms   String[]
+  bloggers    String[]
+  coverImage  String?  @map("cover_image")
+  videos      String[]
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("cases")
+}

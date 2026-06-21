@@ -6,8 +6,8 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import Navbar from "@/components/ui/Navbar";
 
 import FloatingContact from "@/components/FloatingContact";
-
 import Footer from "@/components/ui/Footer";
+import AdminProvider from "@/components/AdminProvider";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 
@@ -24,13 +24,15 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={`${inter.variable} antialiased`}>
-        <SmoothScroll>
-          <CustomCursor />
-          <Navbar />
-          {children}
-          <Footer />
-          <FloatingContact />
-        </SmoothScroll>
+        <AdminProvider>
+          <SmoothScroll>
+            <CustomCursor />
+            <Navbar />
+            {children}
+            <Footer />
+            <FloatingContact />
+          </SmoothScroll>
+        </AdminProvider>
       </body>
     </html>
   );

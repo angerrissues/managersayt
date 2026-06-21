@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import BloggerModal from "./BloggerModal";
+import { useAdmin } from "./AdminProvider";
 
 export type Socials = {
   tiktok?: { url: string; followers: string; views?: string };
@@ -33,6 +34,7 @@ export type Blogger = {
 
 export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
   const [selectedBlogger, setSelectedBlogger] = useState<Blogger | null>(null);
+  const { isAdmin } = useAdmin();
 
   return (
     <>
@@ -60,7 +62,6 @@ export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
               </div>
             </div>
 
-            {/* Desktop: Overlay on hover */}
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 hidden md:flex flex-col justify-end p-8">
               <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
                 <p className="text-white/50 text-xs font-medium tracking-[0.2em] mb-3">{blogger.geo}</p>
@@ -75,6 +76,30 @@ export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
                 </button>
               </div>
             </div>
+
+            {isAdmin && (
+              <div className="absolute top-2 right-2 z-20 flex gap-2">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); /* TODO: Edit logic */ }} 
+                  className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-full shadow"
+                >
+                  Edit
+                </button>
+                <button 
+                  onClick={async (e) => { 
+                    e.stopPropagation(); 
+                    if(confirm("Удалить?")) {
+                      const { deleteBlogger } = await import("@/actions/admin");
+                      await deleteBlogger(blogger.id);
+                      window.location.reload();
+                    }
+                  }} 
+                  className="bg-red-600 hover:bg-red-500 text-white p-2 rounded-full shadow"
+                >
+                  Del
+                </button>
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
