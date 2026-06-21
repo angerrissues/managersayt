@@ -1,9 +1,32 @@
 "use client";
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
-import { X, Upload } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Upload, Plus } from "lucide-react";
 import type { Case } from "./CasesGrid";
-import { saveCase, uploadMedia } from "@/actions/admin";
+import { saveCase, uploadMedia, getBloggers } from "@/actions/admin";
+import type { Blogger } from "./BloggerGrid";
+
+function AutoTextarea({ value, onChange, placeholder, minHeight = "100px" }: { value: string, onChange: (v: string) => void, placeholder: string, minHeight?: string }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.style.height = "auto";
+      ref.current.style.height = ref.current.scrollHeight + "px";
+    }
+  }, [value]);
+
+  return (
+    <textarea 
+      ref={ref}
+      placeholder={placeholder} 
+      className="w-full text-white/80 leading-relaxed bg-black/20 border border-white/10 p-3 rounded-xl outline-none focus:border-red-500 resize-none overflow-hidden" 
+      style={{ minHeight }}
+      value={value} 
+      onChange={e => onChange(e.target.value)} 
+    />
+  );
+}
 
 export default function CaseEditModal({ 
   caseData, 
@@ -29,6 +52,15 @@ export default function CaseEditModal({
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Blogger selection state
+  const [allBloggers, setAllBloggers] = useState<Blogger[]>([]);
+  const [bloggerInput, setBloggerInput] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  useEffect(() => {
+    getBloggers().then(res => setAllBloggers(res as unknown as Blogger[]));
+  }, []);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) onClose();
@@ -68,6 +100,28 @@ export default function CaseEditModal({
       setIsSaving(false);
     }
   };
+
+  // Blogger Tagging Logic
+  const addBlogger = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (!formData.bloggers?.includes(trimmed)) {
+      setFormData({ ...formData, bloggers: [...(formData.bloggers || []), trimmed] });
+    }
+    setBloggerInput("");
+    setShowSuggestions(false);
+  };
+
+  const removeBlogger = (name: string) => {
+    setFormData({ ...formData, bloggers: (formData.bloggers || []).filter(b => b !== name) });
+  };
+
+  const suggestions = allBloggers
+    .filter(b => 
+      b.name.toLowerCase().includes(bloggerInput.toLowerCase()) || 
+      b.id.toLowerCase().includes(bloggerInput.toLowerCase())
+    )
+    .filter(b => !formData.bloggers?.includes(b.name) && !formData.bloggers?.includes(b.id));
 
   return (
     <motion.div
@@ -130,11 +184,11 @@ export default function CaseEditModal({
             <div className="p-4 md:p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col gap-3">
               <p className="text-white/50 text-sm uppercase tracking-wider font-bold">О кампании</p>
               
-              <textarea 
+              <AutoTextarea 
                 placeholder="Описание кейса..." 
-                className="w-full text-white/80 leading-relaxed bg-black/20 border border-white/10 p-3 rounded-xl min-h-[100px] outline-none focus:border-red-500" 
-                value={formData.description} 
-                onChange={e => setFormData({ ...formData, description: e.target.value })} 
+                minHeight="100px"
+                value={formData.description || ""}
+                onChange={v => setFormData({ ...formData, description: v })}
               />
               
               <div className="pt-2">
@@ -150,13 +204,77 @@ export default function CaseEditModal({
             </div>
 
             <div className="p-4 md:p-6 bg-white/5 border border-white/10 rounded-2xl">
-              <p className="text-white/50 text-sm uppercase tracking-wider mb-4 font-bold">Блогеры (через запятую)</p>
-              <textarea 
-                placeholder="Имена или ID блогеров..." 
-                className="w-full text-sm text-white bg-black/20 border border-white/10 p-3 rounded-xl outline-none focus:border-red-500 min-h-[60px]" 
-                value={(formData.bloggers || []).join(", ")} 
-                onChange={e => setFormData({ ...formData, bloggers: e.target.value.split(",").map(s => s.trim()) })} 
-              />
+              <p className="text-white/50 text-sm uppercase tracking-wider mb-4 font-bold">Блогеры</p>
+              
+              <div className="flex flex-wrap gap-2 mb-4">
+                {formData.bloggers?.map((bloggerName, i) => {
+                  const isExisting = allBloggers.some(b => b.name === bloggerName || b.id === bloggerName);
+                  return (
+                    <div 
+                      key={i} 
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs md:text-sm border transition-colors ${
+                        isExisting ? 'bg-white/10 border-white/20 text-white' : 'bg-transparent border-dashed border-white/30 text-white/70'
+                      }`}
+                    >
+                      <span>{bloggerName}</span>
+                      <button onClick={() => removeBlogger(bloggerName)} className="hover:text-red-400">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="relative">
+                <div className="flex items-center bg-black/20 border border-white/10 rounded-xl px-3 focus-within:border-red-500">
+                  <input 
+                    type="text" 
+                    placeholder="Введите имя блогера..." 
+                    className="w-full text-sm text-white bg-transparent p-3 outline-none" 
+                    value={bloggerInput} 
+                    onChange={e => {
+                      setBloggerInput(e.target.value);
+                      setShowSuggestions(true);
+                    }} 
+                    onFocus={() => setShowSuggestions(true)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addBlogger(bloggerInput);
+                      }
+                    }}
+                  />
+                  <button onClick={() => addBlogger(bloggerInput)} className="text-white/50 hover:text-white p-2">
+                    <Plus size={18} />
+                  </button>
+                </div>
+
+                <AnimatePresence>
+                  {showSuggestions && bloggerInput.trim() !== "" && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                      className="absolute left-0 right-0 top-full mt-2 bg-[#1a1a1a] border border-white/10 rounded-xl overflow-hidden z-50 max-h-48 overflow-y-auto shadow-2xl"
+                    >
+                      {suggestions.length > 0 ? (
+                        suggestions.map(b => (
+                          <button
+                            key={b.id}
+                            className="w-full text-left px-4 py-3 text-sm text-white hover:bg-white/10 transition-colors flex items-center justify-between"
+                            onClick={() => addBlogger(b.name)}
+                          >
+                            <span>{b.name}</span>
+                            <span className="text-white/30 text-xs">@{b.id}</span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-4 py-3 text-sm text-white/50 italic">
+                          Нажмите + или Enter, чтобы добавить как нового (вручную)
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
           
@@ -195,11 +313,11 @@ export default function CaseEditModal({
           <div className="p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col gap-4">
             <h3 className="text-white font-bold uppercase">Ссылки на Видео (YouTube Shorts / TikTok и т.д.)</h3>
             <p className="text-white/50 text-xs">Каждая ссылка на новой строке.</p>
-            <textarea 
+            <AutoTextarea 
               placeholder="https://..." 
-              className="w-full text-sm text-white bg-black/20 border border-white/10 p-3 rounded-xl outline-none focus:border-red-500 min-h-[150px] whitespace-pre" 
+              minHeight="150px"
               value={(formData.videos || []).join("\n")} 
-              onChange={e => setFormData({ ...formData, videos: e.target.value.split("\n").filter(v => v.trim() !== "") })} 
+              onChange={v => setFormData({ ...formData, videos: v.split("\n").filter(val => val.trim() !== "") })} 
             />
           </div>
         </div>
