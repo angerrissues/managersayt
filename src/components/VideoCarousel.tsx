@@ -5,14 +5,19 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function VideoCarousel({ videos }: { videos: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  // Play video automatically when it loads or index changes
+  // Play active video automatically, pause others
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(e => console.log("Autoplay prevented:", e));
-    }
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+      if (index === currentIndex) {
+        video.currentTime = 0;
+        video.play().catch(e => console.log("Autoplay prevented:", e));
+      } else {
+        video.pause();
+      }
+    });
   }, [currentIndex]);
 
   const nextVideo = () => {
@@ -38,22 +43,29 @@ export default function VideoCarousel({ videos }: { videos: string[] }) {
 
         {/* Video Container - Strictly 9:16 format */}
         <div className="relative w-full max-w-[280px] md:max-w-[340px] aspect-[9/16] max-h-[60vh] md:max-h-[70vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-          <AnimatePresence mode="wait">
-            <motion.video
-              key={currentIndex}
-              ref={videoRef}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.4 }}
-              src={videos[currentIndex]}
-              autoPlay
+          {videos.map((src, index) => (
+            <video
+              key={src}
+              ref={(el) => {
+                if (!videoRefs.current) {
+                  // @ts-ignore
+                  videoRefs.current = [];
+                }
+                // @ts-ignore
+                videoRefs.current[index] = el;
+              }}
+              src={src}
               playsInline
               muted
               loop
-              className="w-full h-full object-cover pointer-events-none"
+              preload="metadata"
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 pointer-events-none"
+              style={{
+                opacity: index === currentIndex ? 1 : 0,
+                zIndex: index === currentIndex ? 10 : 0
+              }}
             />
-          </AnimatePresence>
+          ))}
         </div>
 
         {/* Next Button */}
