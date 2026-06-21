@@ -19,8 +19,12 @@ export default function BraidDecoration() {
   const { scrollYProgress } = useScroll();
   // Делаем отрисовку очень плавной, с небольшой задержкой/инерцией
   const springProgress = useSpring(scrollYProgress, { stiffness: 40, damping: 20 });
-  // Ограничиваем значения от 0 до 1, чтобы пружина (spring) не уходила в минус и не рисовала конец косы в начале
+  // Ограничиваем значения от 0 до 1
   const smoothProgress = useTransform(springProgress, (val) => Math.max(0, Math.min(1, val)));
+  
+  // Вместо глючного pathLength (который ломается из-за vector-effect в Chrome),
+  // мы будем анимировать маску (clip-path), которая будет открывать косу сверху вниз.
+  const clipPath = useTransform(smoothProgress, (val) => `inset(0 0 ${100 - val * 100}% 0)`);
 
   if (!isVisible) return null;
 
@@ -33,68 +37,68 @@ export default function BraidDecoration() {
     <>
       {/* Левая коса */}
       <div className="fixed top-0 left-0 md:left-4 lg:left-8 h-screen w-[60px] md:w-[100px] lg:w-[140px] pointer-events-none z-0">
-        <svg width="100%" height="100%" viewBox="0 0 100 1000" preserveAspectRatio="none" className="absolute top-0 left-0">
-          <motion.path 
+        <motion.svg 
+          width="100%" height="100%" viewBox="0 0 100 1000" preserveAspectRatio="none" className="absolute top-0 left-0"
+          style={{ clipPath }}
+        >
+          <path 
             d={path1} 
             fill="transparent" 
             stroke="rgba(255,255,255,0.15)" 
             strokeWidth="4" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
-            style={{ pathLength: smoothProgress }} 
           />
-          <motion.path 
+          <path 
             d={path2} 
             fill="transparent" 
             stroke="rgba(255,255,255,0.15)" 
             strokeWidth="4" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
-            style={{ pathLength: smoothProgress }} 
           />
-          <motion.path 
+          <path 
             d={path3} 
             fill="transparent" 
             stroke="rgba(255,255,255,0.25)" 
             strokeWidth="3" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
-            style={{ pathLength: smoothProgress }} 
           />
-        </svg>
+        </motion.svg>
       </div>
 
       {/* Правая коса (отзеркаленная) */}
       <div className="fixed top-0 right-0 md:right-4 lg:right-8 h-screen w-[60px] md:w-[100px] lg:w-[140px] pointer-events-none z-0 scale-x-[-1]">
-        <svg width="100%" height="100%" viewBox="0 0 100 1000" preserveAspectRatio="none" className="absolute top-0 left-0">
-          <motion.path 
+        <motion.svg 
+          width="100%" height="100%" viewBox="0 0 100 1000" preserveAspectRatio="none" className="absolute top-0 left-0"
+          style={{ clipPath }}
+        >
+          <path 
             d={path1} 
             fill="transparent" 
             stroke="rgba(255,255,255,0.15)" 
             strokeWidth="4" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
-            style={{ pathLength: smoothProgress }} 
           />
-          <motion.path 
+          <path 
             d={path2} 
             fill="transparent" 
             stroke="rgba(255,255,255,0.15)" 
             strokeWidth="4" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
-            style={{ pathLength: smoothProgress }} 
           />
-          <motion.path 
+          <path 
             d={path3} 
             fill="transparent" 
             stroke="rgba(255,255,255,0.25)" 
             strokeWidth="3" 
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
-            style={{ pathLength: smoothProgress }} 
           />
-        </svg>
+        </motion.svg>
       </div>
     </>
   );
