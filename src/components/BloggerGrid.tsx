@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import BloggerModal from "./BloggerModal";
+import BloggerEditModal from "./BloggerEditModal";
 import { useAdmin } from "./AdminProvider";
 
 export type Socials = {
@@ -36,12 +37,14 @@ export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
   const [selectedBlogger, setSelectedBlogger] = useState<Blogger | null>(null);
   const { isAdmin } = useAdmin();
 
+  const [editingBlogger, setEditingBlogger] = useState<Partial<Blogger> | null>(null);
+
   return (
     <>
       {isAdmin && (
         <div className="flex justify-end mb-4">
           <button 
-            onClick={() => { /* TODO: Open Add Modal */ }} 
+            onClick={() => setEditingBlogger({})} 
             className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-colors flex items-center gap-2"
           >
             <span className="text-xl leading-none">+</span> Добавить блогера
@@ -90,7 +93,10 @@ export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
             {isAdmin && (
               <div className="absolute top-2 right-2 z-20 flex gap-2">
                 <button 
-                  onClick={(e) => { e.stopPropagation(); /* TODO: Edit logic */ }} 
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    setEditingBlogger(blogger); 
+                  }} 
                   className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-full shadow"
                 >
                   Edit
@@ -115,8 +121,18 @@ export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
       </div>
 
       <AnimatePresence>
-        {selectedBlogger && (
+        {selectedBlogger && !editingBlogger && (
           <BloggerModal blogger={selectedBlogger} onClose={() => setSelectedBlogger(null)} />
+        )}
+        {editingBlogger && (
+          <BloggerEditModal 
+            blogger={editingBlogger} 
+            onClose={() => setEditingBlogger(null)} 
+            onSave={() => {
+              setEditingBlogger(null);
+              window.location.reload();
+            }}
+          />
         )}
       </AnimatePresence>
     </>

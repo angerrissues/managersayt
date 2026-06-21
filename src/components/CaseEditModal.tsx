@@ -1,0 +1,207 @@
+"use client";
+import { useState, useRef } from "react";
+import { motion } from "framer-motion";
+import { X, Upload } from "lucide-react";
+import type { Case } from "./CasesGrid";
+import { saveCase, uploadMedia } from "@/actions/admin";
+
+export default function CaseEditModal({ 
+  caseData, 
+  onClose,
+  onSave 
+}: { 
+  caseData: Case | Partial<Case>; 
+  onClose: () => void;
+  onSave: () => void;
+}) {
+  const [formData, setFormData] = useState<Partial<Case>>({
+    id: caseData.id || crypto.randomUUID(),
+    brand: caseData.brand || "",
+    lineup: caseData.lineup || "",
+    agency: caseData.agency || "82 Agency",
+    description: caseData.description || "",
+    platforms: caseData.platforms || [],
+    bloggers: caseData.bloggers || [],
+    coverImage: caseData.coverImage || "",
+    videos: caseData.videos || [],
+  });
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) onClose();
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    try {
+      setIsUploading(true);
+      const data = new FormData();
+      data.append("file", file);
+      
+      const res: any = await uploadMedia(data);
+      if (res.url) {
+        setFormData({ ...formData, coverImage: res.url });
+      }
+    } catch (err) {
+      alert("Ошибка при загрузке: " + err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setIsSaving(true);
+    try {
+      await saveCase(formData);
+      onSave();
+      onClose();
+    } catch (e) {
+      alert("Ошибка сохранения: " + e);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={handleBackdropClick}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="bg-[#111] border border-white/10 rounded-3xl p-4 md:p-8 max-w-6xl w-full relative my-auto cursor-auto shadow-2xl flex flex-col lg:flex-row gap-10 max-h-[90vh] overflow-y-auto"
+      >
+        <button 
+          onClick={onClose}
+          className="absolute top-3 right-3 md:top-6 md:right-6 p-3 md:p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white z-50 cursor-pointer"
+        >
+          <X size={24} />
+        </button>
+
+        {/* Left Side: Info */}
+        <div className="lg:w-1/2 flex flex-col justify-center gap-4">
+          <input 
+            type="text" 
+            placeholder="ID (только англ, без пробелов)" 
+            className="text-white/50 text-xs border-b border-white/20 bg-transparent p-1 outline-none" 
+            value={formData.id} 
+            disabled={!!caseData.id}
+            onChange={e => setFormData({ ...formData, id: e.target.value })} 
+          />
+
+          <input 
+            type="text" 
+            placeholder="Agency (например: 82 Agency)" 
+            className="text-white/50 tracking-widest uppercase text-sm mb-2 font-mono bg-white/5 border border-white/20 p-2 rounded-xl outline-none focus:border-red-500" 
+            value={formData.agency} 
+            onChange={e => setFormData({ ...formData, agency: e.target.value })} 
+          />
+
+          <input 
+            type="text" 
+            placeholder="Название бренда" 
+            className="text-3xl md:text-5xl font-black uppercase text-white tracking-tighter leading-none mb-2 bg-white/5 border border-white/20 p-3 rounded-xl outline-none focus:border-red-500 w-full" 
+            value={formData.brand} 
+            onChange={e => setFormData({ ...formData, brand: e.target.value })} 
+          />
+
+          <input 
+            type="text" 
+            placeholder="Заголовок (например: Продвижение продукта)" 
+            className="text-xl text-white/80 font-light mb-4 italic bg-white/5 border border-white/20 p-2 rounded-xl outline-none focus:border-red-500 w-full" 
+            value={formData.lineup} 
+            onChange={e => setFormData({ ...formData, lineup: e.target.value })} 
+          />
+
+          <div className="space-y-6">
+            <div className="p-4 md:p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col gap-3">
+              <p className="text-white/50 text-sm uppercase tracking-wider font-bold">О кампании</p>
+              
+              <textarea 
+                placeholder="Описание кейса..." 
+                className="w-full text-white/80 leading-relaxed bg-black/20 border border-white/10 p-3 rounded-xl min-h-[100px] outline-none focus:border-red-500" 
+                value={formData.description} 
+                onChange={e => setFormData({ ...formData, description: e.target.value })} 
+              />
+              
+              <div className="pt-2">
+                <p className="text-white/40 text-xs mb-1 uppercase">Площадки (через запятую)</p>
+                <input 
+                  type="text" 
+                  placeholder="YouTube, TikTok, VK..." 
+                  className="w-full font-medium text-lg text-white bg-black/20 border border-white/10 p-3 rounded-xl outline-none focus:border-red-500" 
+                  value={(formData.platforms || []).join(", ")} 
+                  onChange={e => setFormData({ ...formData, platforms: e.target.value.split(",").map(s => s.trim()) })} 
+                />
+              </div>
+            </div>
+
+            <div className="p-4 md:p-6 bg-white/5 border border-white/10 rounded-2xl">
+              <p className="text-white/50 text-sm uppercase tracking-wider mb-4 font-bold">Блогеры (через запятую)</p>
+              <textarea 
+                placeholder="Имена или ID блогеров..." 
+                className="w-full text-sm text-white bg-black/20 border border-white/10 p-3 rounded-xl outline-none focus:border-red-500 min-h-[60px]" 
+                value={(formData.bloggers || []).join(", ")} 
+                onChange={e => setFormData({ ...formData, bloggers: e.target.value.split(",").map(s => s.trim()) })} 
+              />
+            </div>
+          </div>
+          
+          <button 
+            onClick={handleSubmit}
+            disabled={isSaving}
+            className="mt-4 w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-4 rounded-xl uppercase tracking-wider transition-colors"
+          >
+            {isSaving ? "Сохранение..." : "Сохранить кейс"}
+          </button>
+        </div>
+
+        {/* Right Side: Media Editing */}
+        <div className="lg:w-1/2 flex flex-col gap-6">
+          <div className="p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center gap-4">
+            <h3 className="text-white font-bold uppercase w-full">Обложка (Превью)</h3>
+            <div className="w-full aspect-video bg-black/50 rounded-xl overflow-hidden border border-white/20 relative group flex items-center justify-center">
+              {formData.coverImage ? (
+                <img src={formData.coverImage} alt="Cover" className="w-full h-full object-contain" />
+              ) : (
+                <p className="text-white/30 text-sm">Нет обложки</p>
+              )}
+              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="bg-white text-black px-4 py-2 rounded-full font-bold flex items-center gap-2"
+                  disabled={isUploading}
+                >
+                  <Upload size={16} /> {isUploading ? "Загрузка..." : "Сменить обложку"}
+                </button>
+                <input type="file" ref={fileInputRef} onChange={handleUpload} accept="image/*" className="hidden" />
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col gap-4">
+            <h3 className="text-white font-bold uppercase">Ссылки на Видео (YouTube Shorts / TikTok и т.д.)</h3>
+            <p className="text-white/50 text-xs">Каждая ссылка на новой строке.</p>
+            <textarea 
+              placeholder="https://..." 
+              className="w-full text-sm text-white bg-black/20 border border-white/10 p-3 rounded-xl outline-none focus:border-red-500 min-h-[150px] whitespace-pre" 
+              value={(formData.videos || []).join("\n")} 
+              onChange={e => setFormData({ ...formData, videos: e.target.value.split("\n").filter(v => v.trim() !== "") })} 
+            />
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}

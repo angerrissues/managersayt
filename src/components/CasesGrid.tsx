@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CaseModal from "./CaseModal";
+import CaseEditModal from "./CaseEditModal";
+import { useAdmin } from "./AdminProvider";
 
 export type Case = {
   id: string;
@@ -17,9 +19,21 @@ export type Case = {
 
 export default function CasesGrid({ cases }: { cases: Case[] }) {
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
+  const [editingCase, setEditingCase] = useState<Partial<Case> | null>(null);
+  const { isAdmin } = useAdmin();
 
   return (
     <>
+      {isAdmin && (
+        <div className="flex justify-end mb-4">
+          <button 
+            onClick={() => setEditingCase({})} 
+            className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-colors flex items-center gap-2"
+          >
+            <span className="text-xl leading-none">+</span> Добавить кейс
+          </button>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
         {cases.map((item, i) => (
           <motion.div 
@@ -60,13 +74,50 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
                 {item.agency}
               </div>
             </div>
+
+            {isAdmin && (
+              <div className="absolute top-2 right-2 z-20 flex gap-2">
+                <button 
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    setEditingCase(item); 
+                  }} 
+                  className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-full shadow"
+                >
+                  Edit
+                </button>
+                <button 
+                  onClick={async (e) => { 
+                    e.stopPropagation(); 
+                    if(confirm("Удалить?")) {
+                      const { deleteCase } = await import("@/actions/admin");
+                      await deleteCase(item.id);
+                      window.location.reload();
+                    }
+                  }} 
+                  className="bg-red-600 hover:bg-red-500 text-white p-2 rounded-full shadow"
+                >
+                  Del
+                </button>
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
 
       <AnimatePresence>
-        {selectedCase && (
+        {selectedCase && !editingCase && (
           <CaseModal caseData={selectedCase} onClose={() => setSelectedCase(null)} />
+        )}
+        {editingCase && (
+          <CaseEditModal 
+            caseData={editingCase} 
+            onClose={() => setEditingCase(null)} 
+            onSave={() => {
+              setEditingCase(null);
+              window.location.reload();
+            }}
+          />
         )}
       </AnimatePresence>
     </>
