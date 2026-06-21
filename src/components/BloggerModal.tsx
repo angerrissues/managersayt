@@ -142,6 +142,31 @@ export default function BloggerModal({ blogger, onClose }: { blogger: Blogger; o
               )}
 
             </div>
+
+            {/* Detailed Info */}
+            {blogger.details && (
+              <div className="mt-4 p-5 md:p-6 bg-white/5 border border-white/10 rounded-2xl">
+                {blogger.details.title && <h4 className="text-xl md:text-2xl font-bold mb-4 text-white uppercase tracking-tight">{blogger.details.title}</h4>}
+                
+                <div className="space-y-3 text-sm md:text-base text-white/80">
+                  {blogger.details.positioning && (
+                    <p><span className="font-bold text-white">Позиционирование:</span> {blogger.details.positioning}</p>
+                  )}
+                  {blogger.details.about && (
+                    <p><span className="font-bold text-white">О блогере:</span> {blogger.details.about}</p>
+                  )}
+                  {blogger.details.audience && (
+                    <p><span className="font-bold text-white">Аудитория:</span> {blogger.details.audience}</p>
+                  )}
+                  {blogger.details.brands && (
+                    <p><span className="font-bold text-white">Идеально для брендов:</span> {blogger.details.brands}</p>
+                  )}
+                  {blogger.details.format && (
+                    <p><span className="font-bold text-white">Коронный формат:</span> {blogger.details.format}</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>

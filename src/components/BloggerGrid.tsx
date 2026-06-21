@@ -11,6 +11,15 @@ export type Socials = {
   vk?: { url: string; followers?: string | null; views?: string | null };
 };
 
+export type BloggerDetails = {
+  title?: string;
+  positioning?: string;
+  about?: string;
+  audience?: string;
+  brands?: string;
+  format?: string;
+};
+
 export type Blogger = {
   id: string;
   name: string;
@@ -19,6 +28,7 @@ export type Blogger = {
   rknStatus: boolean;
   contact: string;
   socials: Socials;
+  details?: BloggerDetails;
 };
 
 export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
