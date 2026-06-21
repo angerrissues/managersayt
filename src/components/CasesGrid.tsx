@@ -35,7 +35,12 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
               {/* Cover Image Placeholder or Actual Image */}
               <div className="absolute inset-0 transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 bg-white/5 flex items-center justify-center">
                 {item.coverImage ? (
-                  <img src={item.coverImage} alt={item.brand} className="w-full h-full object-contain p-8 md:p-16" />
+                  <img 
+                    src={item.coverImage} 
+                    alt={item.brand} 
+                    className="w-full h-full object-contain p-8 md:p-16" 
+                    style={item.brand === 'Tornado Max Energy' ? { filter: 'grayscale(1) contrast(10) invert(1)', mixBlendMode: 'screen' } : {}}
+                  />
                 ) : (
                   <span className="text-4xl font-black uppercase tracking-widest opacity-10">{item.brand}</span>
                 )}
