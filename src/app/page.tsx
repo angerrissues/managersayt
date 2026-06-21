@@ -96,8 +96,8 @@ export default function Home() {
         </div>
 
         <h1 ref={titleRef} className="text-[15vw] md:text-[12vw] font-black uppercase tracking-tighter leading-none text-center mix-blend-difference z-10">
-          <div className="overflow-hidden">{splitText("Eighty Two")}</div>
-          <div className="overflow-hidden">{splitText("Agency")}</div>
+          <div className="overflow-hidden">{splitText("82")}</div>
+          <div className="overflow-hidden">{splitText("AGENCY")}</div>
         </h1>
         
         <p className="subtitle mt-4 md:mt-8 text-base md:text-xl lg:text-2xl font-light tracking-wide text-gray-400 text-center max-w-2xl z-10 px-4">
