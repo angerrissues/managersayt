@@ -56,9 +56,9 @@ export default function FloatingContact() {
       <motion.div style={isTouchDevice ? {} : { x: springX, y: springY }}>
         <Link href="https://t.me/manager_hanguki" target="_blank" className="relative flex items-center justify-center w-20 h-20 md:w-36 md:h-36 group cursor-none">
           
-          {/* Вращающийся текст — скрыт на мобильных */}
+          {/* Вращающийся текст */}
           <motion.div 
-            className="absolute inset-0 w-full h-full text-white pointer-events-none origin-center hidden md:block"
+            className="absolute inset-0 w-full h-full text-white pointer-events-none origin-center block"
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
           >
