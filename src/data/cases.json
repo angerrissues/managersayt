@@ -27,5 +27,55 @@
       "/bloggersvideo/7.mp4",
       "/bloggersvideo/8.mp4"
     ]
+  },
+  {
+    "id": "dummy-1",
+    "brand": "Проект 1",
+    "lineup": "Скоро здесь появится новый кейс",
+    "agency": "2026 год",
+    "description": "Описание данного кейса находится в процессе подготовки.",
+    "platforms": ["YouTube", "VK"],
+    "bloggers": [],
+    "videos": []
+  },
+  {
+    "id": "dummy-2",
+    "brand": "Проект 2",
+    "lineup": "Скоро здесь появится новый кейс",
+    "agency": "2026 год",
+    "description": "Описание данного кейса находится в процессе подготовки.",
+    "platforms": ["Instagram", "Telegram"],
+    "bloggers": [],
+    "videos": []
+  },
+  {
+    "id": "dummy-3",
+    "brand": "Проект 3",
+    "lineup": "Скоро здесь появится новый кейс",
+    "agency": "2026 год",
+    "description": "Описание данного кейса находится в процессе подготовки.",
+    "platforms": ["TikTok"],
+    "bloggers": [],
+    "videos": []
+  },
+  {
+    "id": "dummy-4",
+    "brand": "Проект 4",
+    "lineup": "Скоро здесь появится новый кейс",
+    "agency": "2026 год",
+    "description": "Описание данного кейса находится в процессе подготовки.",
+    "platforms": ["YouTube", "Telegram"],
+    "bloggers": [],
+    "videos": []
+  },
+  {
+    "id": "dummy-5",
+    "brand": "Проект 5",
+    "lineup": "Скоро здесь появится новый кейс",
+    "agency": "2026 год",
+    "description": "Описание данного кейса находится в процессе подготовки.",
+    "platforms": ["VK", "Instagram"],
+    "bloggers": [],
+    "videos": []
   }
 ]
