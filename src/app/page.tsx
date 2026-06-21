@@ -4,7 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import ScrollTextReveal from "@/components/ScrollTextReveal";
+import ManifestoReveal from "@/components/ManifestoReveal";
 import LeadForms from "@/components/LeadForms";
 import ExperienceStats from "@/components/ExperienceStats";
 import KoreanFocusSection from "@/components/KoreanFocusSection";
@@ -175,7 +175,7 @@ export default function Home() {
       </section>
 
       {/* Scroll Text Reveal — "Почему мы" */}
-      <ScrollTextReveal />
+      <ManifestoReveal />
 
       {/* Эффект склеивания текста */}
       <GluingTextSection />
