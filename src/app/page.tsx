@@ -73,7 +73,7 @@ export default function Home() {
             transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
           >
             {[...Array(10)].map((_, i) => (
-              <span key={i} className="text-[32px] md:text-[60px] lg:text-[100px] font-black uppercase tracking-tighter text-transparent" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.8)" }}>
+              <span key={i} className="text-[60px] md:text-[80px] lg:text-[100px] font-black uppercase tracking-tighter text-transparent" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.8)" }}>
                 우리는 우리 분야에서 최고입니다 &nbsp;
               </span>
             ))}
@@ -88,7 +88,7 @@ export default function Home() {
             transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
           >
             {[...Array(10)].map((_, i) => (
-              <span key={i} className="text-[32px] md:text-[60px] lg:text-[100px] font-black uppercase tracking-tighter text-transparent" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.8)" }}>
+              <span key={i} className="text-[60px] md:text-[80px] lg:text-[100px] font-black uppercase tracking-tighter text-transparent" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.8)" }}>
                 우리는 우리 분야에서 최고입니다 &nbsp;
               </span>
             ))}
