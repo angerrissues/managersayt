@@ -59,7 +59,14 @@ export default function BloggerModal({ blogger, onClose }: { blogger: Blogger; o
             
             <div className="p-3 bg-white/5 rounded-xl border border-white/10">
               <p className="text-xs text-white/50 mb-1 uppercase tracking-wider">По всем вопросам:</p>
-              <p className="font-mono text-white text-sm">{blogger.contact}</p>
+              <a 
+                href={`https://t.me/${blogger.contact.replace('@', '')}`} 
+                target="_blank" 
+                rel="noreferrer"
+                className="font-mono text-white text-sm hover:text-blue-400 transition-colors underline decoration-white/30 hover:decoration-blue-400 underline-offset-4 cursor-pointer block"
+              >
+                {blogger.contact}
+              </a>
             </div>
           </div>
 
