@@ -56,8 +56,29 @@ export default function LeadForms() {
   ];
 
   return (
-    <section id="lead-forms" className="min-h-screen flex items-center justify-center px-4 md:px-6 py-20 md:py-32 relative z-20 bg-black">
-      <div className="w-full max-w-2xl">
+    <section id="lead-forms" className="min-h-screen flex items-center justify-center px-4 md:px-6 py-20 md:py-32 relative z-20 bg-black overflow-hidden">
+      
+      {/* Decorative Background Words */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="relative w-full max-w-[1400px] mx-auto h-full">
+          {[
+            { word: "성공", css: "top-[15%] left-[5%] md:left-[10%] -rotate-12 text-5xl md:text-6xl" },
+            { word: "유행", css: "top-[65%] left-[2%] md:left-[12%] rotate-6 text-4xl md:text-5xl" },
+            { word: "매체", css: "top-[25%] right-[5%] md:right-[12%] rotate-12 text-5xl md:text-6xl" },
+            { word: "성장", css: "bottom-[15%] right-[3%] md:right-[15%] -rotate-6 text-4xl md:text-5xl" },
+            { word: "영향", css: "top-[45%] right-[2%] md:right-[5%] rotate-[30deg] text-4xl md:text-6xl hidden md:block" },
+          ].map((item, i) => (
+            <span
+              key={i}
+              className={`absolute font-bold text-white/10 transition-all duration-300 hover:font-black hover:text-white/50 hover:scale-110 pointer-events-auto cursor-default select-none ${item.css}`}
+            >
+              {item.word}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="w-full max-w-2xl relative z-10">
         {/* Section Header */}
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
@@ -123,7 +144,7 @@ export default function LeadForms() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: activeTab === "advertiser" ? 20 : -20 }}
               transition={{ duration: 0.3 }}
-              className="space-y-5 md:space-y-8 p-5 md:p-10 bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl backdrop-blur-sm"
+              className="space-y-5 md:space-y-8 p-5 md:p-10 bg-white/[0.03] border border-white/10 rounded-2xl md:rounded-3xl backdrop-blur-sm relative z-20"
             >
               {/* Name */}
               <input
@@ -179,7 +200,7 @@ export default function LeadForms() {
                   type="checkbox"
                   id="agreement"
                   required
-                  className="w-5 h-5 mt-0.5 md:mt-0 cursor-pointer accent-[#2B81F6] rounded-sm shrink-0"
+                  className="w-5 h-5 mt-0.5 md:mt-0 cursor-pointer accent-red-600 rounded-sm shrink-0"
                 />
                 <label htmlFor="agreement" className="text-xs md:text-sm text-white/90 cursor-pointer select-none font-medium leading-snug">
                   я соглашаюсь на обработку своих персональных данных
@@ -190,7 +211,7 @@ export default function LeadForms() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full py-3.5 md:py-4 mt-1 md:mt-2 bg-[#2B81F6] text-white font-medium text-base md:text-lg rounded-md hover:bg-blue-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                className="w-full py-3.5 md:py-4 mt-1 md:mt-2 bg-red-600 text-white font-medium text-base md:text-lg rounded-md hover:bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 relative overflow-hidden"
               >
                 {isPending ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
