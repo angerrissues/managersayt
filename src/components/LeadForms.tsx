@@ -188,13 +188,22 @@ export default function LeadForms() {
 
               {/* Dynamic field */}
               {activeTab === "advertiser" ? (
-                <input
-                  type="text"
-                  name="brandName"
-                  required
-                  placeholder="Бренд"
-                  className="w-full bg-white text-black text-base md:text-lg py-3.5 md:py-4 px-4 md:px-5 outline-none rounded-md placeholder:text-gray-400"
-                />
+                <>
+                  <input
+                    type="text"
+                    name="brandName"
+                    required
+                    placeholder="Бренд"
+                    className="w-full bg-white text-black text-base md:text-lg py-3.5 md:py-4 px-4 md:px-5 outline-none rounded-md placeholder:text-gray-400"
+                  />
+                  <textarea
+                    name="requestText"
+                    required
+                    rows={3}
+                    placeholder="С каким запросом вы пришли?"
+                    className="w-full bg-white text-black text-base md:text-lg py-3.5 md:py-4 px-4 md:px-5 outline-none rounded-md placeholder:text-gray-400 resize-none"
+                  />
+                </>
               ) : (
                 <textarea
                   name="socialLinks"

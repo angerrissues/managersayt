@@ -17,6 +17,7 @@ model AdvertiserLead {
   email       String
   phone       String
   brandName   String   @map("brand_name")
+  requestText String   @default("") @map("request_text")
   status      String   @default("NEW")
   createdAt   DateTime @default(now()) @map("created_at")
 

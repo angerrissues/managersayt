@@ -13,6 +13,7 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
   const brandName = formData.get("brandName") as string;
+  const requestText = formData.get("requestText") as string;
 
   // Валидация
   if (!name || name.trim().length < 2) {
@@ -27,6 +28,9 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
   if (!brandName || brandName.trim().length < 2) {
     return { success: false, message: "Укажите название бренда." };
   }
+  if (!requestText || requestText.trim().length < 5) {
+    return { success: false, message: "Опишите ваш запрос." };
+  }
 
   try {
     await prisma.advertiserLead.create({
@@ -35,6 +39,7 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
         email: email.trim(),
         phone: phone.trim(),
         brandName: brandName.trim(),
+        requestText: requestText.trim(),
       },
     });
 
@@ -46,6 +51,8 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
 📱 <b>Телефон:</b> ${phone.trim()}
 ✉️ <b>Email:</b> ${email.trim()}
 💼 <b>Бренд:</b> ${brandName.trim()}
+📝 <b>Запрос:</b>
+${requestText.trim()}
 ━━━━━━━━━━━━━━━━━━
 `;
     await broadcastLeadNotification(tgMessage);
