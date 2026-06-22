@@ -47,7 +47,7 @@ export default function BloggerEditModal({
         file = await imageCompression(file, {
           maxSizeMB: 2,
           maxWidthOrHeight: 1920,
-          useWebWorker: true,
+          useWebWorker: false,
         });
       }
 
