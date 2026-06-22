@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { X, Upload } from "lucide-react";
 import { FaYoutube, FaInstagram, FaTelegramPlane, FaVk, FaTiktok } from "react-icons/fa";
 import type { Blogger, Socials, BloggerDetails } from "./BloggerGrid";
+import imageCompression from "browser-image-compression";
 import { saveBlogger, uploadMedia } from "@/actions/admin";
 
 export default function BloggerEditModal({ 
@@ -35,11 +36,21 @@ export default function BloggerEditModal({
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    let file = e.target.files?.[0];
     if (!file) return;
     
     try {
       setIsUploading(true);
+      
+      // Auto-compress large files to prevent Cloudinary 10MB limit error
+      if (file.size > 2 * 1024 * 1024) { // Compress if > 2MB
+        file = await imageCompression(file, {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+        });
+      }
+
       const data = new FormData();
       data.append("file", file);
       

@@ -5,6 +5,7 @@ import { X, Upload, Plus } from "lucide-react";
 import type { Case } from "./CasesGrid";
 import { saveCase, uploadMedia, getBloggers } from "@/actions/admin";
 import type { Blogger } from "./BloggerGrid";
+import imageCompression from "browser-image-compression";
 
 function AutoTextarea({ value, onChange, placeholder, minHeight = "100px" }: { value: string, onChange: (v: string) => void, placeholder: string, minHeight?: string }) {
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -67,11 +68,21 @@ export default function CaseEditModal({
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    let file = e.target.files?.[0];
     if (!file) return;
     
     try {
       setIsUploading(true);
+
+      // Auto-compress large files to prevent Cloudinary 10MB limit error
+      if (file.size > 2 * 1024 * 1024) { // Compress if > 2MB
+        file = await imageCompression(file, {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+        });
+      }
+
       const data = new FormData();
       data.append("file", file);
       
