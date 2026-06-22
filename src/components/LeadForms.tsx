@@ -186,6 +186,15 @@ export default function LeadForms() {
                 className="w-full bg-white text-black text-base md:text-lg py-3.5 md:py-4 px-4 md:px-5 outline-none rounded-md placeholder:text-gray-400"
               />
 
+              {/* Telegram Username */}
+              <input
+                type="text"
+                name="tgUsername"
+                required
+                placeholder="Ваш Telegram (@username)"
+                className="w-full bg-white text-black text-base md:text-lg py-3.5 md:py-4 px-4 md:px-5 outline-none rounded-md placeholder:text-gray-400"
+              />
+
               {/* Dynamic field */}
               {activeTab === "advertiser" ? (
                 <>

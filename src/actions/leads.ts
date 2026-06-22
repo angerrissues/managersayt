@@ -12,6 +12,7 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
+  const tgUsername = formData.get("tgUsername") as string;
   const brandName = formData.get("brandName") as string;
   const requestText = formData.get("requestText") as string;
 
@@ -24,6 +25,9 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
   }
   if (!phone || phone.trim().length < 5) {
     return { success: false, message: "Укажите корректный номер телефона." };
+  }
+  if (!tgUsername || tgUsername.trim().length < 2) {
+    return { success: false, message: "Укажите ваш Telegram." };
   }
   if (!brandName || brandName.trim().length < 2) {
     return { success: false, message: "Укажите название бренда." };
@@ -38,6 +42,7 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
+        tgUsername: tgUsername.trim(),
         brandName: brandName.trim(),
         requestText: requestText.trim(),
       },
@@ -49,6 +54,7 @@ export async function submitAdvertiserLead(formData: FormData): Promise<ActionRe
 ━━━━━━━━━━━━━━━━━━
 👤 <b>Имя:</b> ${name.trim()}
 📱 <b>Телефон:</b> ${phone.trim()}
+✈️ <b>Telegram:</b> ${tgUsername.trim()}
 ✉️ <b>Email:</b> ${email.trim()}
 💼 <b>Бренд:</b> ${brandName.trim()}
 📝 <b>Запрос:</b>
@@ -69,6 +75,7 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
   const nickname = formData.get("nickname") as string;
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
+  const tgUsername = formData.get("tgUsername") as string;
   const socialLinks = formData.get("socialLinks") as string;
 
   // Валидация
@@ -84,6 +91,9 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
   if (!phone || phone.trim().length < 5) {
     return { success: false, message: "Укажите корректный номер телефона." };
   }
+  if (!tgUsername || tgUsername.trim().length < 2) {
+    return { success: false, message: "Укажите ваш Telegram." };
+  }
   if (!socialLinks || socialLinks.trim().length < 5) {
     return { success: false, message: "Укажите хотя бы одну ссылку на вашу социальную сеть." };
   }
@@ -95,6 +105,7 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
         nickname: nickname.trim(),
         email: email.trim(),
         phone: phone.trim(),
+        tgUsername: tgUsername.trim(),
         socialLinks: socialLinks.trim(),
       },
     });
@@ -106,6 +117,7 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
 👤 <b>Имя:</b> ${name.trim()}
 ⭐ <b>Никнейм:</b> ${nickname.trim()}
 📱 <b>Телефон:</b> ${phone.trim()}
+✈️ <b>Telegram:</b> ${tgUsername.trim()}
 ✉️ <b>Email:</b> ${email.trim()}
 🔗 <b>Соцсети:</b> 
 ${socialLinks.trim()}

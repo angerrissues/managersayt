@@ -16,6 +16,7 @@ model AdvertiserLead {
   name        String
   email       String
   phone       String
+  tgUsername  String   @default("") @map("tg_username")
   brandName   String   @map("brand_name")
   requestText String   @default("") @map("request_text")
   status      String   @default("NEW")
@@ -30,6 +31,7 @@ model BloggerLead {
   nickname    String   @default("")
   email       String
   phone       String
+  tgUsername  String   @default("") @map("tg_username")
   socialLinks String   @map("social_links")
   status      String   @default("NEW")
   createdAt   DateTime @default(now()) @map("created_at")
