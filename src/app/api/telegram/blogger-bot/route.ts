@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
+import { revalidatePath } from "next/cache";
 
 const BOT_TOKEN = process.env.BLOGGER_BOT_TOKEN;
 const PASSWORD = "1234ewq1234";
@@ -99,6 +100,9 @@ export async function POST(req: Request) {
             where: { id: session.bloggerId },
             data: { socials },
           });
+          
+          revalidatePath("/blogers");
+          revalidatePath("/statistics");
           
           await sendMessage(chatIdStr, `🎉 Успешно! Статистика для соцсети сохранена (Всего файлов: ${session.uploadedUrls.length}).`, {
             remove_keyboard: true 
