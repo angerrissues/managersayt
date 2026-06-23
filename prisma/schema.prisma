@@ -76,3 +76,16 @@ model TelegramSubscriber {
 
   @@map("telegram_subscribers")
 }
+
+model BloggerBotSession {
+  chatId          String   @id @map("chat_id")
+  isAuthenticated Boolean  @default(false) @map("is_authenticated")
+  step            String   @default("START")
+  bloggerId       String?  @map("blogger_id")
+  socialKey       String?  @map("social_key")
+  mediaGroupId    String?  @map("media_group_id")
+  uploadedUrls    String[] @default([]) @map("uploaded_urls")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("blogger_bot_sessions")
+}
