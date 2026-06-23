@@ -101,11 +101,11 @@ export async function POST(req: Request) {
           });
           
           await sendMessage(chatIdStr, `🎉 Успешно! Статистика для соцсети сохранена (Всего файлов: ${session.uploadedUrls.length}).`, {
-            reply_markup: { remove_keyboard: true }
+            remove_keyboard: true 
           });
         } else {
            await sendMessage(chatIdStr, "Файлы не были получены или произошла ошибка.", {
-             reply_markup: { remove_keyboard: true }
+             remove_keyboard: true 
            });
         }
 
@@ -164,11 +164,9 @@ export async function POST(req: Request) {
         });
 
         await sendMessage(chatIdStr, "📸 Отправьте фото или видео (можно отправить сразу несколько альбомом).\n\n<i>Примечание: новые загруженные файлы <b>полностью заменят</b> старую статистику этой соцсети.</i>\n\nКак только все файлы загрузятся, нажмите кнопку <b>Готово ✅</b> внизу экрана.", {
-          reply_markup: {
-             keyboard: [[{ text: "Готово ✅" }, { text: "Главное меню 🏠" }]],
-             resize_keyboard: true,
-             one_time_keyboard: false
-          }
+          keyboard: [[{ text: "Готово ✅" }, { text: "Главное меню 🏠" }]],
+          resize_keyboard: true,
+          one_time_keyboard: false
         });
       }
 
