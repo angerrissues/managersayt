@@ -2,9 +2,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload, Plus } from "lucide-react";
-import type { Case } from "./CasesGrid";
+import type { Case } from "@/types/case";
 import { saveCase, getCloudinarySignature, getBloggers } from "@/actions/admin";
-import type { Blogger } from "./BloggerGrid";
+import type { Blogger } from "@/types/blogger";
 import imageCompression from "browser-image-compression";
 
 function AutoTextarea({ value, onChange, placeholder, minHeight = "100px" }: { value: string, onChange: (v: string) => void, placeholder: string, minHeight?: string }) {
@@ -52,14 +52,10 @@ export default function CaseEditModal({
 
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  
-  // Blogger selection state
   const [allBloggers, setAllBloggers] = useState<Blogger[]>([]);
   const [bloggerInput, setBloggerInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isUploadingImages, setIsUploadingImages] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -83,8 +79,7 @@ export default function CaseEditModal({
     try {
       setIsUploading(true);
 
-      // Auto-compress large files to prevent Cloudinary 10MB limit error
-      if (file.type.startsWith('image/') && file.size > 2 * 1024 * 1024) { // Compress if > 2MB
+      if (file.type.startsWith('image/') && file.size > 2 * 1024 * 1024) {
         file = await imageCompression(file, {
           maxSizeMB: 2,
           maxWidthOrHeight: 1920,
@@ -92,13 +87,11 @@ export default function CaseEditModal({
         });
       }
 
-      // 1. Get Signature from backend
       const signatureData = await getCloudinarySignature();
       if (signatureData.error) throw new Error(signatureData.error);
       
       const { signature, timestamp, apiKey, cloudName } = signatureData;
 
-      // 2. Upload directly to Cloudinary
       const uploadData = new FormData();
       uploadData.append("file", file);
       uploadData.append("api_key", apiKey!);
@@ -138,7 +131,6 @@ export default function CaseEditModal({
     }
   };
 
-  // Blogger Tagging Logic
   const addBlogger = (name: string) => {
     const trimmed = name.trim();
     if (!trimmed) return;

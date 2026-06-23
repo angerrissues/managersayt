@@ -2,16 +2,15 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import VideoCarousel from "./VideoCarousel";
-import type { Case } from "./CasesGrid";
-import BloggerModal from "./BloggerModal";
-import type { Blogger } from "./BloggerGrid";
+import VideoCarousel from "@/components/cases/VideoCarousel";
+import type { Case } from "@/types/case";
+import BloggerModal from "@/components/bloggers/BloggerModal";
+import type { Blogger } from "@/types/blogger";
 import bloggersData from "@/data/bloggers.json";
 
 function findBlogger(nameStr: string): Blogger | undefined {
   const lowerStr = nameStr.toLowerCase();
   
-  // Try to find by extracting the handle inside parentheses if it exists
   const handleMatch = nameStr.match(/\(([^)]+)\)/);
   if (handleMatch) {
     const handle = handleMatch[1].toLowerCase();
@@ -24,7 +23,6 @@ function findBlogger(nameStr: string): Blogger | undefined {
     if (found) return found;
   }
   
-  // Fallback: Check if the name string contains the blogger's id or name
   return (bloggersData as unknown as Blogger[]).find(b => 
     lowerStr.includes(b.id.toLowerCase()) || 
     lowerStr.includes(b.name.toLowerCase())
@@ -37,12 +35,10 @@ export default function CaseModal({ caseData, onClose }: { caseData: Case; onClo
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { 
-      // Only clear if we are completely unmounting
       document.body.style.overflow = ""; 
     };
   }, []);
 
-  // Re-apply overflow hidden if BloggerModal unmounts and clears it
   useEffect(() => {
     if (!selectedBlogger) {
       document.body.style.overflow = "hidden";
@@ -123,7 +119,6 @@ export default function CaseModal({ caseData, onClose }: { caseData: Case; onClo
 
           {/* Right Side: Video Carousel */}
           <div className="lg:w-1/2 flex items-center justify-center bg-black/40 border border-white/5 rounded-3xl py-6 px-2 md:py-12 md:px-4 relative">
-             {/* Background glow effect behind videos */}
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] bg-white opacity-[0.05] blur-[100px] pointer-events-none rounded-full" />
              <VideoCarousel videos={caseData.videos} />
           </div>

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import SmoothScroll from "@/components/SmoothScroll";
+import SmoothScroll from "@/components/shared/SmoothScroll";
 import CustomCursor from "@/components/ui/CustomCursor";
 import Navbar from "@/components/ui/Navbar";
 
-import FloatingContact from "@/components/FloatingContact";
+import FloatingContact from "@/components/shared/FloatingContact";
 import Footer from "@/components/ui/Footer";
-import AdminProvider from "@/components/AdminProvider";
-import BraidDecoration from "@/components/BraidDecoration";
+import AdminProvider from "@/components/shared/AdminProvider";
+import BraidDecoration from "@/components/sections/BraidDecoration";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 

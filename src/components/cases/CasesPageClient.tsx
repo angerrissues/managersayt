@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
-import CasesGrid from "@/components/CasesGrid";
-import type { Case } from "@/components/CasesGrid";
+import CasesGrid from "@/components/cases/CasesGrid";
+import type { Case } from "@/types/case";
 
 export default function CasesPageClient({ cases }: { cases: Case[] }) {
   return (

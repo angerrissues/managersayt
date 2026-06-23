@@ -4,11 +4,11 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import ManifestoReveal from "@/components/ManifestoReveal";
-import LeadForms from "@/components/LeadForms";
-import ExperienceStats from "@/components/ExperienceStats";
-import KoreanFocusSection from "@/components/KoreanFocusSection";
-import GluingTextSection from "@/components/GluingTextSection";
+import ManifestoReveal from "@/components/sections/ManifestoReveal";
+import LeadForms from "@/components/shared/LeadForms";
+import ExperienceStats from "@/components/sections/ExperienceStats";
+import KoreanFocusSection from "@/components/sections/KoreanFocusSection";
+import GluingTextSection from "@/components/sections/GluingTextSection";
 
 gsap.registerPlugin(ScrollTrigger);
 

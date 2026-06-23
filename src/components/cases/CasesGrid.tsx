@@ -3,19 +3,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CaseModal from "./CaseModal";
 import CaseEditModal from "./CaseEditModal";
-import { useAdmin } from "./AdminProvider";
-
-export type Case = {
-  id: string;
-  brand: string;
-  lineup: string;
-  agency: string;
-  description?: string;
-  platforms: string[];
-  bloggers: string[];
-  coverImage?: string;
-  videos: string[];
-};
+import { useAdmin } from "@/components/shared/AdminProvider";
+import type { Case } from "@/types/case";
 
 export default function CasesGrid({ cases }: { cases: Case[] }) {
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
@@ -46,7 +35,6 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
             onClick={() => setSelectedCase(item)}
           >
             <div className="aspect-video bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden relative shadow-xl">
-              {/* Cover Image Placeholder or Actual Image */}
               <div className="absolute inset-0 transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 bg-white/5 flex items-center justify-center">
                 {item.coverImage ? (
                   <img 

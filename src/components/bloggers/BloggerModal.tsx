@@ -3,13 +3,12 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { FaYoutube, FaInstagram, FaTelegramPlane, FaVk, FaTiktok } from "react-icons/fa";
-import type { Blogger } from "./BloggerGrid";
-import SocialStatsModal from "./SocialStatsModal";
+import type { Blogger } from "@/types/blogger";
+import SocialStatsModal from "@/components/shared/SocialStatsModal";
 
 export default function BloggerModal({ blogger, onClose, mode = "default" }: { blogger: Blogger; onClose: () => void; mode?: "default" | "statistics" }) {
   const [selectedStats, setSelectedStats] = useState<{platform: string, url: string, statsMedia: string[]} | null>(null);
 
-  // Prevent body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -17,7 +16,6 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
     };
   }, []);
 
-  // Close on backdrop click
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) onClose();
   };
@@ -88,8 +86,6 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
               <h3 className="text-xl md:text-2xl font-bold mb-1 text-white uppercase tracking-wider border-b border-white/10 pb-3">Статистика</h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                
-                {/* Dynamic Socials */}
                 {Object.entries(blogger.socials || {}).map(([key, data]) => {
                   if (!data) return null;
 
@@ -198,7 +194,6 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
 
                   return null;
                 })}
-
               </div>
 
               {/* Detailed Info */}

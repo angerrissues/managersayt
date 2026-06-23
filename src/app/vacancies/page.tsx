@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import LeadForms from "@/components/LeadForms";
+import LeadForms from "@/components/shared/LeadForms";
 
 const advantages = [
   {

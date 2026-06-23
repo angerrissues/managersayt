@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { X, Upload } from "lucide-react";
 import { FaYoutube, FaInstagram, FaTelegramPlane, FaVk, FaTiktok } from "react-icons/fa";
-import type { Blogger, Socials, BloggerDetails } from "./BloggerGrid";
+import type { Blogger, Socials, BloggerDetails } from "@/types/blogger";
 import imageCompression from "browser-image-compression";
 import { saveBlogger, getCloudinarySignature } from "@/actions/admin";
 
@@ -49,8 +49,7 @@ export default function BloggerEditModal({
     try {
       setIsUploading(true);
       
-      // Auto-compress large files to prevent Cloudinary 10MB limit error
-      if (file.type.startsWith('image/') && file.size > 2 * 1024 * 1024) { // Compress if > 2MB
+      if (file.type.startsWith('image/') && file.size > 2 * 1024 * 1024) {
         file = await imageCompression(file, {
           maxSizeMB: 2,
           maxWidthOrHeight: 1920,
@@ -58,13 +57,11 @@ export default function BloggerEditModal({
         });
       }
 
-      // 1. Get Signature from backend
       const signatureData = await getCloudinarySignature();
       if (signatureData.error) throw new Error(signatureData.error);
       
       const { signature, timestamp, apiKey, cloudName } = signatureData;
 
-      // 2. Upload directly to Cloudinary
       const uploadData = new FormData();
       uploadData.append("file", file);
       uploadData.append("api_key", apiKey!);
@@ -104,7 +101,7 @@ export default function BloggerEditModal({
     }
   };
 
-  const updateSocial = (network: string, field: string, value: any) => {
+  const updateSocial = (network: string, field: string, value: string | string[]) => {
     setFormData(prev => ({
       ...prev,
       socials: {
@@ -119,7 +116,7 @@ export default function BloggerEditModal({
 
   const removeSocial = (network: string) => {
     setFormData(prev => {
-      const newSocials = { ...prev.socials };
+      const newSocials = { ...prev.socials } as Socials;
       delete newSocials[network];
       return { ...prev, socials: newSocials };
     });
@@ -149,14 +146,13 @@ export default function BloggerEditModal({
 
       const newUrls: string[] = [];
 
-      for (const file of files) {
-        let uploadFile = file;
-        if (uploadFile.type.startsWith('image/') && uploadFile.size > 2 * 1024 * 1024) {
-          uploadFile = await imageCompression(uploadFile, { maxSizeMB: 2, maxWidthOrHeight: 1920, useWebWorker: false });
+      for (let file of files) {
+        if (file.type.startsWith('image/') && file.size > 2 * 1024 * 1024) {
+          file = await imageCompression(file, { maxSizeMB: 2, maxWidthOrHeight: 1920, useWebWorker: false });
         }
 
         const uploadData = new FormData();
-        uploadData.append("file", uploadFile);
+        uploadData.append("file", file);
         uploadData.append("api_key", apiKey!);
         uploadData.append("timestamp", timestamp!.toString());
         uploadData.append("signature", signature!);
@@ -178,7 +174,7 @@ export default function BloggerEditModal({
       if (newUrls.length > 0) {
         setFormData(prev => {
           const currentNetwork = prev.socials?.[network] || {};
-          const currentMedia = (currentNetwork as any).statsMedia || [];
+          const currentMedia = currentNetwork.statsMedia || [];
           return {
             ...prev,
             socials: {
@@ -211,8 +207,8 @@ export default function BloggerEditModal({
       <textarea 
         placeholder="https://... (ссылки с новой строки)" 
         className="w-full text-xs bg-black/20 border border-white/10 text-white p-2 rounded min-h-[60px]"
-        value={((formData.socials?.[network] as any)?.statsMedia || []).join("\n")}
-        onChange={e => updateSocial(network, "statsMedia", e.target.value.split("\n").filter((v: string) => v.trim()!==""))}
+        value={(formData.socials?.[network]?.statsMedia || []).join("\n")}
+        onChange={e => updateSocial(network, "statsMedia", e.target.value.split("\n").filter((v: string) => v.trim() !== ""))}
       />
     </div>
   );
@@ -308,7 +304,7 @@ export default function BloggerEditModal({
               placeholder="Уникальный ID (англ)"
               className="text-xs text-white/50 bg-transparent border-b border-white/20 p-1 outline-none mt-4"
               value={formData.id}
-              disabled={!!blogger.id} // cannot edit ID if it's existing
+              disabled={!!blogger.id}
               onChange={e => setFormData({ ...formData, id: e.target.value })}
             />
           </div>

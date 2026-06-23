@@ -3,43 +3,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import BloggerModal from "./BloggerModal";
 import BloggerEditModal from "./BloggerEditModal";
-import { useAdmin } from "./AdminProvider";
-
-export type Socials = {
-  [key: string]: {
-    url?: string;
-    followers?: string;
-    views?: string;
-    horizontalViews?: string;
-    verticalViews?: string;
-    reelsViews?: string;
-    storiesViews?: string;
-    dailyViews?: string;
-    monthlyViews?: string;
-    statsMedia?: string[];
-    rknLink?: string;
-  };
-};
-
-export type BloggerDetails = {
-  title?: string;
-  positioning?: string;
-  about?: string;
-  audience?: string;
-  brands?: string;
-  format?: string;
-};
-
-export type Blogger = {
-  id: string;
-  name: string;
-  avatarPath: string;
-  geo: string;
-  rknStatus: boolean;
-  contact: string;
-  socials: Socials;
-  details?: BloggerDetails;
-};
+import { useAdmin } from "@/components/shared/AdminProvider";
+import type { Blogger } from "@/types/blogger";
 
 export default function BloggerGrid({ bloggers, mode = "default" }: { bloggers: Blogger[], mode?: "default" | "statistics" }) {
   const [selectedBlogger, setSelectedBlogger] = useState<Blogger | null>(null);

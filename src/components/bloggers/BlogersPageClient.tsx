@@ -1,8 +1,8 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import BloggerGrid from "@/components/BloggerGrid";
-import type { Blogger } from "@/components/BloggerGrid";
+import BloggerGrid from "@/components/bloggers/BloggerGrid";
+import type { Blogger } from "@/types/blogger";
 
 export default function BlogersPageClient({ bloggers, mode = "default" }: { bloggers: Blogger[], mode?: "default" | "statistics" }) {
   return (
