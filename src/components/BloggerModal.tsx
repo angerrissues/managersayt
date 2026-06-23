@@ -65,16 +65,9 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
               <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-2 text-white leading-tight">{blogger.name}</h2>
               <p className="text-white/60 mb-1 text-sm md:text-base">Гео: <span className="text-white">{blogger.geo}</span></p>
               <p className="text-white/60 mb-5 text-sm md:text-base">
-                РКН: 
-                {blogger.details?.rknLink ? (
-                  <a href={blogger.details.rknLink} target="_blank" rel="noreferrer" className={`ml-1 hover:underline ${blogger.rknStatus ? "text-green-400 font-medium" : "text-red-400 font-medium"}`}>
-                    {blogger.rknStatus ? "Зарегистрирован" : "Не зарегистрирован"}
-                  </a>
-                ) : (
-                  <span className={`ml-1 ${blogger.rknStatus ? "text-green-400 font-medium" : "text-red-400 font-medium"}`}>
-                    {blogger.rknStatus ? "Зарегистрирован" : "Не зарегистрирован"}
-                  </span>
-                )}
+                РКН: <span className={`ml-1 ${blogger.rknStatus ? "text-green-400 font-medium" : "text-red-400 font-medium"}`}>
+                  {blogger.rknStatus ? "Зарегистрирован" : "Не зарегистрирован"}
+                </span>
               </p>
               
               <div className="p-3 bg-white/5 rounded-xl border border-white/10">
@@ -111,6 +104,11 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
                           <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{data.followers}</span></p>
                           {data.views && <p className="text-sm text-white/60">Видео: <span className="text-white">{data.views}</span></p>}
                         </div>
+                        {data.rknLink && (
+                          <div className="mt-2 pt-2 border-t border-white/10">
+                            <a href={data.rknLink} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-green-400 hover:text-green-300 hover:underline">✓ РКН Зарегистрирован</a>
+                          </div>
+                        )}
                       </a>
                     );
                   }
@@ -127,6 +125,11 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
                           {data.horizontalViews && <p className="text-sm text-white/60">Гориз. видео: <span className="text-white">{data.horizontalViews}</span></p>}
                           {data.verticalViews && <p className="text-sm text-white/60">Вертикальные: <span className="text-white">{data.verticalViews}</span></p>}
                         </div>
+                        {data.rknLink && (
+                          <div className="mt-2 pt-2 border-t border-white/10">
+                            <a href={data.rknLink} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-green-400 hover:text-green-300 hover:underline">✓ РКН Зарегистрирован</a>
+                          </div>
+                        )}
                       </a>
                     );
                   }
@@ -143,6 +146,11 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
                           {data.reelsViews && <p className="text-sm text-white/60">Reels: <span className="text-white">{data.reelsViews}</span></p>}
                           {data.storiesViews && <p className="text-sm text-white/60">Stories: <span className="text-white">{data.storiesViews}</span></p>}
                         </div>
+                        {data.rknLink && (
+                          <div className="mt-2 pt-2 border-t border-white/10">
+                            <a href={data.rknLink} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-green-400 hover:text-green-300 hover:underline">✓ РКН Зарегистрирован</a>
+                          </div>
+                        )}
                       </a>
                     );
                   }
@@ -159,6 +167,11 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
                           {data.dailyViews && <p className="text-sm text-white/60">Суточные: <span className="text-white">{data.dailyViews}</span></p>}
                           {data.monthlyViews && <p className="text-sm text-white/60">Месячные: <span className="text-white">{data.monthlyViews}</span></p>}
                         </div>
+                        {data.rknLink && (
+                          <div className="mt-2 pt-2 border-t border-white/10">
+                            <a href={data.rknLink} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-green-400 hover:text-green-300 hover:underline">✓ РКН Зарегистрирован</a>
+                          </div>
+                        )}
                       </a>
                     );
                   }
@@ -174,6 +187,11 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
                           {data.followers && <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{data.followers}</span></p>}
                           <p className="text-sm text-white/60">Сообщество ВК</p>
                         </div>
+                        {data.rknLink && (
+                          <div className="mt-2 pt-2 border-t border-white/10">
+                            <a href={data.rknLink} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-green-400 hover:text-green-300 hover:underline">✓ РКН Зарегистрирован</a>
+                          </div>
+                        )}
                       </a>
                     );
                   }

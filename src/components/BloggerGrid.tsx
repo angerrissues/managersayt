@@ -17,6 +17,7 @@ export type Socials = {
     dailyViews?: string;
     monthlyViews?: string;
     statsMedia?: string[];
+    rknLink?: string;
   };
 };
 
@@ -27,7 +28,6 @@ export type BloggerDetails = {
   audience?: string;
   brands?: string;
   format?: string;
-  rknLink?: string;
 };
 
 export type Blogger = {

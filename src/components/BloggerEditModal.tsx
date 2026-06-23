@@ -294,15 +294,6 @@ export default function BloggerEditModal({
               />
               РКН Зарегистрирован
             </label>
-            {formData.rknStatus && (
-              <input 
-                type="text" 
-                placeholder="Ссылка на реестр РКН"
-                className="text-sm text-white bg-white/5 border border-white/20 rounded-xl p-2 outline-none focus:border-red-500 mt-1"
-                value={formData.details?.rknLink || ""}
-                onChange={e => updateDetail("rknLink", e.target.value)}
-              />
-            )}
 
             <input 
               type="text" 
@@ -340,6 +331,7 @@ export default function BloggerEditModal({
                         <input type="text" placeholder="Подписчики (100К)" className="w-1/2 text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.followers || ""} onChange={e => updateSocial(key, "followers", e.target.value)} />
                         <input type="text" placeholder="Просмотры (от 500к)" className="w-1/2 text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.views || ""} onChange={e => updateSocial(key, "views", e.target.value)} />
                       </div>
+                      <input type="text" placeholder="Ссылка на РКН (если есть)" className="w-full text-xs text-green-400 bg-transparent border-b border-white/20 p-1 outline-none mt-1" value={data.rknLink || ""} onChange={e => updateSocial(key, "rknLink", e.target.value)} />
                       {renderSocialUpload(key)}
                     </div>
                   );
@@ -356,6 +348,7 @@ export default function BloggerEditModal({
                         <input type="text" placeholder="Reels" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.reelsViews || ""} onChange={e => updateSocial(key, "reelsViews", e.target.value)} />
                         <input type="text" placeholder="Stories" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.storiesViews || ""} onChange={e => updateSocial(key, "storiesViews", e.target.value)} />
                       </div>
+                      <input type="text" placeholder="Ссылка на РКН (если есть)" className="w-full text-xs text-green-400 bg-transparent border-b border-white/20 p-1 outline-none mt-1" value={data.rknLink || ""} onChange={e => updateSocial(key, "rknLink", e.target.value)} />
                       {renderSocialUpload(key)}
                     </div>
                   );
@@ -372,6 +365,7 @@ export default function BloggerEditModal({
                         <input type="text" placeholder="Гориз. видео" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.horizontalViews || ""} onChange={e => updateSocial(key, "horizontalViews", e.target.value)} />
                         <input type="text" placeholder="Вертикальные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.verticalViews || ""} onChange={e => updateSocial(key, "verticalViews", e.target.value)} />
                       </div>
+                      <input type="text" placeholder="Ссылка на РКН (если есть)" className="w-full text-xs text-green-400 bg-transparent border-b border-white/20 p-1 outline-none mt-1" value={data.rknLink || ""} onChange={e => updateSocial(key, "rknLink", e.target.value)} />
                       {renderSocialUpload(key)}
                     </div>
                   );
@@ -388,6 +382,7 @@ export default function BloggerEditModal({
                         <input type="text" placeholder="Суточные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.dailyViews || ""} onChange={e => updateSocial(key, "dailyViews", e.target.value)} />
                         <input type="text" placeholder="Месячные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.monthlyViews || ""} onChange={e => updateSocial(key, "monthlyViews", e.target.value)} />
                       </div>
+                      <input type="text" placeholder="Ссылка на РКН (если есть)" className="w-full text-xs text-green-400 bg-transparent border-b border-white/20 p-1 outline-none mt-1" value={data.rknLink || ""} onChange={e => updateSocial(key, "rknLink", e.target.value)} />
                       {renderSocialUpload(key)}
                     </div>
                   );
@@ -402,6 +397,7 @@ export default function BloggerEditModal({
                       <div className="grid grid-cols-1 gap-2">
                         <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.followers || ""} onChange={e => updateSocial(key, "followers", e.target.value)} />
                       </div>
+                      <input type="text" placeholder="Ссылка на РКН (если есть)" className="w-full text-xs text-green-400 bg-transparent border-b border-white/20 p-1 outline-none mt-1" value={data.rknLink || ""} onChange={e => updateSocial(key, "rknLink", e.target.value)} />
                       {renderSocialUpload(key)}
                     </div>
                   );
