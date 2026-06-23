@@ -23,6 +23,13 @@ export default function AdminProvider({ children }: { children: ReactNode }) {
     // Check initially
     checkIsAdmin().then(setIsAdmin);
 
+    // Mobile access: if URL contains ?admin=true, show modal
+    if (typeof window !== "undefined" && window.location.search.includes("admin=true")) {
+      setShowModal(true);
+      // Clean up URL to hide it from screen sharing or bystanders
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.altKey && e.code === "KeyY") {
         setShowModal((prev) => !prev);
