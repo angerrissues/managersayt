@@ -85,6 +85,7 @@ model BloggerBotSession {
   socialKey       String?  @map("social_key")
   mediaGroupId    String?  @map("media_group_id")
   uploadedUrls    String[] @default([]) @map("uploaded_urls")
+  tempData        Json?    @map("temp_data")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@map("blogger_bot_sessions")
