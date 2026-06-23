@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ExternalLink } from "lucide-react";
+import { X, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { FaYoutube, FaInstagram, FaTelegramPlane, FaVk, FaTiktok } from "react-icons/fa";
 
 type SocialStatsModalProps = {
@@ -23,11 +23,23 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
   const IconData = ICONS[platform] || { icon: ExternalLink, color: "text-white" };
   const Icon = IconData.icon;
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // Close on backdrop click
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) onClose();
+  };
+
+  const handleNext = () => {
+    if (statsMedia && statsMedia.length > 0) {
+      setCurrentIndex((prev) => (prev + 1) % statsMedia.length);
+    }
+  };
+
+  const handlePrev = () => {
+    if (statsMedia && statsMedia.length > 0) {
+      setCurrentIndex((prev) => (prev - 1 + statsMedia.length) % statsMedia.length);
+    }
   };
 
   return (
@@ -44,7 +56,7 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="bg-[#111] border border-white/10 rounded-3xl p-4 md:p-6 max-w-[600px] w-full relative my-auto shadow-2xl max-h-[95vh] flex flex-col"
+        className="bg-[#111] border border-white/10 rounded-3xl p-4 md:p-6 max-w-[600px] w-full relative my-auto shadow-2xl flex flex-col"
       >
         <button 
           onClick={onClose}
@@ -68,35 +80,69 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
           </a>
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+        <div className="flex-1 flex flex-col items-center justify-center relative w-full overflow-hidden rounded-2xl min-h-[300px]">
           {!statsMedia || statsMedia.length === 0 ? (
-            <div className="py-10 text-center text-white/50 bg-white/5 rounded-2xl border border-white/10">
+            <div className="py-10 text-center text-white/50 bg-white/5 rounded-2xl border border-white/10 w-full h-full flex items-center justify-center">
               Статистика пока не загружена
             </div>
           ) : (
-            statsMedia.map((mediaUrl, idx) => {
-              const isVideo = mediaUrl.match(/\.(mp4|webm|ogg|mov)$/i);
-              return (
-                <div key={idx} className="w-full bg-black/50 border border-white/10 rounded-2xl overflow-hidden relative shadow-lg">
-                  {isVideo ? (
+            <>
+              {statsMedia.length > 1 && (
+                <>
+                  <button 
+                    onClick={handlePrev} 
+                    className="absolute left-2 z-10 p-2 bg-black/50 hover:bg-black/80 rounded-full text-white transition-colors"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button 
+                    onClick={handleNext} 
+                    className="absolute right-2 z-10 p-2 bg-black/50 hover:bg-black/80 rounded-full text-white transition-colors"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
+                </>
+              )}
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentIndex}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full h-full flex items-center justify-center bg-black/50 border border-white/10 rounded-2xl overflow-hidden relative shadow-lg"
+                >
+                  {statsMedia[currentIndex].match(/\.(mp4|webm|ogg|mov)$/i) ? (
                     <video 
-                      src={mediaUrl} 
+                      src={statsMedia[currentIndex]} 
                       autoPlay 
                       loop 
                       muted 
                       playsInline
-                      className="w-full h-auto object-contain bg-black"
+                      className="max-h-[60vh] w-auto object-contain bg-black"
                     />
                   ) : (
                     <img 
-                      src={mediaUrl} 
-                      alt={`Stats ${idx}`} 
-                      className="w-full h-auto object-contain bg-black"
+                      src={statsMedia[currentIndex]} 
+                      alt={`Stats ${currentIndex}`} 
+                      className="max-h-[60vh] w-auto object-contain bg-black"
                     />
                   )}
+                </motion.div>
+              </AnimatePresence>
+
+              {statsMedia.length > 1 && (
+                <div className="absolute bottom-4 flex gap-2 z-10">
+                  {statsMedia.map((_, idx) => (
+                    <div 
+                      key={idx} 
+                      className={`w-2 h-2 rounded-full transition-colors ${idx === currentIndex ? 'bg-white' : 'bg-white/30'}`}
+                    />
+                  ))}
                 </div>
-              );
-            })
+              )}
+            </>
           )}
         </div>
       </motion.div>
