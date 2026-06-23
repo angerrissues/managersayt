@@ -90,12 +90,8 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
           </a>
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center relative w-full overflow-hidden rounded-2xl min-h-[300px]">
-          {!statsMedia || statsMedia.length === 0 ? (
-            <div className="py-10 text-center text-white/50 bg-white/5 rounded-2xl border border-white/10 w-full h-full flex items-center justify-center">
-              Статистика пока не загружена
-            </div>
-          ) : (
+        {statsMedia && statsMedia.length > 0 && (
+          <div className="flex-1 flex flex-col items-center justify-center relative w-full overflow-hidden rounded-2xl min-h-[300px]">
             <>
               {statsMedia.length > 1 && (
                 <>
@@ -147,16 +143,22 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
               {statsMedia.length > 1 && (
                 <div className="absolute bottom-4 flex gap-2 z-10">
                   {statsMedia.map((_, idx) => (
-                    <div 
+                    <button 
                       key={idx} 
-                      className={`w-2 h-2 rounded-full transition-colors ${idx === currentIndex ? 'bg-white' : 'bg-white/30'}`}
-                    />
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentIndex(idx);
+                      }}
+                      className={`text-sm font-bold w-6 h-6 flex items-center justify-center rounded-full transition-colors shadow-md ${idx === currentIndex ? 'bg-white text-black' : 'bg-black/50 text-white hover:bg-white/20'}`}
+                    >
+                      {idx + 1}
+                    </button>
                   ))}
                 </div>
               )}
             </>
-          )}
-        </div>
+          </div>
+        )}
       </motion.div>
 
       {/* Fullscreen Overlay */}
