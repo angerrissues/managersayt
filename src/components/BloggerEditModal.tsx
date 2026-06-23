@@ -294,6 +294,15 @@ export default function BloggerEditModal({
               />
               РКН Зарегистрирован
             </label>
+            {formData.rknStatus && (
+              <input 
+                type="text" 
+                placeholder="Ссылка на реестр РКН"
+                className="text-sm text-white bg-white/5 border border-white/20 rounded-xl p-2 outline-none focus:border-red-500 mt-1"
+                value={formData.details?.rknLink || ""}
+                onChange={e => updateDetail("rknLink", e.target.value)}
+              />
+            )}
 
             <input 
               type="text" 

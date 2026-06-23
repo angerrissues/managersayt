@@ -27,6 +27,7 @@ export type BloggerDetails = {
   audience?: string;
   brands?: string;
   format?: string;
+  rknLink?: string;
 };
 
 export type Blogger = {

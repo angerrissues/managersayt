@@ -65,9 +65,16 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
               <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-2 text-white leading-tight">{blogger.name}</h2>
               <p className="text-white/60 mb-1 text-sm md:text-base">Гео: <span className="text-white">{blogger.geo}</span></p>
               <p className="text-white/60 mb-5 text-sm md:text-base">
-                РКН: <span className={blogger.rknStatus ? "text-green-400 font-medium" : "text-red-400 font-medium"}>
-                  {blogger.rknStatus ? "Зарегистрирован" : "Не зарегистрирован"}
-                </span>
+                РКН: 
+                {blogger.details?.rknLink ? (
+                  <a href={blogger.details.rknLink} target="_blank" rel="noreferrer" className={`ml-1 hover:underline ${blogger.rknStatus ? "text-green-400 font-medium" : "text-red-400 font-medium"}`}>
+                    {blogger.rknStatus ? "Зарегистрирован" : "Не зарегистрирован"}
+                  </a>
+                ) : (
+                  <span className={`ml-1 ${blogger.rknStatus ? "text-green-400 font-medium" : "text-red-400 font-medium"}`}>
+                    {blogger.rknStatus ? "Зарегистрирован" : "Не зарегистрирован"}
+                  </span>
+                )}
               </p>
               
               <div className="p-3 bg-white/5 rounded-xl border border-white/10">
