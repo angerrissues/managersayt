@@ -97,7 +97,7 @@ export default function BloggerEditModal({
     }
   };
 
-  const updateSocial = (network: keyof Socials, field: string, value: string) => {
+  const updateSocial = (network: keyof Socials, field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       socials: {
@@ -109,6 +109,87 @@ export default function BloggerEditModal({
       }
     }));
   };
+
+  const handleStatsUpload = async (e: React.ChangeEvent<HTMLInputElement>, network: keyof Socials) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    
+    try {
+      setIsUploading(true);
+
+      const signatureData = await getCloudinarySignature();
+      if (signatureData.error) throw new Error(signatureData.error);
+      const { signature, timestamp, apiKey, cloudName } = signatureData;
+
+      const newUrls: string[] = [];
+
+      for (const file of files) {
+        let uploadFile = file;
+        if (uploadFile.type.startsWith('image/') && uploadFile.size > 2 * 1024 * 1024) {
+          uploadFile = await imageCompression(uploadFile, { maxSizeMB: 2, maxWidthOrHeight: 1920, useWebWorker: false });
+        }
+
+        const uploadData = new FormData();
+        uploadData.append("file", uploadFile);
+        uploadData.append("api_key", apiKey!);
+        uploadData.append("timestamp", timestamp!.toString());
+        uploadData.append("signature", signature!);
+        uploadData.append("folder", "manager_sayt");
+        
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+          method: "POST",
+          body: uploadData,
+        });
+        
+        const result = await res.json();
+        if (res.ok && result.secure_url) {
+          newUrls.push(result.secure_url);
+        } else {
+          alert(`Ошибка загрузки ${file.name}: ` + (result.error?.message || "Cloudinary error"));
+        }
+      }
+
+      if (newUrls.length > 0) {
+        setFormData(prev => {
+          const currentNetwork = prev.socials?.[network] || {};
+          const currentMedia = (currentNetwork as any).statsMedia || [];
+          return {
+            ...prev,
+            socials: {
+              ...prev.socials,
+              [network]: {
+                ...currentNetwork,
+                statsMedia: [...currentMedia, ...newUrls]
+              }
+            }
+          };
+        });
+      }
+    } catch (err) {
+      alert("Ошибка при загрузке: " + err);
+    } finally {
+      setIsUploading(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  const renderSocialUpload = (network: keyof Socials) => (
+    <div className="mt-2 pt-2 border-t border-white/10">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs text-white/50">Статистика (Скриншоты / Видео)</span>
+        <label className="cursor-pointer bg-white/10 hover:bg-white/20 text-white text-xs px-2 py-1 rounded transition-colors flex items-center gap-1">
+          <Upload size={12} /> Загрузить
+          <input type="file" multiple accept="image/*,video/*" className="hidden" onChange={e => handleStatsUpload(e, network)} />
+        </label>
+      </div>
+      <textarea 
+        placeholder="https://... (ссылки с новой строки)" 
+        className="w-full text-xs bg-black/20 border border-white/10 text-white p-2 rounded min-h-[60px]"
+        value={((formData.socials?.[network] as any)?.statsMedia || []).join("\n")}
+        onChange={e => updateSocial(network, "statsMedia", e.target.value.split("\n").filter((v: string) => v.trim()!==""))}
+      />
+    </div>
+  );
 
   const updateDetail = (field: keyof BloggerDetails, value: string) => {
     setFormData(prev => ({
@@ -217,6 +298,7 @@ export default function BloggerEditModal({
                   <input type="text" placeholder="Подписчики (100К)" className="w-1/2 text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.tiktok?.followers || ""} onChange={e => updateSocial("tiktok", "followers", e.target.value)} />
                   <input type="text" placeholder="Просмотры (от 500к)" className="w-1/2 text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.tiktok?.views || ""} onChange={e => updateSocial("tiktok", "views", e.target.value)} />
                 </div>
+                {renderSocialUpload("tiktok")}
               </div>
 
               {/* Instagram */}
@@ -228,6 +310,7 @@ export default function BloggerEditModal({
                   <input type="text" placeholder="Reels" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.instagram?.reelsViews || ""} onChange={e => updateSocial("instagram", "reelsViews", e.target.value)} />
                   <input type="text" placeholder="Stories" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.instagram?.storiesViews || ""} onChange={e => updateSocial("instagram", "storiesViews", e.target.value)} />
                 </div>
+                {renderSocialUpload("instagram")}
               </div>
 
               {/* YouTube */}
@@ -239,6 +322,7 @@ export default function BloggerEditModal({
                   <input type="text" placeholder="Гориз. видео" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.youtube?.horizontalViews || ""} onChange={e => updateSocial("youtube", "horizontalViews", e.target.value)} />
                   <input type="text" placeholder="Вертикальные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.youtube?.verticalViews || ""} onChange={e => updateSocial("youtube", "verticalViews", e.target.value)} />
                 </div>
+                {renderSocialUpload("youtube")}
               </div>
 
               {/* Telegram */}
@@ -250,6 +334,17 @@ export default function BloggerEditModal({
                   <input type="text" placeholder="Суточные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.telegram?.dailyViews || ""} onChange={e => updateSocial("telegram", "dailyViews", e.target.value)} />
                   <input type="text" placeholder="Месячные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.telegram?.monthlyViews || ""} onChange={e => updateSocial("telegram", "monthlyViews", e.target.value)} />
                 </div>
+                {renderSocialUpload("telegram")}
+              </div>
+              
+              {/* VK */}
+              <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
+                <div className="flex items-center gap-2 text-[#0077FF] font-bold"><FaVk /> VK</div>
+                <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.vk?.url || ""} onChange={e => updateSocial("vk", "url", e.target.value)} />
+                <div className="grid grid-cols-1 gap-2">
+                  <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.vk?.followers || ""} onChange={e => updateSocial("vk", "followers", e.target.value)} />
+                </div>
+                {renderSocialUpload("vk")}
               </div>
             </div>
 

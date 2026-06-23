@@ -6,11 +6,11 @@ import BloggerEditModal from "./BloggerEditModal";
 import { useAdmin } from "./AdminProvider";
 
 export type Socials = {
-  tiktok?: { url: string; followers: string; views?: string };
-  youtube?: { url: string; followers: string; horizontalViews?: string; verticalViews?: string };
-  instagram?: { url: string; followers: string; reelsViews?: string; storiesViews?: string };
-  telegram?: { url: string; followers: string; dailyViews?: string; monthlyViews?: string };
-  vk?: { url: string; followers?: string | null; views?: string | null };
+  tiktok?: { url: string; followers: string; views?: string; statsMedia?: string[] };
+  youtube?: { url: string; followers: string; horizontalViews?: string; verticalViews?: string; statsMedia?: string[] };
+  instagram?: { url: string; followers: string; reelsViews?: string; storiesViews?: string; statsMedia?: string[] };
+  telegram?: { url: string; followers: string; dailyViews?: string; monthlyViews?: string; statsMedia?: string[] };
+  vk?: { url: string; followers?: string | null; views?: string | null; statsMedia?: string[] };
 };
 
 export type BloggerDetails = {
@@ -33,7 +33,7 @@ export type Blogger = {
   details?: BloggerDetails;
 };
 
-export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
+export default function BloggerGrid({ bloggers, mode = "default" }: { bloggers: Blogger[], mode?: "default" | "statistics" }) {
   const [selectedBlogger, setSelectedBlogger] = useState<Blogger | null>(null);
   const { isAdmin } = useAdmin();
 
@@ -122,7 +122,7 @@ export default function BloggerGrid({ bloggers }: { bloggers: Blogger[] }) {
 
       <AnimatePresence>
         {selectedBlogger && !editingBlogger && (
-          <BloggerModal blogger={selectedBlogger} onClose={() => setSelectedBlogger(null)} />
+          <BloggerModal blogger={selectedBlogger} onClose={() => setSelectedBlogger(null)} mode={mode} />
         )}
         {editingBlogger && (
           <BloggerEditModal 

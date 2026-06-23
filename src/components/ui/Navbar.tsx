@@ -16,11 +16,11 @@ const menuOverlayVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   },
   exit: {
     opacity: 0,
-    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1], delay: 0.15 },
+    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as [number, number, number, number], delay: 0.15 },
   },
 };
 
@@ -39,12 +39,12 @@ const linkItemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   },
   exit: {
     opacity: 0,
     y: -20,
-    transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   },
 };
 
