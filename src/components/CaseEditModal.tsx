@@ -336,17 +336,78 @@ export default function CaseEditModal({
                 <input type="file" ref={fileInputRef} onChange={handleUpload} accept="image/*" className="hidden" />
               </div>
             </div>
-          </div>
 
-          <div className="p-6 bg-white/5 border border-white/10 rounded-2xl flex flex-col gap-4">
-            <h3 className="text-white font-bold uppercase">Ссылки на Видео (YouTube Shorts / TikTok и т.д.)</h3>
-            <p className="text-white/50 text-xs">Каждая ссылка на новой строке.</p>
-            <AutoTextarea 
-              placeholder="https://..." 
-              minHeight="150px"
-              value={(formData.videos || []).join("\n")} 
-              onChange={v => setFormData({ ...formData, videos: v.split("\n").filter(val => val.trim() !== "") })} 
-            />
+            {/* Videos */}
+            <div className="bg-black/40 p-4 sm:p-5 border border-white/5 rounded-2xl w-full">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xs sm:text-sm font-bold text-white tracking-widest uppercase">
+                  ВИДЕО КЕЙСА (MP4 / SHORTS / REELS)
+                </h3>
+                <label className="cursor-pointer bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2">
+                  <Upload className="w-3.5 h-3.5" />
+                  Загрузить видео
+                  <input 
+                    type="file" 
+                    accept="video/*" 
+                    multiple
+                    className="hidden" 
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      if (!files.length) return;
+                      
+                      try {
+                        setIsUploading(true);
+                  
+                        const signatureData = await getCloudinarySignature();
+                        if (signatureData.error) throw new Error(signatureData.error);
+                        const { signature, timestamp, apiKey, cloudName } = signatureData;
+                  
+                        const newUrls: string[] = [];
+                  
+                        for (const file of files) {
+                          const uploadData = new FormData();
+                          uploadData.append("file", file);
+                          uploadData.append("api_key", apiKey!);
+                          uploadData.append("timestamp", timestamp!.toString());
+                          uploadData.append("signature", signature!);
+                          uploadData.append("folder", "manager_sayt");
+                          
+                          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+                            method: "POST",
+                            body: uploadData,
+                          });
+                          
+                          const result = await res.json();
+                          if (res.ok && result.secure_url) {
+                            newUrls.push(result.secure_url);
+                          } else {
+                            alert(`Ошибка загрузки ${file.name}: ` + (result.error?.message || "Cloudinary error"));
+                          }
+                        }
+                  
+                        if (newUrls.length > 0) {
+                          setFormData(prev => ({ ...prev, videos: [...(prev.videos || []), ...newUrls] }));
+                        }
+                      } catch (err) {
+                        alert("Ошибка при загрузке видео: " + err);
+                      } finally {
+                        setIsUploading(false);
+                        if (e.target) e.target.value = '';
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="text-xs text-white/50 mb-2">Каждая ссылка на новой строке. Можно вставить ссылку или загрузить файлы кнопкой выше.</div>
+                <AutoTextarea 
+                  placeholder="https://..." 
+                  value={(formData.videos || []).join("\n")} 
+                  onChange={v => setFormData({ ...formData, videos: v.split("\n").filter(val => val.trim() !== "") })} 
+                />
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>
