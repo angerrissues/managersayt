@@ -56,6 +56,7 @@ export default function LeadForms() {
   ];
 
   return (
+    <>
     <section id="lead-forms" className="min-h-screen flex items-center justify-center px-4 md:px-6 py-20 md:py-32 relative z-20 bg-black overflow-hidden">
       
       {/* Decorative Background Words */}
@@ -253,24 +254,27 @@ export default function LeadForms() {
         </motion.div>
       </div>
 
-      {/* Toast Notification */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: 50, x: "-50%" }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className={`fixed bottom-4 md:bottom-8 left-1/2 z-[200] flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 rounded-full border backdrop-blur-xl shadow-2xl text-xs md:text-sm ${toast.type === "success"
-                ? "bg-green-500/10 border-green-500/30 text-green-400"
-                : "bg-red-500/10 border-red-500/30 text-red-400"
-              }`}
-          >
-            {toast.type === "success" ? <CheckCircle size={18} /> : <XCircle size={18} />}
-            <span className="font-medium">{toast.message}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
+
+    {/* Toast Notification — вне section чтобы overflow:hidden не обрезал */}
+    <AnimatePresence>
+      {toast && (
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 60 }}
+          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          className={`fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 rounded-full border backdrop-blur-xl shadow-2xl text-xs md:text-sm whitespace-nowrap ${
+            toast.type === "success"
+              ? "bg-green-500/20 border-green-500/40 text-green-300"
+              : "bg-red-500/20 border-red-500/40 text-red-300"
+          }`}
+        >
+          {toast.type === "success" ? <CheckCircle size={18} /> : <XCircle size={18} />}
+          <span className="font-medium">{toast.message}</span>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
