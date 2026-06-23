@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload, Plus } from "lucide-react";
 import type { Case } from "./CasesGrid";
-import { saveCase, uploadMedia, getBloggers } from "@/actions/admin";
+import { saveCase, getCloudinarySignature, getBloggers } from "@/actions/admin";
 import type { Blogger } from "./BloggerGrid";
 import imageCompression from "browser-image-compression";
 
@@ -75,7 +75,7 @@ export default function CaseEditModal({
       setIsUploading(true);
 
       // Auto-compress large files to prevent Cloudinary 10MB limit error
-      if (file.size > 2 * 1024 * 1024) { // Compress if > 2MB
+      if (file.type.startsWith('image/') && file.size > 2 * 1024 * 1024) { // Compress if > 2MB
         file = await imageCompression(file, {
           maxSizeMB: 2,
           maxWidthOrHeight: 1920,
@@ -83,14 +83,31 @@ export default function CaseEditModal({
         });
       }
 
-      const data = new FormData();
-      data.append("file", file);
+      // 1. Get Signature from backend
+      const signatureData = await getCloudinarySignature();
+      if (signatureData.error) throw new Error(signatureData.error);
       
-      const res: any = await uploadMedia(data);
-      if (res?.error) {
-        alert("Ошибка от сервера: " + res.error);
-      } else if (res?.url) {
-        setFormData({ ...formData, coverImage: res.url });
+      const { signature, timestamp, apiKey, cloudName } = signatureData;
+
+      // 2. Upload directly to Cloudinary
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+      uploadData.append("api_key", apiKey!);
+      uploadData.append("timestamp", timestamp!.toString());
+      uploadData.append("signature", signature!);
+      uploadData.append("folder", "manager_sayt");
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+        method: "POST",
+        body: uploadData,
+      });
+      
+      const result = await res.json();
+      
+      if (!res.ok) {
+        alert("Ошибка от сервера: " + (result.error?.message || "Cloudinary error"));
+      } else if (result.secure_url) {
+        setFormData({ ...formData, coverImage: result.secure_url });
       }
     } catch (err) {
       alert("Ошибка при загрузке: " + err);
