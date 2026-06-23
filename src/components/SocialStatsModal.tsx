@@ -64,7 +64,9 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="bg-[#111] border border-white/10 rounded-3xl p-4 md:p-6 max-w-[600px] w-full relative my-auto shadow-2xl flex flex-col"
+        className="bg-[#111] border border-white/10 rounded-3xl p-4 md:p-6 max-w-[600px] w-full relative my-auto shadow-2xl flex flex-col max-h-[95vh] overflow-y-auto custom-scrollbar"
+        data-lenis-prevent="true"
+        onClick={(e) => e.stopPropagation()}
       >
         <button 
           onClick={onClose}

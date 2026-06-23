@@ -165,6 +165,7 @@ export default function CaseEditModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
       onClick={handleBackdropClick}
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
     >
@@ -173,7 +174,9 @@ export default function CaseEditModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="bg-[#111] border border-white/10 rounded-3xl p-4 md:p-8 max-w-6xl w-full relative my-auto cursor-auto shadow-2xl flex flex-col lg:flex-row gap-10 max-h-[90vh] overflow-y-auto"
+        className="bg-[#111] border border-white/10 rounded-3xl p-4 md:p-6 max-w-[1000px] w-full relative my-auto cursor-auto shadow-2xl flex flex-col lg:flex-row gap-10 max-h-[95vh] overflow-y-auto"
+        data-lenis-prevent="true"
+        onClick={(e) => e.stopPropagation()}
       >
         <button 
           onClick={onClose}
