@@ -52,12 +52,21 @@ export default function CaseEditModal({
 
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
+  
   // Blogger selection state
   const [allBloggers, setAllBloggers] = useState<Blogger[]>([]);
   const [bloggerInput, setBloggerInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   useEffect(() => {
     getBloggers().then(res => setAllBloggers(res as unknown as Blogger[]));
