@@ -89,77 +89,90 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 
-                {/* TikTok */}
-                {blogger.socials.tiktok && (
-                  <a href={blogger.socials.tiktok.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "tiktok", blogger.socials.tiktok!.url, blogger.socials.tiktok!.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-[#25F4EE]/10 to-[#FE2C55]/10 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-3 mb-3 text-white">
-                      <FaTiktok size={24} className="text-[#FE2C55] group-hover:scale-110 transition-transform" />
-                      <span className="font-bold text-lg">TikTok</span>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{blogger.socials.tiktok.followers}</span></p>
-                      {blogger.socials.tiktok.views && <p className="text-sm text-white/60">Видео: <span className="text-white">{blogger.socials.tiktok.views}</span></p>}
-                    </div>
-                  </a>
-                )}
+                {/* Dynamic Socials */}
+                {Object.entries(blogger.socials || {}).map(([key, data]) => {
+                  if (!data) return null;
 
-                {/* YouTube */}
-                {blogger.socials.youtube && (
-                  <a href={blogger.socials.youtube.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "youtube", blogger.socials.youtube!.url, blogger.socials.youtube!.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-red-500/10 to-red-900/10 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-3 mb-3 text-white">
-                      <FaYoutube size={24} className="text-red-500 group-hover:scale-110 transition-transform" />
-                      <span className="font-bold text-lg">YouTube</span>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{blogger.socials.youtube.followers}</span></p>
-                      {blogger.socials.youtube.horizontalViews && <p className="text-sm text-white/60">Гориз. видео: <span className="text-white">{blogger.socials.youtube.horizontalViews}</span></p>}
-                      {blogger.socials.youtube.verticalViews && <p className="text-sm text-white/60">Вертикальные: <span className="text-white">{blogger.socials.youtube.verticalViews}</span></p>}
-                    </div>
-                  </a>
-                )}
+                  if (key.startsWith("tiktok")) {
+                    return (
+                      <a key={key} href={data.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "tiktok", data.url || "", data.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-[#25F4EE]/10 to-[#FE2C55]/10 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
+                        <div className="flex items-center gap-3 mb-3 text-white">
+                          <FaTiktok size={24} className="text-[#FE2C55] group-hover:scale-110 transition-transform" />
+                          <span className="font-bold text-lg">TikTok</span>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{data.followers}</span></p>
+                          {data.views && <p className="text-sm text-white/60">Видео: <span className="text-white">{data.views}</span></p>}
+                        </div>
+                      </a>
+                    );
+                  }
 
-                {/* Instagram */}
-                {blogger.socials.instagram && (
-                  <a href={blogger.socials.instagram.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "instagram", blogger.socials.instagram!.url, blogger.socials.instagram!.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-3 mb-3 text-white">
-                      <FaInstagram size={24} className="text-pink-500 group-hover:scale-110 transition-transform" />
-                      <span className="font-bold text-lg">Instagram</span>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{blogger.socials.instagram.followers}</span></p>
-                      {blogger.socials.instagram.reelsViews && <p className="text-sm text-white/60">Reels: <span className="text-white">{blogger.socials.instagram.reelsViews}</span></p>}
-                      {blogger.socials.instagram.storiesViews && <p className="text-sm text-white/60">Stories: <span className="text-white">{blogger.socials.instagram.storiesViews}</span></p>}
-                    </div>
-                  </a>
-                )}
+                  if (key.startsWith("youtube")) {
+                    return (
+                      <a key={key} href={data.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "youtube", data.url || "", data.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-red-500/10 to-red-900/10 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
+                        <div className="flex items-center gap-3 mb-3 text-white">
+                          <FaYoutube size={24} className="text-red-500 group-hover:scale-110 transition-transform" />
+                          <span className="font-bold text-lg">YouTube</span>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{data.followers}</span></p>
+                          {data.horizontalViews && <p className="text-sm text-white/60">Гориз. видео: <span className="text-white">{data.horizontalViews}</span></p>}
+                          {data.verticalViews && <p className="text-sm text-white/60">Вертикальные: <span className="text-white">{data.verticalViews}</span></p>}
+                        </div>
+                      </a>
+                    );
+                  }
 
-                {/* Telegram */}
-                {blogger.socials.telegram && (
-                  <a href={blogger.socials.telegram.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "telegram", blogger.socials.telegram!.url, blogger.socials.telegram!.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-blue-400/10 to-blue-600/10 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-3 mb-3 text-white">
-                      <FaTelegramPlane size={24} className="text-blue-400 group-hover:scale-110 transition-transform" />
-                      <span className="font-bold text-lg">Telegram</span>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{blogger.socials.telegram.followers}</span></p>
-                      {blogger.socials.telegram.dailyViews && <p className="text-sm text-white/60">Суточные: <span className="text-white">{blogger.socials.telegram.dailyViews}</span></p>}
-                      {blogger.socials.telegram.monthlyViews && <p className="text-sm text-white/60">Месячные: <span className="text-white">{blogger.socials.telegram.monthlyViews}</span></p>}
-                    </div>
-                  </a>
-                )}
+                  if (key.startsWith("instagram")) {
+                    return (
+                      <a key={key} href={data.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "instagram", data.url || "", data.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
+                        <div className="flex items-center gap-3 mb-3 text-white">
+                          <FaInstagram size={24} className="text-pink-500 group-hover:scale-110 transition-transform" />
+                          <span className="font-bold text-lg">Instagram</span>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{data.followers}</span></p>
+                          {data.reelsViews && <p className="text-sm text-white/60">Reels: <span className="text-white">{data.reelsViews}</span></p>}
+                          {data.storiesViews && <p className="text-sm text-white/60">Stories: <span className="text-white">{data.storiesViews}</span></p>}
+                        </div>
+                      </a>
+                    );
+                  }
 
-                {/* VK */}
-                {blogger.socials.vk && (
-                  <a href={blogger.socials.vk.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "vk", blogger.socials.vk!.url, blogger.socials.vk!.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-[#0077FF]/10 to-[#0077FF]/5 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-3 mb-3 text-white">
-                      <FaVk size={24} className="text-[#0077FF] group-hover:scale-110 transition-transform" />
-                      <span className="font-bold text-lg">VK</span>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm text-white/60">Сообщество ВК</p>
-                    </div>
-                  </a>
-                )}
+                  if (key.startsWith("telegram")) {
+                    return (
+                      <a key={key} href={data.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "telegram", data.url || "", data.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-blue-400/10 to-blue-600/10 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
+                        <div className="flex items-center gap-3 mb-3 text-white">
+                          <FaTelegramPlane size={24} className="text-blue-400 group-hover:scale-110 transition-transform" />
+                          <span className="font-bold text-lg">Telegram</span>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{data.followers}</span></p>
+                          {data.dailyViews && <p className="text-sm text-white/60">Суточные: <span className="text-white">{data.dailyViews}</span></p>}
+                          {data.monthlyViews && <p className="text-sm text-white/60">Месячные: <span className="text-white">{data.monthlyViews}</span></p>}
+                        </div>
+                      </a>
+                    );
+                  }
+
+                  if (key.startsWith("vk")) {
+                    return (
+                      <a key={key} href={data.url} target="_blank" rel="noreferrer" onClick={(e) => handleSocialClick(e, "vk", data.url || "", data.statsMedia)} className="block p-3 md:p-4 bg-gradient-to-br from-[#0077FF]/10 to-[#0077FF]/5 border border-white/10 rounded-2xl hover:border-white/30 transition-colors cursor-pointer group">
+                        <div className="flex items-center gap-3 mb-3 text-white">
+                          <FaVk size={24} className="text-[#0077FF] group-hover:scale-110 transition-transform" />
+                          <span className="font-bold text-lg">VK</span>
+                        </div>
+                        <div className="space-y-1">
+                          {data.followers && <p className="text-sm text-white/60">Подписчики: <span className="text-white font-mono text-lg">{data.followers}</span></p>}
+                          <p className="text-sm text-white/60">Сообщество ВК</p>
+                        </div>
+                      </a>
+                    );
+                  }
+
+                  return null;
+                })}
 
               </div>
 

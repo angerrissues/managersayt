@@ -6,11 +6,18 @@ import BloggerEditModal from "./BloggerEditModal";
 import { useAdmin } from "./AdminProvider";
 
 export type Socials = {
-  tiktok?: { url: string; followers: string; views?: string; statsMedia?: string[] };
-  youtube?: { url: string; followers: string; horizontalViews?: string; verticalViews?: string; statsMedia?: string[] };
-  instagram?: { url: string; followers: string; reelsViews?: string; storiesViews?: string; statsMedia?: string[] };
-  telegram?: { url: string; followers: string; dailyViews?: string; monthlyViews?: string; statsMedia?: string[] };
-  vk?: { url: string; followers?: string | null; views?: string | null; statsMedia?: string[] };
+  [key: string]: {
+    url?: string;
+    followers?: string;
+    views?: string;
+    horizontalViews?: string;
+    verticalViews?: string;
+    reelsViews?: string;
+    storiesViews?: string;
+    dailyViews?: string;
+    monthlyViews?: string;
+    statsMedia?: string[];
+  };
 };
 
 export type BloggerDetails = {

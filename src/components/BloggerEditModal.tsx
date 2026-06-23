@@ -104,7 +104,7 @@ export default function BloggerEditModal({
     }
   };
 
-  const updateSocial = (network: keyof Socials, field: string, value: any) => {
+  const updateSocial = (network: string, field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       socials: {
@@ -117,7 +117,26 @@ export default function BloggerEditModal({
     }));
   };
 
-  const handleStatsUpload = async (e: React.ChangeEvent<HTMLInputElement>, network: keyof Socials) => {
+  const removeSocial = (network: string) => {
+    setFormData(prev => {
+      const newSocials = { ...prev.socials };
+      delete newSocials[network];
+      return { ...prev, socials: newSocials };
+    });
+  };
+
+  const addSocial = (platform: "tiktok" | "youtube" | "instagram" | "telegram" | "vk") => {
+    const key = `${platform}_${Date.now()}`;
+    setFormData(prev => ({
+      ...prev,
+      socials: {
+        ...prev.socials,
+        [key]: { url: "", followers: "" }
+      }
+    }));
+  };
+
+  const handleStatsUpload = async (e: React.ChangeEvent<HTMLInputElement>, network: string) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
     
@@ -180,7 +199,7 @@ export default function BloggerEditModal({
     }
   };
 
-  const renderSocialUpload = (network: keyof Socials) => (
+  const renderSocialUpload = (network: string) => (
     <div className="mt-2 pt-2 border-t border-white/10">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-white/50">Статистика (Скриншоты / Видео)</span>
@@ -299,61 +318,108 @@ export default function BloggerEditModal({
             <h3 className="text-xl font-bold text-white uppercase tracking-wider border-b border-white/10 pb-2">Соцсети</h3>
             
             <div className="space-y-4">
-              {/* TikTok */}
-              <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
-                <div className="flex items-center gap-2 text-[#FE2C55] font-bold"><FaTiktok /> TikTok</div>
-                <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.tiktok?.url || ""} onChange={e => updateSocial("tiktok", "url", e.target.value)} />
-                <div className="flex gap-2">
-                  <input type="text" placeholder="Подписчики (100К)" className="w-1/2 text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.tiktok?.followers || ""} onChange={e => updateSocial("tiktok", "followers", e.target.value)} />
-                  <input type="text" placeholder="Просмотры (от 500к)" className="w-1/2 text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.tiktok?.views || ""} onChange={e => updateSocial("tiktok", "views", e.target.value)} />
-                </div>
-                {renderSocialUpload("tiktok")}
-              </div>
+              {Object.entries(formData.socials || {}).map(([key, data]) => {
+                if (!data) return null;
 
-              {/* Instagram */}
-              <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
-                <div className="flex items-center gap-2 text-pink-500 font-bold"><FaInstagram /> Instagram</div>
-                <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.instagram?.url || ""} onChange={e => updateSocial("instagram", "url", e.target.value)} />
-                <div className="grid grid-cols-3 gap-2">
-                  <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.instagram?.followers || ""} onChange={e => updateSocial("instagram", "followers", e.target.value)} />
-                  <input type="text" placeholder="Reels" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.instagram?.reelsViews || ""} onChange={e => updateSocial("instagram", "reelsViews", e.target.value)} />
-                  <input type="text" placeholder="Stories" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.instagram?.storiesViews || ""} onChange={e => updateSocial("instagram", "storiesViews", e.target.value)} />
-                </div>
-                {renderSocialUpload("instagram")}
-              </div>
+                if (key.startsWith("tiktok")) {
+                  return (
+                    <div key={key} className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2 relative">
+                      <button onClick={() => removeSocial(key)} className="absolute top-2 right-2 text-white/30 hover:text-red-500 transition-colors"><X size={18}/></button>
+                      <div className="flex items-center gap-2 text-[#FE2C55] font-bold"><FaTiktok /> TikTok</div>
+                      <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.url || ""} onChange={e => updateSocial(key, "url", e.target.value)} />
+                      <div className="flex gap-2">
+                        <input type="text" placeholder="Подписчики (100К)" className="w-1/2 text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.followers || ""} onChange={e => updateSocial(key, "followers", e.target.value)} />
+                        <input type="text" placeholder="Просмотры (от 500к)" className="w-1/2 text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.views || ""} onChange={e => updateSocial(key, "views", e.target.value)} />
+                      </div>
+                      {renderSocialUpload(key)}
+                    </div>
+                  );
+                }
 
-              {/* YouTube */}
-              <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
-                <div className="flex items-center gap-2 text-red-500 font-bold"><FaYoutube /> YouTube</div>
-                <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.youtube?.url || ""} onChange={e => updateSocial("youtube", "url", e.target.value)} />
-                <div className="grid grid-cols-3 gap-2">
-                  <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.youtube?.followers || ""} onChange={e => updateSocial("youtube", "followers", e.target.value)} />
-                  <input type="text" placeholder="Гориз. видео" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.youtube?.horizontalViews || ""} onChange={e => updateSocial("youtube", "horizontalViews", e.target.value)} />
-                  <input type="text" placeholder="Вертикальные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.youtube?.verticalViews || ""} onChange={e => updateSocial("youtube", "verticalViews", e.target.value)} />
-                </div>
-                {renderSocialUpload("youtube")}
-              </div>
+                if (key.startsWith("instagram")) {
+                  return (
+                    <div key={key} className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2 relative">
+                      <button onClick={() => removeSocial(key)} className="absolute top-2 right-2 text-white/30 hover:text-red-500 transition-colors"><X size={18}/></button>
+                      <div className="flex items-center gap-2 text-pink-500 font-bold"><FaInstagram /> Instagram</div>
+                      <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.url || ""} onChange={e => updateSocial(key, "url", e.target.value)} />
+                      <div className="grid grid-cols-3 gap-2">
+                        <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.followers || ""} onChange={e => updateSocial(key, "followers", e.target.value)} />
+                        <input type="text" placeholder="Reels" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.reelsViews || ""} onChange={e => updateSocial(key, "reelsViews", e.target.value)} />
+                        <input type="text" placeholder="Stories" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.storiesViews || ""} onChange={e => updateSocial(key, "storiesViews", e.target.value)} />
+                      </div>
+                      {renderSocialUpload(key)}
+                    </div>
+                  );
+                }
 
-              {/* Telegram */}
-              <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
-                <div className="flex items-center gap-2 text-blue-400 font-bold"><FaTelegramPlane /> Telegram</div>
-                <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.telegram?.url || ""} onChange={e => updateSocial("telegram", "url", e.target.value)} />
-                <div className="grid grid-cols-3 gap-2">
-                  <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.telegram?.followers || ""} onChange={e => updateSocial("telegram", "followers", e.target.value)} />
-                  <input type="text" placeholder="Суточные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.telegram?.dailyViews || ""} onChange={e => updateSocial("telegram", "dailyViews", e.target.value)} />
-                  <input type="text" placeholder="Месячные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.telegram?.monthlyViews || ""} onChange={e => updateSocial("telegram", "monthlyViews", e.target.value)} />
+                if (key.startsWith("youtube")) {
+                  return (
+                    <div key={key} className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2 relative">
+                      <button onClick={() => removeSocial(key)} className="absolute top-2 right-2 text-white/30 hover:text-red-500 transition-colors"><X size={18}/></button>
+                      <div className="flex items-center gap-2 text-red-500 font-bold"><FaYoutube /> YouTube</div>
+                      <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.url || ""} onChange={e => updateSocial(key, "url", e.target.value)} />
+                      <div className="grid grid-cols-3 gap-2">
+                        <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.followers || ""} onChange={e => updateSocial(key, "followers", e.target.value)} />
+                        <input type="text" placeholder="Гориз. видео" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.horizontalViews || ""} onChange={e => updateSocial(key, "horizontalViews", e.target.value)} />
+                        <input type="text" placeholder="Вертикальные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.verticalViews || ""} onChange={e => updateSocial(key, "verticalViews", e.target.value)} />
+                      </div>
+                      {renderSocialUpload(key)}
+                    </div>
+                  );
+                }
+
+                if (key.startsWith("telegram")) {
+                  return (
+                    <div key={key} className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2 relative">
+                      <button onClick={() => removeSocial(key)} className="absolute top-2 right-2 text-white/30 hover:text-red-500 transition-colors"><X size={18}/></button>
+                      <div className="flex items-center gap-2 text-blue-400 font-bold"><FaTelegramPlane /> Telegram</div>
+                      <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.url || ""} onChange={e => updateSocial(key, "url", e.target.value)} />
+                      <div className="grid grid-cols-3 gap-2">
+                        <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.followers || ""} onChange={e => updateSocial(key, "followers", e.target.value)} />
+                        <input type="text" placeholder="Суточные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.dailyViews || ""} onChange={e => updateSocial(key, "dailyViews", e.target.value)} />
+                        <input type="text" placeholder="Месячные" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.monthlyViews || ""} onChange={e => updateSocial(key, "monthlyViews", e.target.value)} />
+                      </div>
+                      {renderSocialUpload(key)}
+                    </div>
+                  );
+                }
+
+                if (key.startsWith("vk")) {
+                  return (
+                    <div key={key} className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2 relative">
+                      <button onClick={() => removeSocial(key)} className="absolute top-2 right-2 text-white/30 hover:text-red-500 transition-colors"><X size={18}/></button>
+                      <div className="flex items-center gap-2 text-[#0077FF] font-bold"><FaVk /> VK</div>
+                      <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.url || ""} onChange={e => updateSocial(key, "url", e.target.value)} />
+                      <div className="grid grid-cols-1 gap-2">
+                        <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={data.followers || ""} onChange={e => updateSocial(key, "followers", e.target.value)} />
+                      </div>
+                      {renderSocialUpload(key)}
+                    </div>
+                  );
+                }
+
+                return null;
+              })}
+
+              <div className="pt-2">
+                <span className="text-xs text-white/50 block mb-2 uppercase">Добавить соцсеть:</span>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => addSocial("tiktok")} className="flex items-center gap-1 text-xs bg-white/5 hover:bg-white/10 text-white py-1.5 px-3 rounded-lg border border-white/10 transition-colors">
+                    <FaTiktok className="text-[#FE2C55]" /> TikTok
+                  </button>
+                  <button onClick={() => addSocial("instagram")} className="flex items-center gap-1 text-xs bg-white/5 hover:bg-white/10 text-white py-1.5 px-3 rounded-lg border border-white/10 transition-colors">
+                    <FaInstagram className="text-pink-500" /> Instagram
+                  </button>
+                  <button onClick={() => addSocial("youtube")} className="flex items-center gap-1 text-xs bg-white/5 hover:bg-white/10 text-white py-1.5 px-3 rounded-lg border border-white/10 transition-colors">
+                    <FaYoutube className="text-red-500" /> YouTube
+                  </button>
+                  <button onClick={() => addSocial("telegram")} className="flex items-center gap-1 text-xs bg-white/5 hover:bg-white/10 text-white py-1.5 px-3 rounded-lg border border-white/10 transition-colors">
+                    <FaTelegramPlane className="text-blue-400" /> Telegram
+                  </button>
+                  <button onClick={() => addSocial("vk")} className="flex items-center gap-1 text-xs bg-white/5 hover:bg-white/10 text-white py-1.5 px-3 rounded-lg border border-white/10 transition-colors">
+                    <FaVk className="text-[#0077FF]" /> VK
+                  </button>
                 </div>
-                {renderSocialUpload("telegram")}
-              </div>
-              
-              {/* VK */}
-              <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2">
-                <div className="flex items-center gap-2 text-[#0077FF] font-bold"><FaVk /> VK</div>
-                <input type="text" placeholder="URL" className="w-full text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.vk?.url || ""} onChange={e => updateSocial("vk", "url", e.target.value)} />
-                <div className="grid grid-cols-1 gap-2">
-                  <input type="text" placeholder="Подписчики" className="text-sm bg-transparent border-b border-white/20 text-white p-1" value={formData.socials?.vk?.followers || ""} onChange={e => updateSocial("vk", "followers", e.target.value)} />
-                </div>
-                {renderSocialUpload("vk")}
               </div>
             </div>
 
