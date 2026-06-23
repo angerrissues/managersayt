@@ -43,6 +43,7 @@ export async function saveBlogger(data: any) {
     create: data,
   });
   revalidatePath("/blogers");
+  revalidatePath("/statistics");
   return result;
 }
 
@@ -52,6 +53,7 @@ export async function deleteBlogger(id: string) {
   
   const result = await prisma.blogger.delete({ where: { id } });
   revalidatePath("/blogers");
+  revalidatePath("/statistics");
   return result;
 }
 
