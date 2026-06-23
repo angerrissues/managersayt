@@ -24,6 +24,7 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
   const Icon = IconData.icon;
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Close on backdrop click
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -120,13 +121,15 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
                       loop 
                       muted 
                       playsInline
-                      className="max-h-[60vh] w-auto object-contain bg-black"
+                      onClick={() => setIsFullscreen(true)}
+                      className="max-h-[60vh] w-auto object-contain bg-black cursor-pointer hover:opacity-90 transition-opacity"
                     />
                   ) : (
                     <img 
                       src={statsMedia[currentIndex]} 
                       alt={`Stats ${currentIndex}`} 
-                      className="max-h-[60vh] w-auto object-contain bg-black"
+                      onClick={() => setIsFullscreen(true)}
+                      className="max-h-[60vh] w-auto object-contain bg-black cursor-pointer hover:opacity-90 transition-opacity"
                     />
                   )}
                 </motion.div>
@@ -146,6 +149,71 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
           )}
         </div>
       </motion.div>
+
+      {/* Fullscreen Overlay */}
+      <AnimatePresence>
+        {isFullscreen && statsMedia && statsMedia.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[300] bg-black flex items-center justify-center p-4 backdrop-blur-xl"
+          >
+            <button 
+              onClick={() => setIsFullscreen(false)}
+              className="absolute top-4 right-4 md:top-8 md:right-8 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white z-50 cursor-pointer"
+            >
+              <X size={32} />
+            </button>
+            
+            {statsMedia.length > 1 && (
+              <>
+                <button 
+                  onClick={handlePrev} 
+                  className="absolute left-4 md:left-8 z-50 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors cursor-pointer"
+                >
+                  <ChevronLeft size={32} />
+                </button>
+                <button 
+                  onClick={handleNext} 
+                  className="absolute right-4 md:right-8 z-50 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors cursor-pointer"
+                >
+                  <ChevronRight size={32} />
+                </button>
+              </>
+            )}
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex + "-fs"}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="w-full h-full flex items-center justify-center relative"
+              >
+                {statsMedia[currentIndex].match(/\.(mp4|webm|ogg|mov)$/i) ? (
+                  <video 
+                    src={statsMedia[currentIndex]} 
+                    autoPlay 
+                    loop 
+                    controls
+                    playsInline
+                    className="max-w-full max-h-[90vh] object-contain shadow-2xl"
+                  />
+                ) : (
+                  <img 
+                    src={statsMedia[currentIndex]} 
+                    alt={`Fullscreen ${currentIndex}`} 
+                    className="max-w-full max-h-[90vh] object-contain shadow-2xl"
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
