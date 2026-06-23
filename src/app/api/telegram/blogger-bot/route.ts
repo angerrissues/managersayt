@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "@/lib/cloudinary";
 
 const BOT_TOKEN = process.env.BLOGGER_BOT_TOKEN;
 const PASSWORD = "1234ewq1234";
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 async function sendMessage(chatId: string, text: string, replyMarkup?: any) {
   if (!BOT_TOKEN) return;
