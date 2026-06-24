@@ -1,5 +1,6 @@
 "use client";
 import { useState, useTransition, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { submitAdvertiserLead, submitBloggerLead } from "@/actions/leads";
 import { Send, CheckCircle, XCircle } from "lucide-react";
@@ -17,8 +18,10 @@ export default function LeadForms() {
   const [toast, setToast] = useState<Toast | null>(null);
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("form") === "blogger") {
@@ -256,25 +259,28 @@ export default function LeadForms() {
 
     </section>
 
-    {/* Toast Notification — вне section чтобы overflow:hidden не обрезал */}
-    <AnimatePresence>
-      {toast && (
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 60 }}
-          transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className={`fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 rounded-full border backdrop-blur-xl shadow-2xl text-xs md:text-sm whitespace-nowrap ${
-            toast.type === "success"
-              ? "bg-green-500/20 border-green-500/40 text-green-300"
-              : "bg-red-500/20 border-red-500/40 text-red-300"
-          }`}
-        >
-          {toast.type === "success" ? <CheckCircle size={18} /> : <XCircle size={18} />}
-          <span className="font-medium">{toast.message}</span>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    {/* Toast Notification — вне section чтобы overflow:hidden не обрезал, и в Portal чтобы избежать конфликтов z-index */}
+    {mounted && createPortal(
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 60 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className={`fixed bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-[99999] flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 rounded-full border backdrop-blur-xl shadow-2xl text-xs md:text-sm whitespace-nowrap ${
+              toast.type === "success"
+                ? "bg-green-500/20 border-green-500/40 text-green-300"
+                : "bg-red-500/20 border-red-500/40 text-red-300"
+            }`}
+          >
+            {toast.type === "success" ? <CheckCircle size={18} /> : <XCircle size={18} />}
+            <span className="font-medium">{toast.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      document.body
+    )}
     </>
   );
 }
