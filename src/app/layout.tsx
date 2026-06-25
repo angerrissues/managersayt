@@ -9,6 +9,7 @@ import FloatingContact from "@/components/shared/FloatingContact";
 import Footer from "@/components/ui/Footer";
 import AdminProvider from "@/components/shared/AdminProvider";
 import BraidDecoration from "@/components/sections/BraidDecoration";
+import BackgroundAudio from "@/components/ui/BackgroundAudio";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 
@@ -26,6 +27,7 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${inter.variable} antialiased`}>
         <AdminProvider>
+          <BackgroundAudio />
           <SmoothScroll>
             <CustomCursor />
             <Navbar />
