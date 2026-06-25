@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 
 export default function BackgroundAudio() {
-  const [isPlaying, setIsPlaying] = useState(false);
+  // Кнопка активна с самого начала
+  const [isPlaying, setIsPlaying] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -13,41 +14,34 @@ export default function BackgroundAudio() {
 
     audio.volume = 0.2; // тихий фон
 
-    // Попытка автоматического воспроизведения
-    const playAttempt = audio.play();
-    if (playAttempt !== undefined) {
-      playAttempt
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(() => {
-          // Автовоспроизведение заблокировано браузером
-          setIsPlaying(false);
-        });
+    const playAudio = () => {
+      audio.play().catch(() => {
+        // Браузеры могут блокировать автоплей без взаимодействия.
+        // Ничего не делаем, обработчик взаимодействия (ниже) запустит музыку при клике.
+      });
+    };
+
+    if (isPlaying) {
+      playAudio();
+    } else {
+      audio.pause();
     }
 
-    // Слушатель для взаимодействия пользователя, если автовоспроизведение не сработало
-    const handleFirstInteraction = () => {
-      if (!isPlaying && audioRef.current) {
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-        }).catch(() => {});
-        document.removeEventListener("click", handleFirstInteraction);
-        document.removeEventListener("scroll", handleFirstInteraction);
-        document.removeEventListener("keydown", handleFirstInteraction);
+    const handleInteraction = () => {
+      if (isPlaying && audio.paused) {
+        playAudio();
       }
     };
 
-    if (!isPlaying) {
-      document.addEventListener("click", handleFirstInteraction);
-      document.addEventListener("scroll", handleFirstInteraction);
-      document.addEventListener("keydown", handleFirstInteraction);
-    }
+    // При любом взаимодействии пользователя, если автовоспроизведение не сработало, запускаем музыку
+    document.addEventListener("click", handleInteraction, { once: true });
+    document.addEventListener("scroll", handleInteraction, { once: true });
+    document.addEventListener("keydown", handleInteraction, { once: true });
 
     return () => {
-      document.removeEventListener("click", handleFirstInteraction);
-      document.removeEventListener("scroll", handleFirstInteraction);
-      document.removeEventListener("keydown", handleFirstInteraction);
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("scroll", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
     };
   }, [isPlaying]);
 
@@ -71,6 +65,7 @@ export default function BackgroundAudio() {
         ref={audioRef}
         src="/Silk_and_Steel.mp3"
         loop
+        autoPlay
         preload="auto"
       />
       <button
