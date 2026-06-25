@@ -26,16 +26,16 @@ export default function KoreanFocusSection() {
       className="py-20 md:py-32 px-4 md:px-6 bg-black relative z-20 border-t border-white/5 overflow-hidden flex flex-col items-center justify-center min-h-[60vh] md:min-h-[80vh]"
     >
       {/* Massive Background Text with Parallax */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center justify-center pointer-events-none select-none z-0 opacity-20">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex flex-col items-center justify-center pointer-events-none select-none z-0 opacity-40 md:opacity-20">
         <motion.h2
           style={{ x: xLeft, y, rotate: rotateLeft }}
-          className="text-[20vw] md:text-[20vw] font-black uppercase tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 blur-md"
+          className="text-[25vw] md:text-[20vw] font-black uppercase tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 blur-sm md:blur-md"
         >
           SEOUL
         </motion.h2>
         <motion.h2
           style={{ x: xRight, y, rotate: rotateRight }}
-          className="text-[20vw] md:text-[20vw] font-black uppercase tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-l from-red-500 via-purple-500 to-blue-500 blur-md"
+          className="text-[25vw] md:text-[20vw] font-black uppercase tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-l from-red-500 via-purple-500 to-blue-500 blur-sm md:blur-md"
         >
           VIBES
         </motion.h2>
