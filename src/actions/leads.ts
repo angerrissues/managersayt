@@ -76,7 +76,8 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
   const tgUsername = formData.get("tgUsername") as string;
-  const socialLinks = formData.get("socialLinks") as string;
+  const socialLinksRaw = formData.get("socialLinks") as string;
+  const socialLinks = socialLinksRaw && socialLinksRaw.trim().length > 0 ? socialLinksRaw : "Не указано";
 
   // Валидация
   if (!name || name.trim().length < 2) {
@@ -93,9 +94,6 @@ export async function submitBloggerLead(formData: FormData): Promise<ActionResul
   }
   if (!tgUsername || tgUsername.trim().length < 2) {
     return { success: false, message: "Укажите ваш Telegram." };
-  }
-  if (!socialLinks || socialLinks.trim().length < 5) {
-    return { success: false, message: "Укажите хотя бы одну ссылку на вашу социальную сеть." };
   }
 
   try {

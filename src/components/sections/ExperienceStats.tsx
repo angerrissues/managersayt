@@ -4,9 +4,9 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 const stats = [
-  { value: "4", label: "года на рынке" },
+  { value: "3", label: "года на рынке" },
   { value: "30", label: "эксклюзивных инфлюенсеров" },
-  { value: "2000", label: "рекламных кампаний" },
+  { value: "100+", label: "рекламных кампаний" },
   { value: "100+", label: "миллионов охватов" },
 ];
 

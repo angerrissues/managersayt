@@ -17,7 +17,7 @@ export default function KoreanFocusSection() {
   const rotateRight = useTransform(scrollYProgress, [0, 1], [5, -5]);
 
   // Разделяем текст на слова для анимации размытия и появления
-  const text = "Мы стираем границы и выводим инфлюенс-маркетинг на международный уровень. Эксклюзивные контракты, невероятная вовлеченность и тренды, которые зарождаются в Сеуле, теперь работают на ваш бренд.";
+  const text = "Эксклюзивные контракты с блогерами из Кореи, Японии, Китая и других стран — с живой русскоязычной аудиторией. Ваш бренд звучит там, где раньше не было конкурентов.";
   const words = text.split(" ");
 
   return (
@@ -44,17 +44,23 @@ export default function KoreanFocusSection() {
       <div className="max-w-5xl mx-auto relative z-10 text-center">
 
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 mb-8 md:mb-12">
+          {/* Mobile Text (Hidden on Desktop) */}
+          <div className="md:hidden text-lg sm:text-xl font-black uppercase tracking-widest text-white/80">
+            82 AGENCY
+          </div>
+          
+          {/* Desktop Flag (Hidden on Mobile) */}
           <motion.img
             src="https://hatscripts.github.io/circle-flags/flags/kr.svg"
             alt="South Korea Flag Left"
-            className="w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] shrink-0"
+            className="hidden md:block w-24 h-24 lg:w-32 lg:h-32 drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] shrink-0"
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 12, ease: "linear" }}
           />
           <h3 className="text-2xl md:text-4xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tight leading-[1.1] text-center">
-            <span className="block">мы нацелены на</span>
+            <span className="block">мы соединяем мировых блогеров</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500">
-              азиатские тренды
+              с русскоязычной аудиторией
             </span>
           </h3>
           <motion.img
