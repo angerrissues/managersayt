@@ -43,12 +43,12 @@ export default function KoreanFocusSection() {
 
       <div className="max-w-5xl mx-auto relative z-10 text-center">
 
+        {/* 82 AGENCY Label */}
+        <div className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-widest text-white/80 mb-6">
+          82 AGENCY
+        </div>
+
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 mb-8 md:mb-12">
-          {/* Mobile Text (Hidden on Desktop) */}
-          <div className="md:hidden text-lg sm:text-xl font-black uppercase tracking-widest text-white/80">
-            82 AGENCY
-          </div>
-          
           {/* Desktop Flag (Hidden on Mobile) */}
           <motion.img
             src="https://hatscripts.github.io/circle-flags/flags/kr.svg"
@@ -60,7 +60,7 @@ export default function KoreanFocusSection() {
           <h3 className="text-2xl md:text-4xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tight leading-[1.1] text-center">
             <span className="block">мы соединяем мировых блогеров</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500">
-              с русскоязычной аудиторией
+              с&nbsp;русскоязычной аудиторией
             </span>
           </h3>
           <motion.img
