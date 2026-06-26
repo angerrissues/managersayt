@@ -22,11 +22,11 @@ export default function Footer() {
               <span className="font-mono text-sm md:text-lg">+7 (919) 968-73-96</span>
             </a>
             
-            <a href="mailto:hello@82agency.com" className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group">
+            <a href="mailto:82agency@82agency.net" className="flex items-center gap-3 text-white/80 hover:text-white transition-colors group">
               <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors shrink-0">
                 <FaEnvelope className="text-white/60 group-hover:text-white text-sm md:text-base" />
               </div>
-              <span className="font-mono text-sm md:text-lg">hello@82agency.com</span>
+              <span className="font-mono text-sm md:text-lg">82agency@82agency.net</span>
             </a>
           </div>
         </div>
