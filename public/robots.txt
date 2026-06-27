@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://82agency.net/sitemap.xml

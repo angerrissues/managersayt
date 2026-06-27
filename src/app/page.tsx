@@ -96,6 +96,7 @@ export default function Home() {
         </div>
 
         <h1 ref={titleRef} className="text-[15vw] md:text-[12vw] font-black uppercase tracking-tighter leading-none text-center mix-blend-difference z-10">
+          <span className="sr-only">82Agency — рекламное агентство</span>
           <div className="overflow-hidden">{splitText("82")}</div>
           <div className="overflow-hidden">{splitText("AGENCY")}</div>
         </h1>

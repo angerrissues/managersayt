@@ -14,8 +14,8 @@ import BackgroundAudio from "@/components/ui/BackgroundAudio";
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "82 Agency | Рекламное агентство",
-  description: "Премиальное агентство по работе с медиа-личностями",
+  title: "82Agency | Маркетинговое агентство, реклама у блогеров",
+  description: "Премиальное агентство инфлюенс-маркетинга 82Agency. Выводим бренды на международный уровень. Закажите эффективную рекламу у топовых блогеров.",
 };
 
 export default function RootLayout({
