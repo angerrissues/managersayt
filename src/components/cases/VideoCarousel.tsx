@@ -5,20 +5,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function VideoCarousel({ videos }: { videos: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
-  // Play active video automatically, pause others
-  useEffect(() => {
-    videoRefs.current.forEach((video, index) => {
-      if (!video) return;
-      if (index === currentIndex) {
-        video.currentTime = 0;
-        video.play().catch(e => console.log("Autoplay prevented:", e));
-      } else {
-        video.pause();
-      }
-    });
-  }, [currentIndex]);
 
   const nextVideo = () => {
     setCurrentIndex((prev) => (prev === videos.length - 1 ? 0 : prev + 1));
@@ -42,30 +28,22 @@ export default function VideoCarousel({ videos }: { videos: string[] }) {
         </button>
 
         {/* Video Container - Strictly 9:16 format */}
-        <div className="relative w-full max-w-[280px] md:max-w-[340px] aspect-[9/16] max-h-[60vh] md:max-h-[70vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-          {videos.map((src, index) => (
-            <video
-              key={src}
-              ref={(el) => {
-                if (!videoRefs.current) {
-                  // @ts-ignore
-                  videoRefs.current = [];
-                }
-                // @ts-ignore
-                videoRefs.current[index] = el;
-              }}
-              src={src}
+        <div className="relative w-full max-w-[280px] md:max-w-[340px] aspect-[9/16] max-h-[60vh] md:max-h-[70vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.video
+              key={currentIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              src={videos[currentIndex]}
+              autoPlay
               playsInline
               muted
               loop
-              preload="metadata"
-              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 pointer-events-none"
-              style={{
-                opacity: index === currentIndex ? 1 : 0,
-                zIndex: index === currentIndex ? 10 : 0
-              }}
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
             />
-          ))}
+          </AnimatePresence>
         </div>
 
         {/* Next Button */}
