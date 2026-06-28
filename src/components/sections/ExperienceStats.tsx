@@ -1,7 +1,10 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getCases } from "@/actions/admin";
+import type { Case } from "@/types/case";
 
 const stats = [
   { value: "3", label: "года на рынке" },
@@ -11,6 +14,17 @@ const stats = [
 ];
 
 export default function ExperienceStats() {
+  const [cases, setCases] = useState<Case[]>([]);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
+  useEffect(() => {
+    getCases().then(res => {
+      const allCases = res as unknown as Case[];
+      // Filter out cases that have no coverImage
+      setCases(allCases.filter(c => c.coverImage));
+    });
+  }, []);
+
   return (
     <section className="py-16 md:py-32 px-4 md:px-6 bg-black relative z-20 border-t border-white/5">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20">
@@ -52,23 +66,68 @@ export default function ExperienceStats() {
 
         {/* Right Column - Stats Grid */}
         <div className="lg:w-2/3 grid grid-cols-2 gap-3 md:gap-8 lg:gap-12">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
-              className="p-5 md:p-10 bg-white/[0.02] border border-white/5 rounded-2xl md:rounded-3xl backdrop-blur-sm hover:bg-white/[0.05] transition-colors"
-            >
-              <div className="text-3xl md:text-6xl lg:text-8xl font-black mb-2 md:mb-4 text-white">
-                {stat.value}
-              </div>
-              <div className="text-sm md:text-xl lg:text-2xl text-white/50 uppercase tracking-tight font-medium">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
+          {stats.map((stat, index) => {
+            const isTargetCard = stat.value === "100+" && stat.label === "рекламных кампаний";
+            const isHovered = hoveredCard === stat.value;
+            
+            return (
+              <motion.div
+                layout
+                key={index}
+                onHoverStart={() => { if (isTargetCard) setHoveredCard(stat.value) }}
+                onHoverEnd={() => { if (isTargetCard) setHoveredCard(null) }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
+                className="p-5 md:p-10 bg-white/[0.02] border border-white/5 rounded-2xl md:rounded-3xl backdrop-blur-sm hover:bg-white/[0.05] transition-colors overflow-hidden flex flex-col justify-center"
+              >
+                <motion.div layout>
+                  <div className="text-3xl md:text-6xl lg:text-8xl font-black mb-2 md:mb-4 text-white">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm md:text-xl lg:text-2xl text-white/50 uppercase tracking-tight font-medium">
+                    {stat.label}
+                  </div>
+                </motion.div>
+
+                {isTargetCard && cases.length > 0 && (
+                  <AnimatePresence>
+                    {isHovered && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                        animate={{ opacity: 1, height: "auto", marginTop: 24 }}
+                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                      >
+                        <div className="flex overflow-hidden relative -mx-2 md:-mx-4 w-[calc(100%+16px)] md:w-[calc(100%+32px)] [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+                          <motion.div
+                            className="flex gap-3 md:gap-4 pr-3 md:pr-4"
+                            animate={{ x: ["0%", "-50%"] }}
+                            transition={{ repeat: Infinity, ease: "linear", duration: cases.length * 2 }}
+                          >
+                            {[...cases, ...cases, ...cases, ...cases].map((c, i) => (
+                              <div 
+                                key={i} 
+                                className="w-12 h-12 md:w-16 md:h-16 shrink-0 bg-white/5 rounded-xl overflow-hidden p-2 flex items-center justify-center border border-white/10"
+                              >
+                                <img 
+                                  src={c.coverImage!} 
+                                  alt={c.brand} 
+                                  className="w-full h-full object-contain"
+                                  style={c.removeWhiteBg || c.brand === 'Tornado Max Energy' ? { filter: 'grayscale(1) contrast(10) invert(1)', mixBlendMode: 'screen' } : {}}
+                                />
+                              </div>
+                            ))}
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
 
       </div>
