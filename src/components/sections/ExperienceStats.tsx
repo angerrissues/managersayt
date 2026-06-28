@@ -41,7 +41,7 @@ export default function ExperienceStats() {
       const vids = allCases.flatMap(c => c.videos || []);
       const uniqueVids = Array.from(new Set(vids));
       const shuffled = uniqueVids.sort(() => 0.5 - Math.random());
-      setRandomVideos(shuffled.slice(0, 8)); // Pick 8 random videos
+      setRandomVideos(shuffled.slice(0, 6)); // Reduce to 6 videos for better performance
     });
   }, []);
 
@@ -184,7 +184,7 @@ export default function ExperienceStats() {
                 animate={{ x: ["0%", "-50%"] }}
                 transition={{ repeat: Infinity, ease: "linear", duration: randomVideos.length * 4 }}
               >
-                {[...randomVideos, ...randomVideos, ...randomVideos, ...randomVideos].map((url, i) => {
+                {[...randomVideos, ...randomVideos, ...randomVideos].map((url, i) => {
                   const thumb = getYouTubeThumbnail(url);
                   return (
                     <div 
@@ -198,7 +198,7 @@ export default function ExperienceStats() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (
-                        <HoverVideo url={url} />
+                        <HoverVideo url={url} index={i} />
                       )}
                     </div>
                   );
@@ -212,9 +212,22 @@ export default function ExperienceStats() {
   );
 }
 
-function HoverVideo({ url }: { url: string }) {
+function HoverVideo({ url, index }: { url: string; index: number }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  // Stagger the loading of video metadata to prevent browser connection overload
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShouldLoad(true);
+    }, index * 200); // 200ms delay per video
+    return () => clearTimeout(timer);
+  }, [index]);
   
+  if (!shouldLoad) {
+    return <div className="w-full h-full bg-[#111] animate-pulse" />;
+  }
+
   return (
     <video
       ref={videoRef}
