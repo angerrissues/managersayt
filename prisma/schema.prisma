@@ -62,6 +62,7 @@ model Case {
   platforms   String[]
   bloggers    String[]
   coverImage  String?  @map("cover_image")
+  removeWhiteBg Boolean @default(false) @map("remove_white_bg")
   videos      String[]
   createdAt   DateTime @default(now()) @map("created_at")
 

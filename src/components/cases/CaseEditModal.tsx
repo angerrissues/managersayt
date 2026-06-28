@@ -325,7 +325,12 @@ export default function CaseEditModal({
             <h3 className="text-white font-bold uppercase w-full">Обложка (Превью)</h3>
             <div className="w-full aspect-video bg-black/50 rounded-xl overflow-hidden border border-white/20 relative group flex items-center justify-center">
               {formData.coverImage ? (
-                <img src={formData.coverImage} alt="Cover" className="w-full h-full object-contain" />
+                <img 
+                  src={formData.coverImage} 
+                  alt="Cover" 
+                  className="w-full h-full object-contain p-2" 
+                  style={formData.removeWhiteBg || formData.brand === 'Tornado Max Energy' ? { filter: 'grayscale(1) contrast(10) invert(1)', mixBlendMode: 'screen' } : {}}
+                />
               ) : (
                 <p className="text-white/30 text-sm">Нет обложки</p>
               )}
