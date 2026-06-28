@@ -10,4 +10,5 @@ export type Case = {
   coverImage?: string;
   removeWhiteBg?: boolean;
   videos: string[];
+  parentId?: string | null;
 };

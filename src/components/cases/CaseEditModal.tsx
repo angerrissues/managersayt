@@ -47,7 +47,9 @@ export default function CaseEditModal({
     platforms: caseData.platforms || [],
     bloggers: caseData.bloggers || [],
     coverImage: caseData.coverImage || "",
+    removeWhiteBg: caseData.removeWhiteBg || false,
     videos: caseData.videos || [],
+    parentId: caseData.parentId || null,
   });
 
   const [isSaving, setIsSaving] = useState(false);

@@ -3,13 +3,17 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CaseModal from "./CaseModal";
 import CaseEditModal from "./CaseEditModal";
+import CaseFolderModal from "./CaseFolderModal";
 import { useAdmin } from "@/components/shared/AdminProvider";
 import type { Case } from "@/types/case";
 
 export default function CasesGrid({ cases }: { cases: Case[] }) {
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<{parent: Case, children: Case[]} | null>(null);
   const [editingCase, setEditingCase] = useState<Partial<Case> | null>(null);
   const { isAdmin } = useAdmin();
+
+  const rootCases = cases.filter(c => !c.parentId);
 
   return (
     <>
@@ -24,7 +28,9 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-        {cases.map((item, i) => (
+        {rootCases.map((item, i) => {
+          const children = cases.filter(c => c.parentId === item.id);
+          return (
           <motion.div 
             key={item.id}
             initial={{ opacity: 0, y: 50 }}
@@ -32,7 +38,13 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
             className="group cursor-none relative"
-            onClick={() => setSelectedCase(item)}
+            onClick={() => {
+              if (children.length > 0) {
+                setSelectedFolder({ parent: item, children });
+              } else {
+                setSelectedCase(item);
+              }
+            }}
           >
             <div className="aspect-video bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden relative shadow-xl">
               <div className="absolute inset-0 transition-transform duration-[1.5s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 bg-white/5 flex items-center justify-center">
@@ -68,6 +80,15 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
                 <button 
                   onClick={(e) => { 
                     e.stopPropagation(); 
+                    setEditingCase({ parentId: item.id, agency: item.brand }); 
+                  }} 
+                  className="bg-green-600 hover:bg-green-500 text-white p-2 rounded-full shadow text-xs whitespace-nowrap"
+                >
+                  + Интеграция
+                </button>
+                <button 
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
                     setEditingCase(item); 
                   }} 
                   className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-full shadow"
@@ -90,11 +111,18 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
               </div>
             )}
           </motion.div>
-        ))}
+        )})}
       </div>
 
       <AnimatePresence>
-        {selectedCase && !editingCase && (
+        {selectedFolder && !editingCase && (
+          <CaseFolderModal 
+            parentCase={selectedFolder.parent} 
+            subCases={selectedFolder.children} 
+            onClose={() => setSelectedFolder(null)} 
+          />
+        )}
+        {selectedCase && !editingCase && !selectedFolder && (
           <CaseModal caseData={selectedCase} onClose={() => setSelectedCase(null)} />
         )}
         {editingCase && (
