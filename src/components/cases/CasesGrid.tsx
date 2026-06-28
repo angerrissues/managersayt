@@ -41,7 +41,7 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
                     src={item.coverImage} 
                     alt={item.brand} 
                     className="w-full h-full object-contain p-2 md:p-4" 
-                    style={item.brand === 'Tornado Max Energy' ? { filter: 'grayscale(1) contrast(10) invert(1)', mixBlendMode: 'screen' } : {}}
+                    style={item.removeWhiteBg || item.brand === 'Tornado Max Energy' ? { filter: 'grayscale(1) contrast(10) invert(1)', mixBlendMode: 'screen' } : {}}
                   />
                 ) : (
                   <span className="text-4xl font-black uppercase tracking-widest opacity-10">{item.brand}</span>

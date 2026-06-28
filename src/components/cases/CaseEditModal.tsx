@@ -340,6 +340,19 @@ export default function CaseEditModal({
                 <input type="file" ref={fileInputRef} onChange={handleUpload} accept="image/*" className="hidden" />
               </div>
             </div>
+            
+            <div className="flex items-center gap-2 mt-2 w-full justify-center">
+              <input 
+                type="checkbox" 
+                id="removeBg" 
+                className="w-4 h-4 cursor-pointer accent-red-500"
+                checked={!!formData.removeWhiteBg}
+                onChange={e => setFormData({ ...formData, removeWhiteBg: e.target.checked })}
+              />
+              <label htmlFor="removeBg" className="text-white/80 text-sm cursor-pointer select-none">
+                Сделать лого белым и убрать фон (как у Торнадо)
+              </label>
+            </div>
 
             {/* Videos */}
             <div className="bg-black/40 p-4 sm:p-5 border border-white/5 rounded-2xl w-full">

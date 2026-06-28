@@ -8,5 +8,6 @@ export type Case = {
   platforms: string[];
   bloggers: string[];
   coverImage?: string;
+  removeWhiteBg?: boolean;
   videos: string[];
 };
