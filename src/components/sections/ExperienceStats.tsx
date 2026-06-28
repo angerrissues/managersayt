@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getCases } from "@/actions/admin";
 import type { Case } from "@/types/case";
 
@@ -180,7 +180,7 @@ export default function ExperienceStats() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (
-                        <div className="text-white/30 text-xs text-center p-4">Видео</div>
+                        <HoverVideo url={url} />
                       )}
                     </a>
                   );
@@ -191,5 +191,28 @@ export default function ExperienceStats() {
         )}
       </AnimatePresence>
     </section>
+  );
+}
+
+function HoverVideo({ url }: { url: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  return (
+    <video
+      ref={videoRef}
+      src={`${url}#t=0.1`}
+      muted
+      playsInline
+      loop
+      preload="metadata"
+      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+      onMouseEnter={() => videoRef.current?.play().catch(() => {})}
+      onMouseLeave={() => {
+        if (videoRef.current) {
+          videoRef.current.pause();
+          videoRef.current.currentTime = 0.1;
+        }
+      }}
+    />
   );
 }
