@@ -96,20 +96,20 @@ export default function ExperienceStats() {
                     {isHovered && (
                       <motion.div
                         initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                        animate={{ opacity: 1, height: "auto", marginTop: 24 }}
+                        animate={{ opacity: 1, height: "auto", marginTop: 32 }}
                         exit={{ opacity: 0, height: 0, marginTop: 0 }}
                         transition={{ duration: 0.4, ease: "easeInOut" }}
                       >
                         <div className="flex overflow-hidden relative -mx-2 md:-mx-4 w-[calc(100%+16px)] md:w-[calc(100%+32px)] [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
                           <motion.div
-                            className="flex gap-3 md:gap-4 pr-3 md:pr-4"
+                            className="flex gap-4 md:gap-6 pr-4 md:pr-6"
                             animate={{ x: ["0%", "-50%"] }}
-                            transition={{ repeat: Infinity, ease: "linear", duration: cases.length * 2 }}
+                            transition={{ repeat: Infinity, ease: "linear", duration: cases.length * 3 }}
                           >
                             {[...cases, ...cases, ...cases, ...cases].map((c, i) => (
                               <div 
                                 key={i} 
-                                className="w-12 h-12 md:w-16 md:h-16 shrink-0 bg-white/5 rounded-xl overflow-hidden p-2 flex items-center justify-center border border-white/10"
+                                className="w-20 h-20 md:w-28 md:h-28 shrink-0 bg-white/5 rounded-2xl overflow-hidden p-3 md:p-5 flex items-center justify-center border border-white/10"
                               >
                                 <img 
                                   src={c.coverImage!} 
