@@ -1,8 +1,8 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowUpRight, X } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { ArrowUpRight } from "lucide-react";
+import { useEffect, useState } from "react";
 import { getCases } from "@/actions/admin";
 import type { Case } from "@/types/case";
 
@@ -31,6 +31,16 @@ export default function ExperienceStats() {
     }, 300);
   };
 
+  // Helper to compress Cloudinary videos on the fly
+  const optimizeCloudinaryVideo = (url: string) => {
+    if (!url.includes("cloudinary.com/")) return url;
+    if (url.includes("/upload/")) {
+      if (url.includes("/f_auto") || url.includes("/q_auto")) return url;
+      return url.replace("/upload/", "/upload/f_auto,q_auto/");
+    }
+    return url;
+  };
+
   useEffect(() => {
     getCases().then(res => {
       const allCases = res as unknown as Case[];
@@ -41,7 +51,7 @@ export default function ExperienceStats() {
       const vids = allCases.flatMap(c => c.videos || []);
       const uniqueVids = Array.from(new Set(vids));
       const shuffled = uniqueVids.sort(() => 0.5 - Math.random());
-      setRandomVideos(shuffled.slice(0, 6)); // Reduce to 6 videos for better performance
+      setRandomVideos(shuffled.slice(0, 8)); // Pick 8 random videos
     });
   }, []);
 
@@ -57,7 +67,7 @@ export default function ExperienceStats() {
   return (
     <section className="py-16 md:py-32 px-4 md:px-6 bg-black relative z-20 border-t border-white/5">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20">
-        
+
         {/* Left Column - Text content */}
         <div className="lg:w-1/3 flex flex-col justify-between">
           <motion.div
@@ -83,8 +93,8 @@ export default function ExperienceStats() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           >
-            <Link 
-              href="/cases" 
+            <Link
+              href="/cases"
               className="inline-flex items-center gap-3 px-6 py-3 md:px-8 md:py-4 bg-white text-black rounded-full font-bold uppercase tracking-wider text-xs md:text-sm hover:bg-gray-200 transition-colors cursor-none magnetic group"
             >
               Смотреть кейсы
@@ -98,18 +108,18 @@ export default function ExperienceStats() {
           {stats.map((stat, index) => {
             const isCampaignsCard = index === 2; // 100+ рекламных кампаний
             const isHovered = hoveredIndex === index;
-            
+
             return (
               <motion.div
                 layout
                 key={index}
                 onHoverStart={() => {
+                  setHoveredIndex(index);
                   if (index === 3) handleMouseEnter();
-                  else setHoveredIndex(index);
                 }}
                 onHoverEnd={() => {
+                  setHoveredIndex(null);
                   if (index === 3) handleMouseLeave();
-                  else setHoveredIndex(null);
                 }}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -142,13 +152,13 @@ export default function ExperienceStats() {
                             transition={{ repeat: Infinity, ease: "linear", duration: cases.length * 3 }}
                           >
                             {[...cases, ...cases, ...cases, ...cases].map((c, i) => (
-                              <div 
-                                key={i} 
+                              <div
+                                key={i}
                                 className="w-20 h-20 md:w-28 md:h-28 shrink-0 bg-white/5 rounded-2xl overflow-hidden p-3 md:p-5 flex items-center justify-center border border-white/10"
                               >
-                                <img 
-                                  src={c.coverImage!} 
-                                  alt={c.brand} 
+                                <img
+                                  src={c.coverImage!}
+                                  alt={c.brand}
                                   className="w-full h-full object-contain"
                                   style={c.removeWhiteBg || c.brand === 'Tornado Max Energy' ? { filter: 'grayscale(1) contrast(10) invert(1)', mixBlendMode: 'screen' } : {}}
                                 />
@@ -175,8 +185,8 @@ export default function ExperienceStats() {
             exit={{ height: 0, opacity: 0, marginTop: 0 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
             className="w-full overflow-hidden max-w-[1920px] mx-auto"
-            onHoverStart={handleMouseEnter}
-            onHoverEnd={handleMouseLeave}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <div className="flex overflow-hidden relative w-full [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
               <motion.div
@@ -186,6 +196,8 @@ export default function ExperienceStats() {
               >
                 {[...randomVideos, ...randomVideos, ...randomVideos].map((url, i) => {
                   const thumb = getYouTubeThumbnail(url);
+                  const optimizedUrl = optimizeCloudinaryVideo(url);
+                  
                   return (
                     <div 
                       key={i} 
@@ -198,7 +210,7 @@ export default function ExperienceStats() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (
-                        <HoverVideo url={url} index={i} />
+                        <HoverVideo url={optimizedUrl} index={i} />
                       )}
                     </div>
                   );

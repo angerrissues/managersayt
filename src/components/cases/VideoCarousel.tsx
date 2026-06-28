@@ -7,6 +7,16 @@ export default function VideoCarousel({ videos }: { videos: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
+  // Helper to compress Cloudinary videos on the fly
+  const optimizeCloudinaryVideo = (url: string) => {
+    if (!url.includes("cloudinary.com/")) return url;
+    if (url.includes("/upload/")) {
+      if (url.includes("/f_auto") || url.includes("/q_auto")) return url;
+      return url.replace("/upload/", "/upload/f_auto,q_auto/");
+    }
+    return url;
+  };
+
   // Play active video automatically, pause others
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
@@ -63,7 +73,7 @@ export default function VideoCarousel({ videos }: { videos: string[] }) {
                   // @ts-ignore
                   videoRefs.current[index] = el;
                 }}
-                src={src}
+                src={optimizeCloudinaryVideo(src)}
                 playsInline
                 muted
                 loop
