@@ -96,8 +96,13 @@ export default function CaseFolderModal({
                 </div>
 
                 <div className="mt-3">
-                  <h3 className="text-lg md:text-xl font-black uppercase tracking-tight text-white line-clamp-1">
+                  <h3 className="text-lg md:text-xl font-black uppercase tracking-tight text-white line-clamp-1 flex items-center gap-2">
                     {item.brand}
+                    {item.id === parentCase.id && (
+                      <span className="px-2 py-0.5 rounded-full border border-red-500/50 text-red-400 text-[8px] md:text-[10px] tracking-widest bg-red-500/10">
+                        ОСНОВНОЙ КЕЙС
+                      </span>
+                    )}
                   </h3>
                   <p className="text-white/60 mt-0.5 font-light text-xs md:text-sm line-clamp-1">
                     {item.lineup}
@@ -115,19 +120,21 @@ export default function CaseFolderModal({
                     >
                       Edit
                     </button>
-                    <button
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        if (confirm("Удалить интеграцию?")) {
-                          const { deleteCase } = await import("@/actions/admin");
-                          await deleteCase(item.id);
-                          window.location.reload();
-                        }
-                      }}
-                      className="bg-red-600 hover:bg-red-500 text-white p-1.5 md:p-2 rounded-full shadow text-xs"
-                    >
-                      Del
-                    </button>
+                    {item.id !== parentCase.id && (
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (confirm("Удалить интеграцию?")) {
+                            const { deleteCase } = await import("@/actions/admin");
+                            await deleteCase(item.id);
+                            window.location.reload();
+                          }
+                        }}
+                        className="bg-red-600 hover:bg-red-500 text-white p-1.5 md:p-2 rounded-full shadow text-xs"
+                      >
+                        Del
+                      </button>
+                    )}
                   </div>
                 )}
               </motion.div>

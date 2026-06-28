@@ -40,7 +40,8 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
             className="group cursor-none relative"
             onClick={() => {
               if (children.length > 0) {
-                setSelectedFolder({ parent: item, children });
+                const folderItems = (item.videos && item.videos.length > 0) ? [item, ...children] : children;
+                setSelectedFolder({ parent: item, children: folderItems });
               } else {
                 setSelectedCase(item);
               }
