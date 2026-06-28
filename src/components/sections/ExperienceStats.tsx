@@ -15,15 +15,31 @@ const stats = [
 
 export default function ExperienceStats() {
   const [cases, setCases] = useState<Case[]>([]);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [randomVideos, setRandomVideos] = useState<string[]>([]);
 
   useEffect(() => {
     getCases().then(res => {
       const allCases = res as unknown as Case[];
       // Filter out cases that have no coverImage
       setCases(allCases.filter(c => c.coverImage));
+
+      // Extract random videos
+      const vids = allCases.flatMap(c => c.videos || []);
+      const uniqueVids = Array.from(new Set(vids));
+      const shuffled = uniqueVids.sort(() => 0.5 - Math.random());
+      setRandomVideos(shuffled.slice(0, 8)); // Pick 8 random videos
     });
   }, []);
+
+  const getYouTubeThumbnail = (url: string) => {
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      return `https://i.ytimg.com/vi/${match[2]}/maxresdefault.jpg`;
+    }
+    return null;
+  };
 
   return (
     <section className="py-16 md:py-32 px-4 md:px-6 bg-black relative z-20 border-t border-white/5">
@@ -67,20 +83,20 @@ export default function ExperienceStats() {
         {/* Right Column - Stats Grid */}
         <div className="lg:w-2/3 grid grid-cols-2 gap-3 md:gap-8 lg:gap-12">
           {stats.map((stat, index) => {
-            const isTargetCard = stat.value === "100+" && stat.label === "рекламных кампаний";
-            const isHovered = hoveredCard === stat.value;
+            const isCampaignsCard = index === 2; // 100+ рекламных кампаний
+            const isHovered = hoveredIndex === index;
             
             return (
               <motion.div
                 layout
                 key={index}
-                onHoverStart={() => { if (isTargetCard) setHoveredCard(stat.value) }}
-                onHoverEnd={() => { if (isTargetCard) setHoveredCard(null) }}
+                onHoverStart={() => setHoveredIndex(index)}
+                onHoverEnd={() => setHoveredIndex(null)}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
-                className="p-5 md:p-10 bg-white/[0.02] border border-white/5 rounded-2xl md:rounded-3xl backdrop-blur-sm hover:bg-white/[0.05] transition-colors overflow-hidden flex flex-col justify-center"
+                className="p-5 md:p-10 bg-white/[0.02] border border-white/5 rounded-2xl md:rounded-3xl backdrop-blur-sm hover:bg-white/[0.05] transition-colors overflow-hidden flex flex-col justify-center cursor-default"
               >
                 <motion.div layout>
                   <div className="text-3xl md:text-6xl lg:text-8xl font-black mb-2 md:mb-4 text-white">
@@ -91,7 +107,7 @@ export default function ExperienceStats() {
                   </div>
                 </motion.div>
 
-                {isTargetCard && cases.length > 0 && (
+                {isCampaignsCard && cases.length > 0 && (
                   <AnimatePresence>
                     {isHovered && (
                       <motion.div
@@ -129,8 +145,51 @@ export default function ExperienceStats() {
             );
           })}
         </div>
-
       </div>
+
+      {/* Full width Video Marquee for "100+ миллионов охватов" (index 3) */}
+      <AnimatePresence>
+        {hoveredIndex === 3 && randomVideos.length > 0 && (
+          <motion.div
+            initial={{ height: 0, opacity: 0, marginTop: 0 }}
+            animate={{ height: "auto", opacity: 1, marginTop: 40 }}
+            exit={{ height: 0, opacity: 0, marginTop: 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="w-full overflow-hidden max-w-[1920px] mx-auto"
+          >
+            <div className="flex overflow-hidden relative w-full [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
+              <motion.div
+                className="flex gap-4 md:gap-6 pr-4 md:pr-6"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ repeat: Infinity, ease: "linear", duration: randomVideos.length * 4 }}
+              >
+                {[...randomVideos, ...randomVideos, ...randomVideos, ...randomVideos].map((url, i) => {
+                  const thumb = getYouTubeThumbnail(url);
+                  return (
+                    <a 
+                      href={url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      key={i} 
+                      className="w-40 h-[284px] md:w-64 md:h-[455px] shrink-0 bg-[#0a0a0a] rounded-2xl md:rounded-3xl overflow-hidden flex items-center justify-center border border-white/10 group cursor-pointer"
+                    >
+                      {thumb ? (
+                        <img 
+                          src={thumb} 
+                          alt="Video thumbnail" 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="text-white/30 text-xs text-center p-4">Видео</div>
+                      )}
+                    </a>
+                  );
+                })}
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
