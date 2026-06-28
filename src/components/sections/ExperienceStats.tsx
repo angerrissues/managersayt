@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, X } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { getCases } from "@/actions/admin";
 import type { Case } from "@/types/case";
@@ -17,6 +17,20 @@ export default function ExperienceStats() {
   const [cases, setCases] = useState<Case[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [randomVideos, setRandomVideos] = useState<string[]>([]);
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
+  
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setHoveredIndex(3);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredIndex(null);
+    }, 300);
+  };
 
   useEffect(() => {
     getCases().then(res => {
@@ -90,8 +104,14 @@ export default function ExperienceStats() {
               <motion.div
                 layout
                 key={index}
-                onHoverStart={() => setHoveredIndex(index)}
-                onHoverEnd={() => setHoveredIndex(null)}
+                onHoverStart={() => {
+                  if (index === 3) handleMouseEnter();
+                  else setHoveredIndex(index);
+                }}
+                onHoverEnd={() => {
+                  if (index === 3) handleMouseLeave();
+                  else setHoveredIndex(null);
+                }}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
@@ -149,29 +169,30 @@ export default function ExperienceStats() {
 
       {/* Full width Video Marquee for "100+ миллионов охватов" (index 3) */}
       <AnimatePresence>
-        {hoveredIndex === 3 && randomVideos.length > 0 && (
+        {(hoveredIndex === 3 || activeVideoUrl) && randomVideos.length > 0 && (
           <motion.div
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
             animate={{ height: "auto", opacity: 1, marginTop: 40 }}
             exit={{ height: 0, opacity: 0, marginTop: 0 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
             className="w-full overflow-hidden max-w-[1920px] mx-auto"
+            onHoverStart={handleMouseEnter}
+            onHoverEnd={handleMouseLeave}
           >
             <div className="flex overflow-hidden relative w-full [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]">
               <motion.div
                 className="flex gap-4 md:gap-6 pr-4 md:pr-6"
-                animate={{ x: ["0%", "-50%"] }}
+                animate={activeVideoUrl ? { x: "0%" } : { x: ["0%", "-50%"] }}
                 transition={{ repeat: Infinity, ease: "linear", duration: randomVideos.length * 4 }}
+                style={{ animationPlayState: activeVideoUrl ? "paused" : "running" }}
               >
                 {[...randomVideos, ...randomVideos, ...randomVideos, ...randomVideos].map((url, i) => {
                   const thumb = getYouTubeThumbnail(url);
                   return (
-                    <a 
-                      href={url} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <div 
                       key={i} 
-                      className="w-40 h-[284px] md:w-64 md:h-[455px] shrink-0 bg-[#0a0a0a] rounded-2xl md:rounded-3xl overflow-hidden flex items-center justify-center border border-white/10 group cursor-pointer"
+                      onClick={() => setActiveVideoUrl(url)}
+                      className="w-40 h-[284px] md:w-64 md:h-[455px] shrink-0 bg-[#0a0a0a] rounded-2xl md:rounded-3xl overflow-hidden flex items-center justify-center border border-white/10 group cursor-pointer relative"
                     >
                       {thumb ? (
                         <img 
@@ -180,9 +201,9 @@ export default function ExperienceStats() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (
-                        <HoverVideo url={url} />
+                        <HoverVideo url={url} isActiveModalOpen={!!activeVideoUrl} />
                       )}
-                    </a>
+                    </div>
                   );
                 })}
               </motion.div>
@@ -190,12 +211,65 @@ export default function ExperienceStats() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Fullscreen Video Modal */}
+      <AnimatePresence>
+        {activeVideoUrl && (
+          <VideoModal url={activeVideoUrl} onClose={() => setActiveVideoUrl(null)} />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
 
-function HoverVideo({ url }: { url: string }) {
+function VideoModal({ url, onClose }: { url: string; onClose: () => void }) {
+  // Lock body scroll
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8 cursor-pointer"
+      onClick={onClose}
+    >
+      <button 
+        onClick={onClose}
+        className="absolute top-4 right-4 md:top-8 md:right-8 text-white p-3 md:p-4 bg-white/10 hover:bg-white/20 rounded-full transition-colors cursor-pointer z-10"
+      >
+        <X size={24} />
+      </button>
+
+      <div 
+        className="relative w-full max-w-[340px] md:max-w-[450px] aspect-[9/16] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center cursor-default"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <video 
+          src={url} 
+          autoPlay 
+          controls 
+          className="w-full h-full object-cover" 
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+function HoverVideo({ url, isActiveModalOpen }: { url: string; isActiveModalOpen?: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  
+  // Pause automatically if modal is opened
+  useEffect(() => {
+    if (isActiveModalOpen && videoRef.current) {
+      videoRef.current.pause();
+    }
+  }, [isActiveModalOpen]);
   
   return (
     <video
