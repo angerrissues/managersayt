@@ -5,6 +5,36 @@ import BloggerGrid from "@/components/bloggers/BloggerGrid";
 import type { Blogger } from "@/types/blogger";
 
 export default function BlogersPageClient({ bloggers, mode = "default" }: { bloggers: Blogger[], mode?: "default" | "statistics" }) {
+  // Helpers for sorting by TikTok followers
+  const parseFollowers = (value?: string): number => {
+    if (!value) return 0;
+    let str = value.replace(/\s+/g, '').replace(',', '.').toLowerCase();
+    
+    let multiplier = 1;
+    if (str.includes('k') || str.includes('к')) multiplier = 1000;
+    else if (str.includes('m') || str.includes('м')) multiplier = 1000000;
+    
+    const numMatch = str.match(/[\d.]+/);
+    if (!numMatch) return 0;
+    
+    const num = parseFloat(numMatch[0]);
+    return isNaN(num) ? 0 : num * multiplier;
+  };
+
+  const getTikTokFollowers = (blogger: Blogger): number => {
+    if (!blogger.socials) return 0;
+    let maxFollowers = 0;
+    for (const [key, social] of Object.entries(blogger.socials)) {
+      if (key.toLowerCase().startsWith('tiktok') && social.followers) {
+        const followers = parseFollowers(social.followers);
+        if (followers > maxFollowers) maxFollowers = followers;
+      }
+    }
+    return maxFollowers;
+  };
+
+  const sortedBloggers = [...bloggers].sort((a, b) => getTikTokFollowers(b) - getTikTokFollowers(a));
+
   return (
     <main className="min-h-screen pt-24 md:pt-40 px-4 md:px-6 bg-black text-white">
       <div className="max-w-7xl mx-auto pb-20">
@@ -52,7 +82,7 @@ export default function BlogersPageClient({ bloggers, mode = "default" }: { blog
           </motion.div>
         )}
         
-        <BloggerGrid bloggers={bloggers} mode={mode} />
+        <BloggerGrid bloggers={sortedBloggers} mode={mode} />
       </div>
     </main>
   );
