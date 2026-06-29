@@ -389,6 +389,13 @@ export default function CaseEditModal({
                         const newUrls: string[] = [];
                   
                         for (const file of files) {
+                          // Check file size (100MB limit for standard Cloudinary upload)
+                          const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
+                          if (file.size > MAX_SIZE) {
+                            alert(`Видео "${file.name}" слишком большое (${(file.size / 1024 / 1024).toFixed(1)} МБ).\n\nМаксимальный размер — 100 МБ. Телефоны часто снимают в очень высоком качестве (4K), из-за чего файлы получаются огромными.\n\nПожалуйста, сожмите видео или скиньте его в Telegram (сжав) и скачайте обратно, либо загрузите с компьютера.`);
+                            continue;
+                          }
+
                           const uploadData = new FormData();
                           uploadData.append("file", file);
                           uploadData.append("api_key", apiKey!);
