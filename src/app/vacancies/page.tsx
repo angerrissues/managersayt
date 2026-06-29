@@ -52,6 +52,49 @@ function AdvantageCard({ adv, index, isEven }: { adv: any, index: number, isEven
   );
 }
 
+function MotivationalText() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const xLeft = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], ["-30%", "0%", "0%", "-30%"]);
+  const xRight = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], ["30%", "0%", "0%", "30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.1, 1, 1, 0.1]);
+  const scale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.8, 1, 1, 0.8]);
+
+  const xLeftFinal = !isMounted || isMobile ? "0%" : xLeft;
+  const xRightFinal = !isMounted || isMobile ? "0%" : xRight;
+
+  return (
+    <div ref={containerRef} className="text-center mt-32 mb-10 overflow-hidden">
+      <motion.div style={{ x: xLeftFinal, opacity, scale }}>
+        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6 leading-tight">
+          Меньше рутины. <br className="md:hidden" />Больше свободы.
+        </h2>
+      </motion.div>
+      
+      <motion.div style={{ x: xRightFinal, opacity, scale }}>
+        <p className="text-xl md:text-2xl text-white/50 font-light max-w-3xl mx-auto leading-relaxed">
+          Выбирая <span className="text-white font-medium">82 Agency</span>, вы выбираете абсолютный комфорт и масштаб. Оставьте операционку нам, а сами занимайтесь тем, что по-настоящему любите.
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
 export default function VacanciesPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -119,31 +162,7 @@ export default function VacanciesPage() {
         </div>
 
         {/* Мотивирующая фраза */}
-        <div className="text-center mt-32 mb-10 overflow-hidden">
-          <div>
-            <motion.h2 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6 leading-tight"
-            >
-              Меньше рутины. <br className="md:hidden" />Больше свободы.
-            </motion.h2>
-          </div>
-          
-          <div>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl md:text-2xl text-white/50 font-light max-w-3xl mx-auto leading-relaxed"
-            >
-              Выбирая <span className="text-white font-medium">82 Agency</span>, вы выбираете абсолютный комфорт и масштаб. Оставьте операционку нам, а сами занимайтесь тем, что по-настоящему любите.
-            </motion.p>
-          </div>
-        </div>
+        <MotivationalText />
       </div>
       
       {/* Форма заявки */}
