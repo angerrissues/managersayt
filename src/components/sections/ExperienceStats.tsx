@@ -197,6 +197,7 @@ export default function ExperienceStats() {
                 {[...randomVideos, ...randomVideos, ...randomVideos].map((url, i) => {
                   const thumb = getYouTubeThumbnail(url);
                   const optimizedUrl = optimizeCloudinaryVideo(url);
+                  const isImage = /\.(jpe?g|png|webp|gif|avif)$/i.test(url) || url.includes('/image/upload/');
                   
                   return (
                     <div 
@@ -207,6 +208,12 @@ export default function ExperienceStats() {
                         <img 
                           src={thumb} 
                           alt="Video thumbnail" 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : isImage ? (
+                        <img 
+                          src={optimizedUrl} 
+                          alt="Media thumbnail" 
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (

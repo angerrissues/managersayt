@@ -361,18 +361,18 @@ export default function CaseEditModal({
               </label>
             </div>
 
-            {/* Videos */}
+            {/* Media */}
             <div className="bg-black/40 p-4 sm:p-5 border border-white/5 rounded-2xl w-full">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xs sm:text-sm font-bold text-white tracking-widest uppercase">
-                  ВИДЕО КЕЙСА (MP4 / SHORTS / REELS)
+                  МЕДИА КЕЙСА (ВИДЕО И ФОТО)
                 </h3>
                 <label className="cursor-pointer bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2">
                   <Upload className="w-3.5 h-3.5" />
-                  Загрузить видео
+                  Загрузить файлы
                   <input 
                     type="file" 
-                    accept="video/*" 
+                    accept="video/*,image/*" 
                     multiple
                     className="hidden" 
                     onChange={async (e) => {
@@ -392,7 +392,7 @@ export default function CaseEditModal({
                           // Check file size (100MB limit for standard Cloudinary upload)
                           const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
                           if (file.size > MAX_SIZE) {
-                            alert(`Видео "${file.name}" слишком большое (${(file.size / 1024 / 1024).toFixed(1)} МБ).\n\nМаксимальный размер — 100 МБ. Телефоны часто снимают в очень высоком качестве (4K), из-за чего файлы получаются огромными.\n\nПожалуйста, сожмите видео или скиньте его в Telegram (сжав) и скачайте обратно, либо загрузите с компьютера.`);
+                            alert(`Файл "${file.name}" слишком большой (${(file.size / 1024 / 1024).toFixed(1)} МБ).\n\nМаксимальный размер — 100 МБ.\n\nПожалуйста, сожмите файл или загрузите с компьютера.`);
                             continue;
                           }
 
@@ -420,7 +420,7 @@ export default function CaseEditModal({
                           setFormData(prev => ({ ...prev, videos: [...(prev.videos || []), ...newUrls] }));
                         }
                       } catch (err) {
-                        alert("Ошибка при загрузке видео: " + err);
+                        alert("Ошибка при загрузке файлов: " + err);
                       } finally {
                         setIsUploading(false);
                         if (e.target) e.target.value = '';

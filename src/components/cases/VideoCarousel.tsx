@@ -62,6 +62,25 @@ export default function VideoCarousel({ videos }: { videos: string[] }) {
         <div className="relative w-full max-w-[280px] md:max-w-[340px] aspect-[9/16] max-h-[60vh] md:max-h-[70vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center">
           {videos.map((src, index) => {
             if (!uniqueIndicesToRender.includes(index)) return null;
+            
+            const isImage = /\.(jpe?g|png|webp|gif|avif)$/i.test(src) || src.includes('/image/upload/');
+            const optimizedSrc = optimizeCloudinaryVideo(src);
+
+            if (isImage) {
+              return (
+                <img
+                  key={src}
+                  src={optimizedSrc}
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 pointer-events-none"
+                  style={{
+                    opacity: index === currentIndex ? 1 : 0,
+                    zIndex: index === currentIndex ? 10 : 0
+                  }}
+                  alt="Media"
+                />
+              );
+            }
+
             return (
               <video
                 key={src}
@@ -73,7 +92,7 @@ export default function VideoCarousel({ videos }: { videos: string[] }) {
                   // @ts-ignore
                   videoRefs.current[index] = el;
                 }}
-                src={optimizeCloudinaryVideo(src)}
+                src={optimizedSrc}
                 playsInline
                 muted
                 loop
