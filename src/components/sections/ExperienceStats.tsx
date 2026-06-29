@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getCases } from "@/actions/admin";
 import type { Case } from "@/types/case";
 
