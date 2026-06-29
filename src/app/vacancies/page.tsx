@@ -120,7 +120,7 @@ export default function VacanciesPage() {
 
         {/* Мотивирующая фраза */}
         <div className="text-center mt-32 mb-10 overflow-hidden">
-          <motion.div style={{ x: xLeft, opacity: fadeOut }}>
+          <div>
             <motion.h2 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -130,9 +130,9 @@ export default function VacanciesPage() {
             >
               Меньше рутины. <br className="md:hidden" />Больше свободы.
             </motion.h2>
-          </motion.div>
+          </div>
           
-          <motion.div style={{ x: xRight, opacity: fadeOut }}>
+          <div>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -142,7 +142,7 @@ export default function VacanciesPage() {
             >
               Выбирая <span className="text-white font-medium">82 Agency</span>, вы выбираете абсолютный комфорт и масштаб. Оставьте операционку нам, а сами занимайтесь тем, что по-настоящему любите.
             </motion.p>
-          </motion.div>
+          </div>
         </div>
       </div>
       
