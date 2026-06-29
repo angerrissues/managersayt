@@ -3,17 +3,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { getCases } from "@/actions/admin";
 import type { Case } from "@/types/case";
 
 const stats = [
   { value: "3", label: "года на рынке" },
-  { value: "30", label: "эксклюзивных инфлюенсеров" },
-  { value: "100+", label: "рекламных кампаний" },
-  { value: "100+", label: "миллионов охватов" },
+  { value: "30", label: "эксклюзивных инфлюенсеров", linkMobile: "/blogers" },
+  { value: "100+", label: "рекламных кампаний", linkMobile: "/cases" },
+  { value: "100+", label: "миллионов охватов", linkMobile: "/blogers" },
 ];
 
 export default function ExperienceStats() {
+  const router = useRouter();
   const [cases, setCases] = useState<Case[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [randomVideos, setRandomVideos] = useState<string[]>([]);
@@ -120,6 +122,11 @@ export default function ExperienceStats() {
                 onHoverEnd={() => {
                   setHoveredIndex(null);
                   if (index === 3) handleMouseLeave();
+                }}
+                onClick={() => {
+                  if (stat.linkMobile && window.innerWidth < 768) {
+                    router.push(stat.linkMobile);
+                  }
                 }}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
