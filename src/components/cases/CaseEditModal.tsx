@@ -54,6 +54,63 @@ export default function CaseEditModal({
 
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
+  const [videoQueue, setVideoQueue] = useState<{file: File, index: number, total: number}[]>([]);
+  const [processedFiles, setProcessedFiles] = useState<{file: File, transformation?: string}[]>([]);
+
+  const startUpload = async (filesToUpload: {file: File, transformation?: string}[]) => {
+    setIsUploading(true);
+    const newUrls: string[] = [];
+
+    for (const item of filesToUpload) {
+      const { file, transformation } = item;
+      const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
+      if (file.size > MAX_SIZE) {
+        alert(`Файл "${file.name}" слишком большой (${(file.size / 1024 / 1024).toFixed(1)} МБ).\n\nМаксимальный размер — 100 МБ.\n\nПожалуйста, сожмите файл или загрузите с компьютера.`);
+        continue;
+      }
+
+      try {
+        const params = transformation ? { transformation } : {};
+        const signatureData = await getCloudinarySignature(params);
+        if (signatureData.error) throw new Error(signatureData.error);
+        const { signature, timestamp, apiKey, cloudName } = signatureData;
+
+        const uploadData = new FormData();
+        uploadData.append("file", file);
+        uploadData.append("api_key", apiKey!);
+        uploadData.append("timestamp", timestamp!.toString());
+        uploadData.append("signature", signature!);
+        uploadData.append("folder", "manager_sayt");
+        if (transformation) {
+          uploadData.append("transformation", transformation);
+        }
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+          method: "POST",
+          body: uploadData,
+        });
+        
+        const result = await res.json();
+        if (res.ok && result.secure_url) {
+          newUrls.push(result.secure_url);
+        } else {
+          alert(`Ошибка загрузки ${file.name}: ` + (result.error?.message || "Cloudinary error"));
+        }
+      } catch (err) {
+        alert("Ошибка при загрузке файлов: " + err);
+      }
+    }
+
+    if (newUrls.length > 0) {
+      setFormData(prev => ({ ...prev, videos: [...(prev.videos || []), ...newUrls] }));
+    }
+    
+    setIsUploading(false);
+    setProcessedFiles([]);
+    if (mediaInputRef.current) mediaInputRef.current.value = '';
+  };
   const [allBloggers, setAllBloggers] = useState<Blogger[]>([]);
   const [bloggerInput, setBloggerInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -372,58 +429,36 @@ export default function CaseEditModal({
                   Загрузить файлы
                   <input 
                     type="file" 
+                    ref={mediaInputRef}
                     accept="video/*,image/*" 
                     multiple
                     className="hidden" 
-                    onChange={async (e) => {
+                    onChange={(e) => {
                       const files = Array.from(e.target.files || []);
                       if (!files.length) return;
                       
-                      try {
-                        setIsUploading(true);
-                  
-                        const signatureData = await getCloudinarySignature();
-                        if (signatureData.error) throw new Error(signatureData.error);
-                        const { signature, timestamp, apiKey, cloudName } = signatureData;
-                  
-                        const newUrls: string[] = [];
-                  
-                        for (const file of files) {
-                          // Check file size (100MB limit for standard Cloudinary upload)
-                          const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
-                          if (file.size > MAX_SIZE) {
-                            alert(`Файл "${file.name}" слишком большой (${(file.size / 1024 / 1024).toFixed(1)} МБ).\n\nМаксимальный размер — 100 МБ.\n\nПожалуйста, сожмите файл или загрузите с компьютера.`);
-                            continue;
-                          }
-
-                          const uploadData = new FormData();
-                          uploadData.append("file", file);
-                          uploadData.append("api_key", apiKey!);
-                          uploadData.append("timestamp", timestamp!.toString());
-                          uploadData.append("signature", signature!);
-                          uploadData.append("folder", "manager_sayt");
-                          
-                          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
-                            method: "POST",
-                            body: uploadData,
-                          });
-                          
-                          const result = await res.json();
-                          if (res.ok && result.secure_url) {
-                            newUrls.push(result.secure_url);
-                          } else {
-                            alert(`Ошибка загрузки ${file.name}: ` + (result.error?.message || "Cloudinary error"));
-                          }
+                      const images: {file: File}[] = [];
+                      const videos: {file: File, index: number, total: number}[] = [];
+                      
+                      let videoCount = 0;
+                      for (const f of files) {
+                        if (f.type.startsWith('video/')) videoCount++;
+                      }
+                    
+                      let currentVideoIndex = 1;
+                      for (const f of files) {
+                        if (f.type.startsWith('video/')) {
+                          videos.push({ file: f, index: currentVideoIndex++, total: videoCount });
+                        } else {
+                          images.push({ file: f });
                         }
-                  
-                        if (newUrls.length > 0) {
-                          setFormData(prev => ({ ...prev, videos: [...(prev.videos || []), ...newUrls] }));
-                        }
-                      } catch (err) {
-                        alert("Ошибка при загрузке файлов: " + err);
-                      } finally {
-                        setIsUploading(false);
-                        if (e.target) e.target.value = '';
+                      }
+                    
+                      setProcessedFiles(images);
+                      setVideoQueue(videos);
+                      
+                      if (videos.length === 0) {
+                        startUpload(images);
                       }
                     }}
                   />
@@ -442,6 +477,142 @@ export default function CaseEditModal({
           </div>
         </div>
       </motion.div>
+
+      {videoQueue.length > 0 && (
+        <VideoTrimmerModal 
+          file={videoQueue[0].file}
+          index={videoQueue[0].index}
+          total={videoQueue[0].total}
+          onSave={(start, end) => {
+            const nextQueue = videoQueue.slice(1);
+            const nextProcessed = [...processedFiles, { file: videoQueue[0].file, transformation: `so_${start.toFixed(2)},eo_${end.toFixed(2)}` }];
+            setVideoQueue(nextQueue);
+            setProcessedFiles(nextProcessed);
+            if (nextQueue.length === 0) startUpload(nextProcessed);
+          }}
+          onSkip={() => {
+            const nextQueue = videoQueue.slice(1);
+            const nextProcessed = [...processedFiles, { file: videoQueue[0].file }];
+            setVideoQueue(nextQueue);
+            setProcessedFiles(nextProcessed);
+            if (nextQueue.length === 0) startUpload(nextProcessed);
+          }}
+        />
+      )}
+
     </motion.div>
+  );
+}
+
+function VideoTrimmerModal({ 
+  file, 
+  index, 
+  total, 
+  onSave, 
+  onSkip 
+}: { 
+  file: File, 
+  index: number, 
+  total: number, 
+  onSave: (startTime: number, endTime: number) => void,
+  onSkip: () => void 
+}) {
+  const [url, setUrl] = useState<string>("");
+  const [duration, setDuration] = useState<number>(0);
+  const [startTime, setStartTime] = useState<number>(0);
+  const [endTime, setEndTime] = useState<number>(100);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(file);
+    setUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+      setEndTime(videoRef.current.duration);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm">
+      <div className="bg-[#111] p-6 rounded-3xl w-full max-w-2xl flex flex-col gap-6 border border-white/10 shadow-2xl">
+        <div className="flex justify-between items-center">
+          <h3 className="text-white font-bold tracking-widest text-sm">ОБРЕЗКА ВИДЕО ({index} ИЗ {total})</h3>
+          <button onClick={onSkip} className="text-white/50 hover:text-white text-sm transition-colors">Пропустить</button>
+        </div>
+        
+        {url && (
+          <video 
+            ref={videoRef}
+            src={url} 
+            controls 
+            playsInline
+            className="w-full max-h-[50vh] rounded-xl object-contain bg-black"
+            onLoadedMetadata={handleLoadedMetadata}
+          />
+        )}
+        
+        {duration > 0 && (
+          <div className="flex flex-col gap-6 text-white/80 text-sm bg-white/5 p-4 rounded-2xl border border-white/5">
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between">
+                <label className="font-semibold">Начало</label>
+                <span>{startTime.toFixed(1)} сек</span>
+              </div>
+              <input 
+                type="range" 
+                min={0} 
+                max={duration} 
+                step={0.1} 
+                value={startTime} 
+                className="w-full accent-red-500"
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (val < endTime) setStartTime(val);
+                  if (videoRef.current) videoRef.current.currentTime = val;
+                }} 
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between">
+                <label className="font-semibold">Конец</label>
+                <span>{endTime.toFixed(1)} сек</span>
+              </div>
+              <input 
+                type="range" 
+                min={0} 
+                max={duration} 
+                step={0.1} 
+                value={endTime} 
+                className="w-full accent-red-500"
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (val > startTime) setEndTime(val);
+                  if (videoRef.current) videoRef.current.currentTime = val;
+                }} 
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-3 mt-2">
+          <button 
+            onClick={onSkip} 
+            className="px-5 py-2.5 rounded-xl border border-white/20 text-white hover:bg-white/10 transition-colors text-sm font-semibold"
+          >
+            Без обрезки
+          </button>
+          <button 
+            onClick={() => onSave(startTime, endTime)} 
+            className="px-5 py-2.5 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-colors text-sm font-semibold shadow-lg shadow-red-500/20"
+          >
+            Обрезать и Загрузить
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

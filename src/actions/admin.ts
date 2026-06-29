@@ -95,13 +95,13 @@ export async function deleteCase(id: string) {
 
 // -- CLOUDINARY UPLOAD --
 
-export async function getCloudinarySignature() {
+export async function getCloudinarySignature(params: Record<string, string> = {}) {
   const isAdmin = await checkIsAdmin();
   if (!isAdmin) return { error: "Unauthorized" };
 
   const timestamp = Math.round(new Date().getTime() / 1000);
   const signature = cloudinary.utils.api_sign_request(
-    { timestamp, folder: "manager_sayt" },
+    { timestamp, folder: "manager_sayt", ...params },
     process.env.CLOUDINARY_API_SECRET!
   );
 
