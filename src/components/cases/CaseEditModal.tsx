@@ -114,7 +114,7 @@ export default function CaseEditModal({
   const [allBloggers, setAllBloggers] = useState<Blogger[]>([]);
   const [bloggerInput, setBloggerInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
