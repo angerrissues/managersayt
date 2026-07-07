@@ -58,6 +58,41 @@ export default function CaseEditModal({
   const mediaInputRef = useRef<HTMLInputElement>(null);
   const [videoQueue, setVideoQueue] = useState<{file: File, index: number, total: number}[]>([]);
   const [processedFiles, setProcessedFiles] = useState<{file: File, transformation?: string}[]>([]);
+  const [hasCopiedData, setHasCopiedData] = useState(false);
+  const [backupData, setBackupData] = useState<Partial<Case> | null>(null);
+  const [isPasted, setIsPasted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const data = localStorage.getItem("agency82_copied_case");
+      if (data) setHasCopiedData(true);
+    }
+  }, []);
+
+  const handlePaste = () => {
+    try {
+      const dataStr = localStorage.getItem("agency82_copied_case");
+      if (!dataStr) return;
+      const copied = JSON.parse(dataStr);
+      setBackupData(formData);
+      setFormData({
+        ...copied,
+        id: formData.id,
+        parentId: formData.parentId,
+      });
+      setIsPasted(true);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleUndoPaste = () => {
+    if (backupData) {
+      setFormData(backupData);
+      setIsPasted(false);
+      setBackupData(null);
+    }
+  };
 
   const startUpload = async (filesToUpload: {file: File, transformation?: string}[]) => {
     setIsUploading(true);
@@ -235,6 +270,26 @@ export default function CaseEditModal({
         >
           <X size={24} />
         </button>
+
+        {hasCopiedData && (
+          <div className="absolute top-3 left-3 md:top-6 md:left-6 z-50">
+            {isPasted ? (
+              <button 
+                onClick={handleUndoPaste}
+                className="bg-red-600/80 hover:bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow transition-colors"
+              >
+                Отменить изменения
+              </button>
+            ) : (
+              <button 
+                onClick={handlePaste}
+                className="bg-purple-600/80 hover:bg-purple-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow transition-colors"
+              >
+                Вставить скопированные данные
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Left Side: Info */}
         <div className="lg:w-1/2 flex flex-col justify-center gap-4">

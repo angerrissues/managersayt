@@ -11,6 +11,7 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const [selectedFolder, setSelectedFolder] = useState<{parent: Case, children: Case[]} | null>(null);
   const [editingCase, setEditingCase] = useState<Partial<Case> | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const { isAdmin } = useAdmin();
 
   const rootCases = cases.filter(c => !c.parentId);
@@ -96,7 +97,24 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
                 >
                   Edit
                 </button>
-                <button 
+                {copiedId === item.id ? (
+                  <button className="bg-purple-600 text-white p-2 rounded-full shadow cursor-default" onClick={e => e.stopPropagation()}>
+                    ✓ Copied
+                  </button>
+                ) : (
+                  <button 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      localStorage.setItem('agency82_copied_case', JSON.stringify(item));
+                      setCopiedId(item.id);
+                      setTimeout(() => setCopiedId(null), 3000);
+                    }} 
+                    className="bg-purple-600 hover:bg-purple-500 text-white p-2 rounded-full shadow"
+                  >
+                    Copy
+                  </button>
+                )}
+                <button  
                   onClick={async (e) => { 
                     e.stopPropagation(); 
                     if(confirm("Удалить?")) {

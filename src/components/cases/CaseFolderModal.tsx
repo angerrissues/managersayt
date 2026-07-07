@@ -18,6 +18,7 @@ export default function CaseFolderModal({
 }) {
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const [editingCase, setEditingCase] = useState<Partial<Case> | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const { isAdmin } = useAdmin();
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -120,6 +121,23 @@ export default function CaseFolderModal({
                     >
                       Edit
                     </button>
+                    {copiedId === item.id ? (
+                      <button className="bg-purple-600 text-white p-1.5 md:p-2 rounded-full shadow text-xs cursor-default" onClick={e => e.stopPropagation()}>
+                        ✓
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          localStorage.setItem('agency82_copied_case', JSON.stringify(item));
+                          setCopiedId(item.id);
+                          setTimeout(() => setCopiedId(null), 3000);
+                        }} 
+                        className="bg-purple-600 hover:bg-purple-500 text-white p-1.5 md:p-2 rounded-full shadow text-xs"
+                      >
+                        Copy
+                      </button>
+                    )}
                     {item.id !== parentCase.id && (
                       <button
                         onClick={async (e) => {
