@@ -52,8 +52,28 @@ export default function ExperienceStats() {
       // Extract random videos
       const vids = allCases.flatMap(c => c.videos || []);
       const uniqueVids = Array.from(new Set(vids));
-      const shuffled = uniqueVids.sort(() => 0.5 - Math.random());
-      setRandomVideos(shuffled.slice(0, 8)); // Pick 8 random videos
+      
+      const selected: string[] = [];
+      if (uniqueVids.length > 0) {
+        let lastVid = "";
+        for (let i = 0; i < 15; i++) {
+          let available = uniqueVids.filter(v => v !== lastVid);
+          if (available.length === 0) available = uniqueVids;
+          
+          const pick = available[Math.floor(Math.random() * available.length)];
+          selected.push(pick);
+          lastVid = pick;
+        }
+        
+        // Ensure last item doesn't match first item (for smooth repeating)
+        if (selected.length > 1 && selected[selected.length - 1] === selected[0]) {
+          let available = uniqueVids.filter(v => v !== selected[selected.length - 2] && v !== selected[0]);
+          if (available.length > 0) {
+            selected[selected.length - 1] = available[Math.floor(Math.random() * available.length)];
+          }
+        }
+      }
+      setRandomVideos(selected);
     });
   }, []);
 
