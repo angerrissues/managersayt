@@ -210,6 +210,7 @@ export async function POST(req: Request) {
         
         revalidatePath("/blogers");
         revalidatePath("/statistics");
+        revalidatePath("/");
         
         await prisma.bloggerBotSession.update({
           where: { chatId: chatIdStr },
@@ -285,6 +286,7 @@ export async function POST(req: Request) {
           });
           revalidatePath("/blogers");
           revalidatePath("/statistics");
+          revalidatePath("/");
         }
         
         // JUMP TO START

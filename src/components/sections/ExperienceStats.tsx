@@ -7,16 +7,9 @@ import { useRouter } from "next/navigation";
 import { getCases, getBloggers } from "@/actions/admin";
 import type { Case } from "@/types/case";
 
-export default function ExperienceStats() {
+export default function ExperienceStats({ initialBloggerCount }: { initialBloggerCount: number }) {
   const router = useRouter();
   const [cases, setCases] = useState<Case[]>([]);
-  const [bloggerCount, setBloggerCount] = useState<number>(() => {
-    if (typeof window !== "undefined") {
-      const cached = localStorage.getItem("bloggerCount");
-      if (cached) return Number(cached);
-    }
-    return 30; // fallback
-  });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [randomVideos, setRandomVideos] = useState<string[]>([]);
 
@@ -44,14 +37,6 @@ export default function ExperienceStats() {
   };
 
   useEffect(() => {
-    getBloggers()
-      .then((res) => {
-        const count = res.length;
-        setBloggerCount(count);
-        localStorage.setItem("bloggerCount", count.toString());
-      })
-      .catch(console.error);
-
     getCases().then(res => {
       const allCases = res as unknown as Case[];
       // Filter out cases that have no coverImage
@@ -96,7 +81,7 @@ export default function ExperienceStats() {
 
   const currentStats = [
     { value: "15", label: "стран" },
-    { value: String(bloggerCount), label: "эксклюзивных блогеров", linkMobile: "/blogers" },
+    { value: String(initialBloggerCount), label: "эксклюзивных блогеров", linkMobile: "/blogers" },
     { value: "100+", label: "рекламных кампаний", linkMobile: "/cases" },
     { value: "50+", label: "брендов", linkMobile: "/blogers" },
   ];
@@ -170,7 +155,7 @@ export default function ExperienceStats() {
                 className="p-5 md:p-10 bg-white/[0.02] border border-white/5 rounded-2xl md:rounded-3xl backdrop-blur-sm hover:bg-white/[0.05] transition-colors overflow-hidden flex flex-col justify-center cursor-default"
               >
                 <motion.div layout>
-                  <div suppressHydrationWarning className="text-3xl md:text-6xl lg:text-8xl font-black mb-2 md:mb-4 text-white">
+                  <div className="text-3xl md:text-6xl lg:text-8xl font-black mb-2 md:mb-4 text-white">
                     {stat.value}
                   </div>
                   <div className="text-sm md:text-xl lg:text-2xl text-white/50 uppercase tracking-tight font-medium">
