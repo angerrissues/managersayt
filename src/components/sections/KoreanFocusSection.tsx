@@ -17,7 +17,7 @@ export default function KoreanFocusSection() {
   const rotateRight = useTransform(scrollYProgress, [0, 1], [5, -5]);
 
   // Разделяем текст на слова для анимации размытия и появления
-  const text = "Эксклюзивные контракты с блогерами из Кореи, Японии, Китая и других стран — с живой русскоязычной аудиторией. Ваш бренд звучит там, где раньше не было конкурентов.";
+  const text = "Эксклюзивные контракты с блогерами из Кореи, Японии, Китая и других стран позволяют запускать рекламу там, где русскоязычный рынок практически свободен.";
   const words = text.split(" ");
 
   return (
@@ -58,9 +58,9 @@ export default function KoreanFocusSection() {
             transition={{ repeat: Infinity, duration: 12, ease: "linear" }}
           />
           <h3 className="text-2xl md:text-4xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tight leading-[1.1] text-center">
-            <span className="block">мы соединяем мировых блогеров</span>
+            <span className="block">Мы открываем брендам доступ к аудитории,</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500">
-              с&nbsp;русскоязычной аудиторией
+              до которой конкуренты еще не добрались.
             </span>
           </h3>
           <motion.img
