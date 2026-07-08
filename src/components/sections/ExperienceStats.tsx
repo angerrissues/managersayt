@@ -4,19 +4,13 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCases } from "@/actions/admin";
+import { getCases, getBloggers } from "@/actions/admin";
 import type { Case } from "@/types/case";
-
-const stats = [
-  { value: "3", label: "года на рынке" },
-  { value: "30", label: "эксклюзивных инфлюенсеров", linkMobile: "/blogers" },
-  { value: "100+", label: "рекламных кампаний", linkMobile: "/cases" },
-  { value: "100+", label: "миллионов охватов", linkMobile: "/blogers" },
-];
 
 export default function ExperienceStats() {
   const router = useRouter();
   const [cases, setCases] = useState<Case[]>([]);
+  const [bloggerCount, setBloggerCount] = useState<number>(30);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [randomVideos, setRandomVideos] = useState<string[]>([]);
   
@@ -44,6 +38,8 @@ export default function ExperienceStats() {
   };
 
   useEffect(() => {
+    getBloggers().then(res => setBloggerCount(res.length)).catch(console.error);
+
     getCases().then(res => {
       const allCases = res as unknown as Case[];
       // Filter out cases that have no coverImage
@@ -86,6 +82,13 @@ export default function ExperienceStats() {
     return null;
   };
 
+  const currentStats = [
+    { value: "15", label: "стран" },
+    { value: String(bloggerCount), label: "эксклюзивных инфлюенсеров", linkMobile: "/blogers" },
+    { value: "100+", label: "рекламных кампаний", linkMobile: "/cases" },
+    { value: "50+", label: "брендов", linkMobile: "/blogers" },
+  ];
+
   return (
     <section className="py-16 md:py-32 px-4 md:px-6 bg-black relative z-20 border-t border-white/5">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20">
@@ -127,7 +130,7 @@ export default function ExperienceStats() {
 
         {/* Right Column - Stats Grid */}
         <div className="lg:w-2/3 grid grid-cols-2 gap-3 md:gap-8 lg:gap-12">
-          {stats.map((stat, index) => {
+          {currentStats.map((stat, index) => {
             const isCampaignsCard = index === 2; // 100+ рекламных кампаний
             const isHovered = hoveredIndex === index;
 
