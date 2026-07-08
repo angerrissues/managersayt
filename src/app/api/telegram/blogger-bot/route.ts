@@ -64,15 +64,42 @@ async function getTelegramFileUrl(fileId: string): Promise<string | null> {
   return null;
 }
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "https://82agency.net",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
+}
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || authHeader !== `Bearer ${process.env.API_SECRET_TOKEN}`) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: corsHeaders });
+    }
+
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400, headers: corsHeaders });
+    }
+
+    if (!body || typeof body !== "object" || (!body.message && !body.callback_query)) {
+      return NextResponse.json({ error: "Invalid payload structure" }, { status: 400, headers: corsHeaders });
+    }
 
     const message = body.message;
     const callbackQuery = body.callback_query;
 
     const chatId = message?.chat?.id || callbackQuery?.message?.chat?.id;
-    if (!chatId) return NextResponse.json({ ok: true });
+    if (!chatId) return NextResponse.json({ ok: true }, { headers: corsHeaders });
 
     const chatIdStr = String(chatId);
 
@@ -99,7 +126,7 @@ export async function POST(req: Request) {
       } else {
         await sendMessage(chatIdStr, "🔒 Введите пароль для доступа:");
       }
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { headers: corsHeaders });
     }
 
     // 2. COMMANDS
@@ -113,7 +140,7 @@ export async function POST(req: Request) {
       });
 
       await sendMessage(chatIdStr, "👥 <b>Выберите блогера:</b>", { inline_keyboard: buttons });
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { headers: corsHeaders });
     }
 
     if (text === "Готово ✅" && session.step === "AWAITING_MEDIA") {
@@ -140,12 +167,12 @@ export async function POST(req: Request) {
           });
         }
       }
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { headers: corsHeaders });
     }
 
     // 3. EDIT DETAILS FLOW
     if (session.step.startsWith("EDIT_DETAILS_")) {
-      if (text === "Главное меню 🏠") return NextResponse.json({ ok: true });
+      if (text === "Главное меню 🏠") return NextResponse.json({ ok: true }, { headers: corsHeaders });
 
       let details = (session.tempData as Record<string,any>) || {};
       const blogger = await prisma.blogger.findUnique({ where: { id: session.bloggerId! } });
@@ -191,12 +218,12 @@ export async function POST(req: Request) {
         });
         await sendMessage(chatIdStr, "✅ Описание блогера успешно обновлено на сайте!", { remove_keyboard: true });
       }
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { headers: corsHeaders });
     }
 
     // 4. EDIT SOCIAL FLOW
     if (session.step.startsWith("EDIT_SOCIAL_")) {
-      if (text === "Главное меню 🏠") return NextResponse.json({ ok: true });
+      if (text === "Главное меню 🏠") return NextResponse.json({ ok: true }, { headers: corsHeaders });
 
       let socialData = (session.tempData as Record<string,any>) || {};
       const socialKey = session.socialKey!;
@@ -271,7 +298,7 @@ export async function POST(req: Request) {
           remove_keyboard: true 
         });
       }
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { headers: corsHeaders });
     }
 
     // 5. CALLBACKS (Inline Keyboard)
@@ -357,7 +384,7 @@ export async function POST(req: Request) {
           body: JSON.stringify({ callback_query_id: callbackQuery.id }),
         });
       }
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true }, { headers: corsHeaders });
     }
 
     // 6. HANDLING MEDIA
@@ -394,9 +421,9 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { headers: corsHeaders });
   } catch (error) {
     console.error("Telegram webhook error:", error);
-    return NextResponse.json({ ok: true, error: "Handled Error" });
+    return NextResponse.json({ ok: true, error: "Handled Error" }, { headers: corsHeaders });
   }
 }
