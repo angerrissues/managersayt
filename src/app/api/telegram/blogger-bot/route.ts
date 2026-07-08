@@ -123,33 +123,22 @@ export async function POST(req: Request) {
         if (blogger) {
           const socials = (blogger.socials as Record<string, any>) || {};
           const currentSocial = socials[session.socialKey] || {};
+          const nextTempData = { ...currentSocial };
           
           if (session.uploadedUrls && session.uploadedUrls.length > 0) {
-            currentSocial.statsMedia = session.uploadedUrls;
-            socials[session.socialKey] = currentSocial;
-
-            await prisma.blogger.update({
-              where: { id: session.bloggerId },
-              data: { socials },
-            });
-            
-            revalidatePath("/blogers");
-            revalidatePath("/statistics");
-            
-            await sendMessage(chatIdStr, `🎉 Успешно! Скриншоты для соцсети сохранены (Всего новых файлов: ${session.uploadedUrls.length}).`, {
-              remove_keyboard: true 
-            });
-          } else {
-            // Если не отправил ни одного файла, но нажал готово -> просто сохраняем старые
-            await sendMessage(chatIdStr, `🎉 Успешно! Новые скриншоты не загружались, старые сохранены без изменений.`, {
-              remove_keyboard: true 
-            });
+            nextTempData.statsMedia = session.uploadedUrls;
           }
+          
+          await prisma.bloggerBotSession.update({
+            where: { chatId: chatIdStr },
+            data: { step: "EDIT_SOCIAL_FOLLOWERS", tempData: nextTempData },
+          });
+
+          await sendMessage(chatIdStr, `<b>Подписчики</b>\nТекущее: <i>${nextTempData.followers || "нет"}</i>\n\nВведите новые данные или нажмите "Пропустить ⏭":`, {
+            keyboard: [[{ text: "Пропустить ⏭" }, { text: "Главное меню 🏠" }]],
+            resize_keyboard: true
+          });
         }
-        await prisma.bloggerBotSession.update({
-          where: { chatId: chatIdStr },
-          data: { step: "START", bloggerId: null, socialKey: null, uploadedUrls: [], tempData: null },
-        });
       }
       return NextResponse.json({ ok: true });
     }
@@ -272,15 +261,14 @@ export async function POST(req: Request) {
           revalidatePath("/statistics");
         }
         
-        // JUMP TO MEDIA
+        // JUMP TO START
         await prisma.bloggerBotSession.update({
           where: { chatId: chatIdStr },
-          data: { step: "AWAITING_MEDIA", uploadedUrls: [], tempData: null },
+          data: { step: "START", bloggerId: null, socialKey: null, uploadedUrls: [], tempData: null },
         });
 
-        await sendMessage(chatIdStr, "📸 <b>Скриншоты статистики</b>\n\nОтправьте новые фото/видео (они <b>полностью заменят</b> старые). \nЕсли хотите <b>оставить старые</b> фото — просто ничего не отправляйте и нажмите <b>Готово ✅</b>.", {
-          keyboard: [[{ text: "Готово ✅" }, { text: "Главное меню 🏠" }]],
-          resize_keyboard: true
+        await sendMessage(chatIdStr, `🎉 Успешно! Данные и статистика для соцсети сохранены.`, {
+          remove_keyboard: true 
         });
       }
       return NextResponse.json({ ok: true });
@@ -353,11 +341,11 @@ export async function POST(req: Request) {
         
         await prisma.bloggerBotSession.update({
           where: { chatId: chatIdStr },
-          data: { step: "EDIT_SOCIAL_FOLLOWERS", socialKey, tempData: currentSocial, uploadedUrls: [] },
+          data: { step: "AWAITING_MEDIA", socialKey, tempData: currentSocial, uploadedUrls: [] },
         });
 
-        await sendMessage(chatIdStr, `<b>Подписчики</b>\nТекущее: <i>${currentSocial.followers || "нет"}</i>\n\nВведите новые данные или нажмите "Пропустить ⏭":`, {
-          keyboard: [[{ text: "Пропустить ⏭" }, { text: "Главное меню 🏠" }]],
+        await sendMessage(chatIdStr, "📸 <b>Скриншоты статистики</b>\n\nОтправьте новые фото/видео (они <b>полностью заменят</b> старые). \nЕсли хотите <b>оставить старые</b> фото — просто ничего не отправляйте и нажмите <b>Готово ✅</b>.", {
+          keyboard: [[{ text: "Готово ✅" }, { text: "Главное меню 🏠" }]],
           resize_keyboard: true
         });
       }
