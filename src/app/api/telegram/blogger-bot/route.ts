@@ -4,7 +4,6 @@ import cloudinary from "@/lib/cloudinary";
 import { revalidatePath } from "next/cache";
 
 const BOT_TOKEN = process.env.BLOGGER_BOT_TOKEN;
-const PASSWORD = "1234ewq1234";
 
 const METRIC_1_PROMPT: Record<string, { field: string, label: string } | null> = {
   tiktok: { field: "views", label: "Просмотры видео" },
@@ -79,8 +78,8 @@ export async function OPTIONS() {
 
 export async function POST(req: Request) {
   try {
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || authHeader !== `Bearer ${process.env.API_SECRET_TOKEN}`) {
+    const tgSecretToken = req.headers.get("x-telegram-bot-api-secret-token");
+    if (!tgSecretToken || tgSecretToken !== process.env.TELEGRAM_WEBHOOK_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: corsHeaders });
     }
 
@@ -117,7 +116,7 @@ export async function POST(req: Request) {
 
     // 1. AUTHENTICATION
     if (!session.isAuthenticated) {
-      if (text === PASSWORD) {
+      if (text === process.env.BOT_ADMIN_PASSWORD) {
         await prisma.bloggerBotSession.update({
           where: { chatId: chatIdStr },
           data: { isAuthenticated: true, step: "START" },
