@@ -10,10 +10,16 @@ import type { Case } from "@/types/case";
 export default function ExperienceStats() {
   const router = useRouter();
   const [cases, setCases] = useState<Case[]>([]);
-  const [bloggerCount, setBloggerCount] = useState<number>(30);
+  const [bloggerCount, setBloggerCount] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const cached = localStorage.getItem("bloggerCount");
+      if (cached) return Number(cached);
+    }
+    return 30; // fallback
+  });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [randomVideos, setRandomVideos] = useState<string[]>([]);
-  
+
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
@@ -38,7 +44,13 @@ export default function ExperienceStats() {
   };
 
   useEffect(() => {
-    getBloggers().then(res => setBloggerCount(res.length)).catch(console.error);
+    getBloggers()
+      .then((res) => {
+        const count = res.length;
+        setBloggerCount(count);
+        localStorage.setItem("bloggerCount", count.toString());
+      })
+      .catch(console.error);
 
     getCases().then(res => {
       const allCases = res as unknown as Case[];
@@ -48,19 +60,19 @@ export default function ExperienceStats() {
       // Extract random videos
       const vids = allCases.flatMap(c => c.videos || []);
       const uniqueVids = Array.from(new Set(vids));
-      
+
       const selected: string[] = [];
       if (uniqueVids.length > 0) {
         let lastVid = "";
         for (let i = 0; i < 15; i++) {
           let available = uniqueVids.filter(v => v !== lastVid);
           if (available.length === 0) available = uniqueVids;
-          
+
           const pick = available[Math.floor(Math.random() * available.length)];
           selected.push(pick);
           lastVid = pick;
         }
-        
+
         // Ensure last item doesn't match first item (for smooth repeating)
         if (selected.length > 1 && selected[selected.length - 1] === selected[0]) {
           let available = uniqueVids.filter(v => v !== selected[selected.length - 2] && v !== selected[0]);
@@ -84,7 +96,7 @@ export default function ExperienceStats() {
 
   const currentStats = [
     { value: "15", label: "стран" },
-    { value: String(bloggerCount), label: "эксклюзивных инфлюенсеров", linkMobile: "/blogers" },
+    { value: String(bloggerCount), label: "эксклюзивных блогеров", linkMobile: "/blogers" },
     { value: "100+", label: "рекламных кампаний", linkMobile: "/cases" },
     { value: "50+", label: "брендов", linkMobile: "/blogers" },
   ];
@@ -158,7 +170,7 @@ export default function ExperienceStats() {
                 className="p-5 md:p-10 bg-white/[0.02] border border-white/5 rounded-2xl md:rounded-3xl backdrop-blur-sm hover:bg-white/[0.05] transition-colors overflow-hidden flex flex-col justify-center cursor-default"
               >
                 <motion.div layout>
-                  <div className="text-3xl md:text-6xl lg:text-8xl font-black mb-2 md:mb-4 text-white">
+                  <div suppressHydrationWarning className="text-3xl md:text-6xl lg:text-8xl font-black mb-2 md:mb-4 text-white">
                     {stat.value}
                   </div>
                   <div className="text-sm md:text-xl lg:text-2xl text-white/50 uppercase tracking-tight font-medium">
@@ -228,22 +240,22 @@ export default function ExperienceStats() {
                   const thumb = getYouTubeThumbnail(url);
                   const optimizedUrl = optimizeCloudinaryVideo(url);
                   const isImage = /\.(jpe?g|png|webp|gif|avif)$/i.test(url) || url.includes('/image/upload/');
-                  
+
                   return (
-                    <div 
-                      key={i} 
+                    <div
+                      key={i}
                       className="w-40 h-[284px] md:w-64 md:h-[455px] shrink-0 bg-[#0a0a0a] rounded-2xl md:rounded-3xl overflow-hidden flex items-center justify-center border border-white/10 group relative"
                     >
                       {thumb ? (
-                        <img 
-                          src={thumb} 
-                          alt="Video thumbnail" 
+                        <img
+                          src={thumb}
+                          alt="Video thumbnail"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : isImage ? (
-                        <img 
-                          src={optimizedUrl} 
-                          alt="Media thumbnail" 
+                        <img
+                          src={optimizedUrl}
+                          alt="Media thumbnail"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                       ) : (
@@ -272,7 +284,7 @@ function HoverVideo({ url, index }: { url: string; index: number }) {
     }, index * 200); // 200ms delay per video
     return () => clearTimeout(timer);
   }, [index]);
-  
+
   if (!shouldLoad) {
     return <div className="w-full h-full bg-[#111] animate-pulse" />;
   }
@@ -286,7 +298,7 @@ function HoverVideo({ url, index }: { url: string; index: number }) {
       loop
       preload="metadata"
       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-      onMouseEnter={() => videoRef.current?.play().catch(() => {})}
+      onMouseEnter={() => videoRef.current?.play().catch(() => { })}
       onMouseLeave={() => {
         if (videoRef.current) {
           videoRef.current.pause();
