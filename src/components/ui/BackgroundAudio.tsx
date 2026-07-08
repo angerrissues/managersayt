@@ -12,7 +12,7 @@ export default function BackgroundAudio() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    audio.volume = 0.2; // тихий фон
+    audio.volume = 0.08; // тихий фон
 
     const playAudio = () => {
       audio.play().catch(() => {
