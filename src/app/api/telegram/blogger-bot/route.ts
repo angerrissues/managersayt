@@ -116,7 +116,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    if (text === "Готово ✅" && session.step.startsWith("AWAITING_MEDIA")) {
+    if (text === "Готово ✅" && session.step === "AWAITING_MEDIA") {
       if (session.bloggerId && session.socialKey) {
         const blogger = await prisma.blogger.findUnique({ where: { id: session.bloggerId } });
         
@@ -140,22 +140,10 @@ export async function POST(req: Request) {
               remove_keyboard: true 
             });
           } else {
+            // Если не отправил ни одного файла, но нажал готово -> просто сохраняем старые
             await sendMessage(chatIdStr, `🎉 Успешно! Новые скриншоты не загружались, старые сохранены без изменений.`, {
               remove_keyboard: true 
             });
-          }
-          
-          if (session.step === "AWAITING_MEDIA_FULL") {
-            const currentDetails = blogger.details as Record<string,any> || {};
-            await prisma.bloggerBotSession.update({
-              where: { chatId: chatIdStr },
-              data: { step: "EDIT_DETAILS_POSITIONING", socialKey: null, uploadedUrls: [], tempData: currentDetails },
-            });
-            await sendMessage(chatIdStr, `<b>Позиционирование</b>\nТекущее: <i>${currentDetails.positioning || "не заполнено"}</i>\n\nВведите новый текст или нажмите "Пропустить ⏭":`, {
-              keyboard: [[{ text: "Пропустить ⏭" }, { text: "Главное меню 🏠" }]],
-              resize_keyboard: true
-            });
-            return NextResponse.json({ ok: true });
           }
         }
         await prisma.bloggerBotSession.update({
@@ -271,9 +259,6 @@ export async function POST(req: Request) {
             socialData.rknLink = text;
         }
 
-        const isFullFlow = socialData._isFullFlow;
-        delete socialData._isFullFlow;
-
         // SAVE TEXT DATA TO DB
         const blogger = await prisma.blogger.findUnique({ where: { id: session.bloggerId! } });
         if (blogger) {
@@ -290,7 +275,7 @@ export async function POST(req: Request) {
         // JUMP TO MEDIA
         await prisma.bloggerBotSession.update({
           where: { chatId: chatIdStr },
-          data: { step: isFullFlow ? "AWAITING_MEDIA_FULL" : "AWAITING_MEDIA", uploadedUrls: [], tempData: null },
+          data: { step: "AWAITING_MEDIA", uploadedUrls: [], tempData: null },
         });
 
         await sendMessage(chatIdStr, "📸 <b>Скриншоты статистики</b>\n\nОтправьте новые фото/видео (они <b>полностью заменят</b> старые). \nЕсли хотите <b>оставить старые</b> фото — просто ничего не отправляйте и нажмите <b>Готово ✅</b>.", {
@@ -313,49 +298,13 @@ export async function POST(req: Request) {
         });
 
         const buttons = [
-          [{ text: "📝 Редактировать описание и статистику", callback_data: `action:edit_full` }]
+          [{ text: "📝 Редактировать описание", callback_data: `action:details` }],
+          [{ text: "📱 Обновить соцсети / статистику", callback_data: `action:socials` }]
         ];
         
         const blogger = await prisma.blogger.findUnique({ where: { id: bloggerId } });
-        await sendMessage(chatIdStr, `Блогер: <b>${blogger?.name}</b>\nНажмите кнопку ниже для редактирования:`, { inline_keyboard: buttons });
+        await sendMessage(chatIdStr, `Блогер: <b>${blogger?.name}</b>\nЧто вы хотите отредактировать?`, { inline_keyboard: buttons });
       } 
-      else if (data === "action:edit_full" && session.bloggerId) {
-        const blogger = await prisma.blogger.findUnique({ where: { id: session.bloggerId } });
-        const socials = blogger?.socials as Record<string, any>;
-        const socialKeys = Object.keys(socials || {});
-        
-        if (socialKeys.length === 0) {
-          const currentDetails = blogger?.details as Record<string,any> || {};
-          await prisma.bloggerBotSession.update({
-            where: { chatId: chatIdStr },
-            data: { step: "EDIT_DETAILS_POSITIONING", tempData: currentDetails },
-          });
-
-          await sendMessage(chatIdStr, `У блогера нет добавленных соцсетей, переходим к описанию.\n\n<b>Позиционирование</b>\nТекущее: <i>${currentDetails.positioning || "не заполнено"}</i>\n\nВведите новый текст или нажмите "Пропустить ⏭":`, {
-            keyboard: [[{ text: "Пропустить ⏭" }, { text: "Главное меню 🏠" }]],
-            resize_keyboard: true
-          });
-        } else {
-          const buttons = socialKeys.map(key => {
-            let name = key;
-            if (key.startsWith("tiktok")) name = "TikTok";
-            if (key.startsWith("youtube")) name = "YouTube";
-            if (key.startsWith("instagram")) name = "Instagram";
-            if (key.startsWith("telegram")) name = "Telegram";
-            if (key.startsWith("vk")) name = "VK";
-            return [{ text: name, callback_data: `social_full:${key}` }];
-          });
-          
-          buttons.push([{ text: "Пропустить статистику ⏭", callback_data: `action:details` }]);
-
-          await prisma.bloggerBotSession.update({
-            where: { chatId: chatIdStr },
-            data: { step: "SELECT_SOCIAL" },
-          });
-
-          await sendMessage(chatIdStr, `Выберите соцсеть для редактирования статистики:`, { inline_keyboard: buttons });
-        }
-      }
       else if (data === "action:details" && session.bloggerId) {
         const blogger = await prisma.blogger.findUnique({ where: { id: session.bloggerId } });
         const currentDetails = blogger?.details as Record<string,any> || {};
@@ -370,12 +319,37 @@ export async function POST(req: Request) {
           resize_keyboard: true
         });
       }
-      else if (data.startsWith("social_full:") && session.bloggerId) {
-        const socialKey = data.replace("social_full:", "");
+      else if (data === "action:socials" && session.bloggerId) {
+        const blogger = await prisma.blogger.findUnique({ where: { id: session.bloggerId } });
+        const socials = blogger?.socials as Record<string, any>;
+        const socialKeys = Object.keys(socials || {});
+        
+        if (socialKeys.length === 0) {
+          await sendMessage(chatIdStr, "У этого блогера не добавлено ни одной соцсети.");
+        } else {
+          const buttons = socialKeys.map(key => {
+            let name = key;
+            if (key.startsWith("tiktok")) name = "TikTok";
+            if (key.startsWith("youtube")) name = "YouTube";
+            if (key.startsWith("instagram")) name = "Instagram";
+            if (key.startsWith("telegram")) name = "Telegram";
+            if (key.startsWith("vk")) name = "VK";
+            return [{ text: name, callback_data: `social:${key}` }];
+          });
+
+          await prisma.bloggerBotSession.update({
+            where: { chatId: chatIdStr },
+            data: { step: "SELECT_SOCIAL" },
+          });
+
+          await sendMessage(chatIdStr, `Выберите соцсеть для редактирования:`, { inline_keyboard: buttons });
+        }
+      }
+      else if (data.startsWith("social:") && session.bloggerId) {
+        const socialKey = data.replace("social:", "");
         const blogger = await prisma.blogger.findUnique({ where: { id: session.bloggerId } });
         const socials = (blogger?.socials as Record<string,any>) || {};
         const currentSocial = socials[socialKey] || {};
-        currentSocial._isFullFlow = true;
         
         await prisma.bloggerBotSession.update({
           where: { chatId: chatIdStr },
@@ -399,7 +373,7 @@ export async function POST(req: Request) {
     }
 
     // 6. HANDLING MEDIA
-    if (session.step.startsWith("AWAITING_MEDIA")) {
+    if (session.step === "AWAITING_MEDIA") {
       let fileId = null;
 
       if (message.photo && message.photo.length > 0) {
