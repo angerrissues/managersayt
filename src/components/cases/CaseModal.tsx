@@ -6,15 +6,15 @@ import VideoCarousel from "@/components/cases/VideoCarousel";
 import type { Case } from "@/types/case";
 import BloggerModal from "@/components/bloggers/BloggerModal";
 import type { Blogger } from "@/types/blogger";
-import bloggersData from "@/data/bloggers.json";
+import { getBloggers } from "@/actions/admin";
 
-function findBlogger(nameStr: string): Blogger | undefined {
-  const lowerStr = nameStr.toLowerCase();
+function findBlogger(nameStr: string, dbBloggers: Blogger[]): Blogger | undefined {
+  const lowerStr = nameStr.toLowerCase().trim();
   
   const handleMatch = nameStr.match(/\(([^)]+)\)/);
   if (handleMatch) {
-    const handle = handleMatch[1].toLowerCase();
-    const found = (bloggersData as unknown as Blogger[]).find(b => 
+    const handle = handleMatch[1].toLowerCase().trim();
+    const found = dbBloggers.find(b => 
       b.id.toLowerCase() === handle ||
       b.id.toLowerCase() === handle.replace(/[^a-z0-9]/g, '') ||
       b.socials?.tiktok?.url?.toLowerCase().includes(handle) ||
@@ -23,7 +23,7 @@ function findBlogger(nameStr: string): Blogger | undefined {
     if (found) return found;
   }
   
-  return (bloggersData as unknown as Blogger[]).find(b => 
+  return dbBloggers.find(b => 
     lowerStr.includes(b.id.toLowerCase()) || 
     lowerStr.includes(b.name.toLowerCase())
   );
@@ -31,6 +31,11 @@ function findBlogger(nameStr: string): Blogger | undefined {
 
 export default function CaseModal({ caseData, onClose }: { caseData: Case; onClose: () => void }) {
   const [selectedBlogger, setSelectedBlogger] = useState<Blogger | null>(null);
+  const [dbBloggers, setDbBloggers] = useState<Blogger[]>([]);
+
+  useEffect(() => {
+    getBloggers().then(setDbBloggers).catch(console.error);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -95,7 +100,7 @@ export default function CaseModal({ caseData, onClose }: { caseData: Case; onClo
                 <p className="text-white/50 text-sm uppercase tracking-wider mb-4 font-bold">Блогеры ({caseData.bloggers.length})</p>
                 <div className="flex flex-wrap gap-2">
                   {caseData.bloggers.map((bloggerStr, i) => {
-                    const matchedBlogger = findBlogger(bloggerStr);
+                    const matchedBlogger = findBlogger(bloggerStr, dbBloggers);
                     return (
                       <button 
                         key={i} 
