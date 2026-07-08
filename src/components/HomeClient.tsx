@@ -101,7 +101,7 @@ export default function HomeClient({ initialBloggerCount }: { initialBloggerCoun
         </h1>
         
         <p className="subtitle mt-4 md:mt-8 text-base md:text-xl lg:text-2xl font-light tracking-wide text-gray-400 text-center max-w-2xl z-10 px-4">
-          Эксклюзивное представление интересов ведущих медиа-личностей и блогеров.
+          Мы объединяем бренды с крупнейшими русскоязычными блогерами Азии.
         </p>
 
         {/* Abstract shape for background depth */}
