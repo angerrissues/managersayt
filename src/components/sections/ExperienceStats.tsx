@@ -105,7 +105,7 @@ export default function ExperienceStats({ initialBloggerCount }: { initialBlogge
               Как мы добиваемся успеха для ваших брендов
             </h2>
             <p className="text-white/60 text-base md:text-lg font-light leading-relaxed mb-8 md:mb-12">
-              Мы гордимся нашими успешными проектами, которые помогли множеству клиентов достичь своих целей.
+              Мы создаем рекламные кампании, которые приносят брендам реальные продажи, а блогерам — долгосрочные партнерства.
             </p>
           </motion.div>
 
