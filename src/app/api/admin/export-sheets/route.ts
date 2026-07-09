@@ -32,46 +32,47 @@ export async function POST() {
       orderBy: { createdAt: 'desc' }
     });
 
-    // Собираем все уникальные соцсети по всем блогерам, чтобы сформировать колонки
-    const uniqueNetworks = new Set<string>();
+    // Фиксированные платформы по запросу: только TikTok и VK
+    const platforms = ["tiktok", "vk"];
+
+    // Найдем максимальное количество ссылок статистики, чтобы создать нужное количество колонок
+    let maxStatsCount = 1;
     bloggers.forEach(blogger => {
       const socials = (blogger.socials as any) || {};
-      Object.keys(socials).forEach(key => {
-        const prefix = key.split('_')[0]; // "tiktok", "instagram" etc.
-        uniqueNetworks.add(prefix);
+      const tiktokKeys = Object.keys(socials).filter(k => k.startsWith("tiktok"));
+      let statsCount = 0;
+      tiktokKeys.forEach(k => {
+        const media = socials[k].statsMedia;
+        if (Array.isArray(media)) {
+          statsCount += media.length;
+        }
       });
-    });
-    
-    // Сортируем соцсети в понятном порядке
-    const standardOrder = ["tiktok", "vk", "instagram", "youtube", "telegram"];
-    const platforms = Array.from(uniqueNetworks).sort((a, b) => {
-      const idxA = standardOrder.indexOf(a);
-      const idxB = standardOrder.indexOf(b);
-      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-      if (idxA !== -1) return -1;
-      if (idxB !== -1) return 1;
-      return a.localeCompare(b);
+      if (statsCount > maxStatsCount) {
+        maxStatsCount = statsCount;
+      }
     });
 
-    // Формируем заголовки: Блогер | платформы... | Статистика | Цена
-    const headers = ["блогер", ...platforms.map(p => {
-      if (p === 'vk') return 'VK';
-      if (p === 'youtube') return 'YouTube';
-      if (p === 'tiktok') return 'TikTok';
-      return p.charAt(0).toUpperCase() + p.slice(1);
-    }), "статистика", "цена"];
+    // Формируем заголовки: Блогер | TikTok | VK | Цена | Статистика 1 | Статистика 2 ...
+    const headers = ["блогер", "TikTok", "VK", "цена"];
+    for (let i = 1; i <= maxStatsCount; i++) {
+      headers.push(`статистика ${i}`);
+    }
 
     const rows = bloggers.map(blogger => {
       const socials = (blogger.socials as any) || {};
       
       const row: string[] = [blogger.name || ""];
 
-      // Ссылки на каждую платформу
+      // Ссылки на каждую платформу (TikTok, VK)
+      // Если ссылок несколько, Google Таблицы не сделают их все кликабельными в одной ячейке, 
+      // но обычно аккаунт один. Соединяем через \n
       platforms.forEach(platform => {
         const keys = Object.keys(socials).filter(k => k.startsWith(platform));
         const urls = keys.map(k => socials[k].url).filter(Boolean).join("\n");
         row.push(urls);
       });
+
+      row.push("?"); // цена
 
       // Статистика только из TikTok
       const tiktokKeys = Object.keys(socials).filter(k => k.startsWith("tiktok"));
@@ -82,10 +83,11 @@ export async function POST() {
           statsMedia.push(...media);
         }
       });
-      const statsUrl = statsMedia.join("\n");
       
-      row.push(statsUrl); // статистика
-      row.push("?");      // цена
+      // Добавляем каждую ссылку статистики в отдельную колонку, чтобы они были кликабельными
+      for (let i = 0; i < maxStatsCount; i++) {
+        row.push(statsMedia[i] || "");
+      }
       
       return row;
     });
@@ -98,11 +100,11 @@ export async function POST() {
       range: "A1:Z10000",
     });
 
-    // Записываем новые данные
+    // Записываем новые данные (USER_ENTERED парсит ссылки как кликабельные URL)
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
       range: "A1",
-      valueInputOption: "RAW",
+      valueInputOption: "USER_ENTERED",
       requestBody: {
         values,
       },
