@@ -201,7 +201,7 @@ export default function BloggerEditModal({
         <span className="text-xs text-white/50">Статистика (Скриншоты / Видео)</span>
         <label className="cursor-pointer bg-white/10 hover:bg-white/20 text-white text-xs px-2 py-1 rounded transition-colors flex items-center gap-1">
           <Upload size={12} /> Загрузить
-          <input type="file" multiple accept="image/*,video/*,.mp4,.mov,.avi" className="hidden" onChange={e => handleStatsUpload(e, network)} />
+          <input type="file" multiple accept="*/*" className="hidden" onChange={e => handleStatsUpload(e, network)} />
         </label>
       </div>
       <textarea 
