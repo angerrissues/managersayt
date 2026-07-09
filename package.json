@@ -12,6 +12,7 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "googleapis": "^144.0.0",
     "@prisma/client": "^6.4.1",
     "@studio-freight/react-lenis": "^0.0.47",
     "browser-image-compression": "^2.0.2",

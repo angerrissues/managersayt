@@ -11,11 +11,33 @@ export default function BloggerGrid({ bloggers, mode = "default" }: { bloggers: 
   const { isAdmin } = useAdmin();
 
   const [editingBlogger, setEditingBlogger] = useState<Partial<Blogger> | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+      const res = await fetch("/api/admin/export-sheets", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Ошибка выгрузки");
+      alert(`Данные успешно выгружены! Обработано блогеров: ${data.count}`);
+    } catch (err: any) {
+      alert("Ошибка при выгрузке: " + err.message);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <>
       {isAdmin && (
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end mb-4 gap-4">
+          <button 
+            onClick={handleExport}
+            disabled={isExporting}
+            className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-colors flex items-center gap-2"
+          >
+            {isExporting ? "Выгрузка..." : "Выгрузить в таблицы"}
+          </button>
           <button 
             onClick={() => setEditingBlogger({})} 
             className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-colors flex items-center gap-2"
