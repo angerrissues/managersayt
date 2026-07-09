@@ -110,6 +110,37 @@ export async function POST() {
       },
     });
 
+    // Применяем форматирование "Обрезка" (CLIP), чтобы длинные ссылки не вылезали за края ячеек
+    try {
+      const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
+      const firstSheetId = spreadsheet.data.sheets?.[0]?.properties?.sheetId;
+      
+      if (firstSheetId !== undefined) {
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: sheetId,
+          requestBody: {
+            requests: [
+              {
+                repeatCell: {
+                  range: {
+                    sheetId: firstSheetId,
+                  },
+                  cell: {
+                    userEnteredFormat: {
+                      wrapStrategy: "CLIP"
+                    }
+                  },
+                  fields: "userEnteredFormat.wrapStrategy"
+                }
+              }
+            ]
+          }
+        });
+      }
+    } catch (formatError) {
+      console.error("Error applying wrapStrategy:", formatError);
+    }
+
     return NextResponse.json({ success: true, count: bloggers.length });
   } catch (error: any) {
     console.error("Export to sheets error:", error);
