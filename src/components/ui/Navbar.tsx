@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -53,29 +53,6 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const closeMobile = () => setMobileOpen(false);
-
-  useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-      window.history.pushState({ mobileMenuOpen: true }, "");
-
-      const handlePopState = () => {
-        setMobileOpen(false);
-      };
-
-      window.addEventListener("popstate", handlePopState);
-
-      return () => {
-        document.body.style.overflow = "";
-        window.removeEventListener("popstate", handlePopState);
-        if (window.history.state?.mobileMenuOpen) {
-          window.history.back();
-        }
-      };
-    } else {
-      document.body.style.overflow = "";
-    }
-  }, [mobileOpen]);
 
   return (
     <>

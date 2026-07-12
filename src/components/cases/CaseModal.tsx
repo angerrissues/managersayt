@@ -143,7 +143,7 @@ export default function CaseModal({ caseData, onClose }: { caseData: Case; onClo
           {/* Right Side: Video Carousel */}
           {caseData.videos && caseData.videos.length > 0 && (
             <div className="lg:w-1/2 flex items-center justify-center bg-black/40 border border-white/5 rounded-3xl py-6 px-2 md:py-12 md:px-4 relative">
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] bg-white opacity-[0.05] blur-[100px] pointer-events-none rounded-full" />
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] bg-white opacity-[0.05] md:blur-[100px] blur-[30px] pointer-events-none rounded-full" />
                <VideoCarousel videos={caseData.videos} />
             </div>
           )}

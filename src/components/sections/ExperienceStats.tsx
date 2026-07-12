@@ -49,7 +49,8 @@ export default function ExperienceStats({ initialBloggerCount }: { initialBlogge
       const selected: string[] = [];
       if (uniqueVids.length > 0) {
         let lastVid = "";
-        for (let i = 0; i < 15; i++) {
+        const count = window.innerWidth < 768 ? 6 : 15;
+        for (let i = 0; i < count; i++) {
           let available = uniqueVids.filter(v => v !== lastVid);
           if (available.length === 0) available = uniqueVids;
 
