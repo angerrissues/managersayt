@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { FaYoutube, FaInstagram, FaTelegramPlane, FaVk, FaTiktok } from "react-icons/fa";
@@ -26,12 +26,43 @@ export default function SocialStatsModal({ platform, url, statsMedia, onClose }:
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    window.history.pushState({ modalOpen: true }, "");
+
+    const handlePopState = () => {
+      onCloseRef.current();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("popstate", handlePopState);
+      if (window.history.state?.modalOpen) {
+        window.history.back();
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (isFullscreen) {
+      window.history.pushState({ fullscreen: true }, "");
+      const handlePopState = () => setIsFullscreen(false);
+      window.addEventListener("popstate", handlePopState);
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+        if (window.history.state?.fullscreen) {
+          window.history.back();
+        }
+      };
+    }
+  }, [isFullscreen]);
 
   // Close on backdrop click
   const handleBackdropClick = (e: React.MouseEvent) => {

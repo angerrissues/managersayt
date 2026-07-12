@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import VideoCarousel from "@/components/cases/VideoCarousel";
@@ -37,10 +37,28 @@ export default function CaseModal({ caseData, onClose }: { caseData: Case; onClo
     getBloggers().then(setDbBloggers).catch(console.error);
   }, []);
 
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    
+    window.history.pushState({ modalOpen: true }, "");
+
+    const handlePopState = () => {
+      onCloseRef.current();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
     return () => { 
       document.body.style.overflow = ""; 
+      window.removeEventListener("popstate", handlePopState);
+      if (window.history.state?.modalOpen) {
+        window.history.back();
+      }
     };
   }, []);
 
