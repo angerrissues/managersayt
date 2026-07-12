@@ -80,7 +80,7 @@ export default function CaseModal({ caseData, onClose }: { caseData: Case; onClo
           </button>
 
           {/* Left Side: Info */}
-          <div className="lg:w-1/2 flex flex-col justify-center">
+          <div className={`${caseData.videos && caseData.videos.length > 0 ? 'lg:w-1/2' : 'w-full lg:max-w-3xl mx-auto'} flex flex-col justify-center`}>
             <p className="text-white/50 tracking-widest uppercase text-sm mb-2 font-mono">{caseData.agency}</p>
             <h2 className="text-3xl md:text-6xl font-black uppercase text-white tracking-tighter leading-none mb-4">{caseData.brand}</h2>
             <h3 className="text-2xl text-white/80 font-light mb-8 italic">{caseData.lineup}</h3>
@@ -123,10 +123,12 @@ export default function CaseModal({ caseData, onClose }: { caseData: Case; onClo
           </div>
 
           {/* Right Side: Video Carousel */}
-          <div className="lg:w-1/2 flex items-center justify-center bg-black/40 border border-white/5 rounded-3xl py-6 px-2 md:py-12 md:px-4 relative">
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] bg-white opacity-[0.05] blur-[100px] pointer-events-none rounded-full" />
-             <VideoCarousel videos={caseData.videos} />
-          </div>
+          {caseData.videos && caseData.videos.length > 0 && (
+            <div className="lg:w-1/2 flex items-center justify-center bg-black/40 border border-white/5 rounded-3xl py-6 px-2 md:py-12 md:px-4 relative">
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] bg-white opacity-[0.05] blur-[100px] pointer-events-none rounded-full" />
+               <VideoCarousel videos={caseData.videos} />
+            </div>
+          )}
         </motion.div>
       </motion.div>
 
