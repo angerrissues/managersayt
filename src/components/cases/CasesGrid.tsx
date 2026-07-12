@@ -34,10 +34,10 @@ export default function CasesGrid({ cases }: { cases: Case[] }) {
           return (
           <motion.div 
             key={item.id}
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+            viewport={{ once: true, margin: "50px" }}
+            transition={{ duration: 0.5, delay: (i % 2) * 0.1, ease: "easeOut" }}
             className="group cursor-none relative"
             onClick={() => {
               if (children.length > 0) {
