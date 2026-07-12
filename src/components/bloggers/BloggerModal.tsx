@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { FaYoutube, FaInstagram, FaTelegramPlane, FaVk, FaTiktok } from "react-icons/fa";
@@ -9,10 +9,30 @@ import SocialStatsModal from "@/components/shared/SocialStatsModal";
 export default function BloggerModal({ blogger, onClose, mode = "default" }: { blogger: Blogger; onClose: () => void; mode?: "default" | "statistics" }) {
   const [selectedStats, setSelectedStats] = useState<{platform: string, url: string, statsMedia: string[]} | null>(null);
 
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    
+    // Добавляем запись в историю для перехвата кнопки "Назад" на телефоне
+    window.history.pushState({ modalOpen: true }, "");
+
+    const handlePopState = () => {
+      onCloseRef.current();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("popstate", handlePopState);
+      // Очищаем стек истории, если модалка закрывается не кнопкой "назад" (например, через крестик)
+      if (window.history.state?.modalOpen) {
+        window.history.back();
+      }
     };
   }, []);
 
@@ -49,16 +69,16 @@ export default function BloggerModal({ blogger, onClose, mode = "default" }: { b
           {/* Close Button */}
           <button 
             onClick={onClose}
-            className="absolute top-3 right-3 md:top-5 md:right-5 p-3 md:p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white z-20 cursor-pointer"
+            className="absolute top-4 right-4 md:top-5 md:right-5 p-3 md:p-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 shadow-xl transition-colors text-white z-20 cursor-pointer"
           >
-            <X size={24} />
+            <X size={24} className="drop-shadow-md" />
           </button>
 
           <div className="flex flex-col md:flex-row gap-6">
             {/* Left Column: Avatar & Basic Info */}
             <div className="md:w-1/3 shrink-0">
-              <div className="max-h-[250px] md:max-h-none aspect-auto md:aspect-[3/4] rounded-2xl overflow-hidden mb-5 border border-white/10 shadow-inner">
-                <img src={blogger.avatarPath} alt={blogger.name} className="w-full h-full object-cover" />
+              <div className="aspect-square md:aspect-[3/4] rounded-2xl overflow-hidden mb-5 border border-white/10 shadow-inner bg-white/5 relative">
+                <img src={blogger.avatarPath} alt={blogger.name} className="w-full h-full object-cover object-top md:object-center" />
               </div>
               <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-2 text-white leading-tight">{blogger.name}</h2>
               <p className="text-white/60 mb-1 text-sm md:text-base">Гео: <span className="text-white">{blogger.geo}</span></p>
