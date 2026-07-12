@@ -14,8 +14,31 @@ import BackgroundAudio from "@/components/ui/BackgroundAudio";
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://82agency.net"),
   title: "82Agency | Маркетинговое агентство, реклама у блогеров",
   description: "Премиальное агентство инфлюенс-маркетинга 82Agency. Выводим бренды на международный уровень. Закажите эффективную рекламу у топовых блогеров.",
+  openGraph: {
+    title: "82Agency | Маркетинговое агентство",
+    description: "Премиальное агентство инфлюенс-маркетинга 82Agency. Выводим бренды на международный уровень.",
+    url: "https://82agency.net",
+    siteName: "82Agency",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "82Agency Preview",
+      },
+    ],
+    locale: "ru_RU",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "82Agency | Маркетинговое агентство",
+    description: "Премиальное агентство инфлюенс-маркетинга 82Agency. Выводим бренды на международный уровень.",
+    images: ["/og-image.jpg"],
+  },
 };
 
 export default function RootLayout({
