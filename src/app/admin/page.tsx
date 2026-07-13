@@ -2,13 +2,27 @@
 
 import React, { useState, useEffect } from 'react';
 import { Send, Loader2, Bell, Clock, Plus, Trash2 } from 'lucide-react';
+import { useAdmin } from '@/components/shared/AdminProvider';
 import './admin.css';
 
 // Получаем URL бэкенда бота из переменных окружения. Если не задан - используем локальный
 const API_BASE = process.env.NEXT_PUBLIC_BOT_API || 'http://localhost:8080';
 
 export default function AdminPage() {
+  const { isAdmin } = useAdmin();
   const [activeTab, setActiveTab] = useState('reminders');
+
+  if (!isAdmin) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', background: '#111' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Доступ закрыт</h1>
+          <p style={{ color: '#888' }}>У вас нет прав для просмотра этой страницы.</p>
+          <p style={{ color: '#555', fontSize: '12px', marginTop: '20px' }}>(Нажмите Ctrl+Alt+Y для входа)</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="botAdminBody">
