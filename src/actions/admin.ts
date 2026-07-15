@@ -10,7 +10,7 @@ import type { Case } from "@/types/case";
 import crypto from "crypto";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_BOT_TOKEN = process.env.MANAGER_BOT_TOKEN;
 
 // -- AUTH --
 
