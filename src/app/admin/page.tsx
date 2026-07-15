@@ -304,21 +304,21 @@ function AIChat() {
       if (response.ok) {
         setMessages(prev => [...prev, { role: 'ai', text: data.response }]);
       } else {
-        setMessages(prev => [...prev, { role: 'ai', text: \Ошибка: \\ }]);
+        setMessages(prev => [...prev, { role: 'ai', text: \: \\ }]);
       }
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'Ошибка соединения с сервером бота.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: '    .' }]);
     }
     setLoading(false);
   };
 
   return (
     <div className="glassPanel" style={{ display: 'flex', flexDirection: 'column', height: '60vh' }}>
-      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>Чат с нейросетью</h2>
+      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>  </h2>
       
       <div style={{ flex: 1, overflowY: 'auto', marginBottom: 15, padding: 10, background: 'rgba(0,0,0,0.2)', borderRadius: 8 }}>
         {messages.length === 0 ? (
-          <p style={{ color: 'var(--text-light)', textAlign: 'center', marginTop: 20 }}>Задайте вопрос по базе данных агентства...</p>
+          <p style={{ color: 'var(--text-light)', textAlign: 'center', marginTop: 20 }}>     ...</p>
         ) : (
           messages.map((msg, i) => (
             <div key={i} style={{ 
@@ -340,23 +340,23 @@ function AIChat() {
             </div>
           ))
         )}
-        {loading && <div style={{ color: 'var(--text-light)', fontSize: 12 }}>Нейросеть печатает...</div>}
+        {loading && <div style={{ color: 'var(--text-light)', fontSize: 12 }}> ...</div>}
       </div>
 
       <div style={{ display: 'flex', gap: 10 }}>
         <input 
           className="botInput"
           type="text" 
-          placeholder="Напишите сообщение..." 
+          placeholder=" ..." 
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSend()}
           style={{ flex: 1 }}
         />
         <button className="botBtn" onClick={handleSend} disabled={loading || !input.trim()}>
-          Отправить
+          
         </button>
       </div>
     </div>
   );
-}
+}

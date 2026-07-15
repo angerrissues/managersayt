@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAdmin } from "@/components/shared/AdminProvider";
 
 const NAV_ITEMS = [
   { label: "Главная", href: "/" },
@@ -51,8 +52,15 @@ const linkItemVariants = {
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isAdmin } = useAdmin();
 
   const closeMobile = () => setMobileOpen(false);
+
+  // Динамически формируем элементы навигации
+  const currentNavItems = [...NAV_ITEMS];
+  if (isAdmin) {
+    currentNavItems.push({ label: "ТГ Бот", href: "/admin" });
+  }
 
   return (
     <>
@@ -69,7 +77,7 @@ export default function Navbar() {
 
         {/* ── Desktop centered links (hidden on mobile) ── */}
         <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 gap-10 font-medium text-sm tracking-wide uppercase">
-          {NAV_ITEMS.map(({ label, href }) => {
+          {currentNavItems.map(({ label, href }) => {
             const isActive = pathname === href;
             return (
               <Link
@@ -146,7 +154,7 @@ export default function Navbar() {
               exit="exit"
               className="flex flex-col items-center gap-8"
             >
-              {NAV_ITEMS.map(({ label, href }) => {
+              {currentNavItems.map(({ label, href }) => {
                 const isActive = pathname === href;
                 return (
                   <motion.li key={href} variants={linkItemVariants}>

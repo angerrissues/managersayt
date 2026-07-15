@@ -60,6 +60,7 @@ export default function RootLayout({
             <FloatingContact />
           </SmoothScroll>
         </AdminProvider>
+        <script src="https://telegram.org/js/telegram-web-app.js" async></script>
       </body>
     </html>
   );

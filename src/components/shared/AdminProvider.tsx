@@ -21,7 +21,20 @@ export default function AdminProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check initially
-    checkIsAdmin().then(setIsAdmin);
+    checkIsAdmin().then((isSessionAdmin) => {
+      // If session admin is true, set it
+      if (isSessionAdmin) {
+        setIsAdmin(true);
+      } else {
+        // If not session admin, check if we are in Telegram Web App
+        // We wait a bit for the script to load
+        setTimeout(() => {
+          if (typeof window !== "undefined" && (window as any).Telegram?.WebApp?.initData) {
+            setIsAdmin(true);
+          }
+        }, 500);
+      }
+    });
 
     // Mobile access: if URL contains ?admin=true, show modal
     if (typeof window !== "undefined" && window.location.search.includes("admin=true")) {
