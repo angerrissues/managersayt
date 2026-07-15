@@ -7,7 +7,10 @@ import cloudinary from "@/lib/cloudinary";
 import type { Blogger } from "@/types/blogger";
 import type { Case } from "@/types/case";
 
+import crypto from "crypto";
+
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
 // -- AUTH --
 
@@ -18,6 +21,37 @@ export async function loginAdmin(password: string) {
     return { success: true };
   }
   return { success: false, error: "Неверный пароль" };
+}
+
+export async function loginViaTelegram(initData: string) {
+  if (!TELEGRAM_BOT_TOKEN) {
+    return { success: false, error: "Telegram token not configured" };
+  }
+
+  try {
+    const urlParams = new URLSearchParams(initData);
+    const hash = urlParams.get("hash");
+    urlParams.delete("hash");
+
+    // Sort params alphabetically
+    const keys = Array.from(urlParams.keys()).sort();
+    const dataCheckString = keys.map(key => `${key}=${urlParams.get(key)}`).join("\n");
+
+    // Verify HMAC-SHA256
+    const secretKey = crypto.createHmac("sha256", "WebAppData").update(TELEGRAM_BOT_TOKEN).digest();
+    const calculatedHash = crypto.createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
+
+    if (calculatedHash === hash) {
+      // Подпись верна! Устанавливаем админскую куку.
+      const cookieStore = await cookies();
+      cookieStore.set("admin_token", "true", { httpOnly: true, secure: true, path: "/" });
+      return { success: true };
+    } else {
+      return { success: false, error: "Недействительная подпись Telegram" };
+    }
+  } catch (err) {
+    return { success: false, error: "Ошибка проверки данных" };
+  }
 }
 
 export async function logoutAdmin() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { checkIsAdmin, loginAdmin, logoutAdmin } from "@/actions/admin";
+import { checkIsAdmin, loginAdmin, logoutAdmin, loginViaTelegram } from "@/actions/admin";
 
 interface AdminContextType {
   isAdmin: boolean;
@@ -22,15 +22,18 @@ export default function AdminProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Check initially
     checkIsAdmin().then((isSessionAdmin) => {
-      // If session admin is true, set it
       if (isSessionAdmin) {
         setIsAdmin(true);
       } else {
-        // If not session admin, check if we are in Telegram Web App
-        // We wait a bit for the script to load
+        // Если куки нет, проверяем Telegram Web App и отправляем initData на сервер для проверки подписи
         setTimeout(() => {
           if (typeof window !== "undefined" && (window as any).Telegram?.WebApp?.initData) {
-            setIsAdmin(true);
+            const initData = (window as any).Telegram.WebApp.initData;
+            loginViaTelegram(initData).then((res) => {
+              if (res.success) {
+                setIsAdmin(true);
+              }
+            });
           }
         }, 500);
       }
