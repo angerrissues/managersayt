@@ -6,7 +6,7 @@ import { useAdmin } from '@/components/shared/AdminProvider';
 import './admin.css';
 
 export default function AdminPage() {
-  const { isAdmin } = useAdmin();
+  const { isAdmin, error } = useAdmin();
   const [activeTab, setActiveTab] = useState('reminders');
 
   if (!isAdmin) {
@@ -15,6 +15,7 @@ export default function AdminPage() {
         <div style={{ textAlign: 'center' }}>
           <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Доступ закрыт</h1>
           <p style={{ color: '#888' }}>У вас нет прав для просмотра этой страницы.</p>
+          {error && <p style={{ color: '#ef4444', marginTop: '10px', maxWidth: '300px', margin: '10px auto' }}>{error}</p>}
           <p style={{ color: '#555', fontSize: '12px', marginTop: '20px' }}>(Нажмите Ctrl+Alt+Y для входа)</p>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { checkIsAdmin, loginAdmin, logoutAdmin, loginViaTelegram } from "@/actio
 interface AdminContextType {
   isAdmin: boolean;
   logout: () => void;
+  error?: string;
 }
 
 const AdminContext = createContext<AdminContextType>({ isAdmin: false, logout: () => {} });
@@ -32,6 +33,8 @@ export default function AdminProvider({ children }: { children: ReactNode }) {
             loginViaTelegram(initData).then((res) => {
               if (res.success) {
                 setIsAdmin(true);
+              } else {
+                setError("Telegram Error: " + (res.error || "Unknown error"));
               }
             });
           }
@@ -73,7 +76,7 @@ export default function AdminProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AdminContext.Provider value={{ isAdmin, logout: handleLogout }}>
+    <AdminContext.Provider value={{ isAdmin, logout: handleLogout, error }}>
       {children}
       
       {showModal && !isAdmin && (
