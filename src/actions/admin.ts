@@ -48,7 +48,7 @@ export async function loginViaTelegram(initData: string) {
         try {
           const userObj = JSON.parse(decodeURIComponent(userParam));
           const userId = String(userObj.id);
-          const allowedIds = (process.env.ALLOWED_MANAGER_IDS || "").split(",").map(id => id.trim());
+          const allowedIds = (process.env.ALLOWED_MANAGER_IDS || "7915041131,1965048346").split(",").map(id => id.trim());
           
           if (!allowedIds.includes(userId)) {
             return { success: false, error: "Ваш Telegram ID не имеет прав администратора" };
