@@ -341,9 +341,14 @@ export async function POST(req: Request) {
       
       const tempData = session.tempData as Record<string, any>;
       const queue = tempData.queue;
-      const currentIndex = tempData.currentIndex;
+      let currentIndex = tempData.currentIndex;
       
-      if (text === "Назад ⬅️" && currentIndex > 0) {
+      let finishNow = false;
+      
+      if (text === "Пропустить всё ⏭⏭") {
+        finishNow = true;
+      }
+      else if (text === "Назад ⬅️" && currentIndex > 0) {
         tempData.currentIndex = currentIndex - 1;
         await prisma.bloggerBotSession.update({
           where: { chatId: chatIdStr },
@@ -353,7 +358,7 @@ export async function POST(req: Request) {
         const currentPrice = tempData.prices[prevItem.platformKey]?.[prevItem.fieldKey];
         const priceStr = currentPrice ? `(сейчас = ${currentPrice})` : "(сейчас нету цены)";
         
-        const keyboardRow = [{ text: "Пропустить ⏭" }];
+        const keyboardRow = [{ text: "Пропустить ⏭" }, { text: "Пропустить всё ⏭⏭" }];
         if (tempData.currentIndex > 0) keyboardRow.push({ text: "Назад ⬅️" });
         
         await sendMessage(chatIdStr, `<b>${prevItem.platformName}</b>\nУкажите цену за: <b>${prevItem.fieldLabel}</b>\n${priceStr}\n\nВведите цену или нажмите "Пропустить ⏭":`, {
@@ -361,27 +366,27 @@ export async function POST(req: Request) {
           resize_keyboard: true
         });
         return NextResponse.json({ ok: true }, { headers: corsHeaders });
+      } else {
+        const currentItem = queue[currentIndex];
+        if (!tempData.prices[currentItem.platformKey]) {
+          tempData.prices[currentItem.platformKey] = {};
+        }
+        tempData.prices[currentItem.platformKey][currentItem.fieldKey] = text === "Пропустить ⏭" ? "-" : text;
+        currentIndex++;
       }
-
-      const currentItem = queue[currentIndex];
-      if (!tempData.prices[currentItem.platformKey]) {
-        tempData.prices[currentItem.platformKey] = {};
-      }
-      tempData.prices[currentItem.platformKey][currentItem.fieldKey] = text === "Пропустить ⏭" ? "-" : text;
       
-      const nextIndex = currentIndex + 1;
-      
-      if (nextIndex < queue.length) {
-        tempData.currentIndex = nextIndex;
+      if (!finishNow && currentIndex < queue.length) {
+        tempData.currentIndex = currentIndex;
         await prisma.bloggerBotSession.update({
           where: { chatId: chatIdStr },
           data: { tempData },
         });
-        const nextItem = queue[nextIndex];
+        const nextItem = queue[currentIndex];
         const currentPrice = tempData.prices[nextItem.platformKey]?.[nextItem.fieldKey];
         const priceStr = currentPrice ? `(сейчас = ${currentPrice})` : "(сейчас нету цены)";
 
-        const keyboardRow = [{ text: "Пропустить ⏭" }, { text: "Назад ⬅️" }];
+        const keyboardRow = [{ text: "Пропустить ⏭" }, { text: "Пропустить всё ⏭⏭" }];
+        if (currentIndex > 0) keyboardRow.push({ text: "Назад ⬅️" });
         
         await sendMessage(chatIdStr, `<b>${nextItem.platformName}</b>\nУкажите цену за: <b>${nextItem.fieldLabel}</b>\n${priceStr}\n\nВведите цену или нажмите "Пропустить ⏭":`, {
           keyboard: [keyboardRow, [{ text: "Главное меню 🏠" }]],
@@ -537,7 +542,7 @@ export async function POST(req: Request) {
             const priceStr = currentPrice ? `(сейчас = ${currentPrice})` : "(сейчас нету цены)";
             
             await sendMessage(chatIdStr, `<b>${first.platformName}</b>\nУкажите цену за: <b>${first.fieldLabel}</b>\n${priceStr}\n\nВведите цену или нажмите "Пропустить ⏭":`, {
-              keyboard: [[{ text: "Пропустить ⏭" }], [{ text: "Главное меню 🏠" }]],
+              keyboard: [[{ text: "Пропустить ⏭" }, { text: "Пропустить всё ⏭⏭" }], [{ text: "Главное меню 🏠" }]],
               resize_keyboard: true
             });
           }
