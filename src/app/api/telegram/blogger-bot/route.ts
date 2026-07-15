@@ -21,6 +21,41 @@ const METRIC_2_PROMPT: Record<string, { field: string, label: string } | null> =
   vk: null
 };
 
+const PRICING_FIELDS: Record<string, { key: string, label: string }[]> = {
+  tiktok: [
+    { key: "video", label: "ролик" }
+  ],
+  instagram: [
+    { key: "post", label: "пост" },
+    { key: "story", label: "Стори" }
+  ],
+  youtube: [
+    { key: "big", label: "большие ролики" },
+    { key: "preroll", label: "Преролл" },
+    { key: "int1", label: "Интеграция 1 слот" },
+    { key: "int2", label: "Интеграция 2 слот" },
+    { key: "shorts", label: "YT Shorts" }
+  ],
+  vk: [
+    { key: "post", label: "Текстовый/фотопост" },
+    { key: "clip", label: "Клип" }
+  ],
+  telegram: [
+    { key: "text", label: "Текстовый пост" },
+    { key: "photo", label: "Фотопост" },
+    { key: "video", label: "Видеопост" },
+    { key: "circle", label: "Кружок + текст" }
+  ]
+};
+
+const PLATFORM_NAMES: Record<string, string> = {
+  tiktok: "TikTok",
+  instagram: "Instagram",
+  youtube: "Youtube",
+  vk: "VK",
+  telegram: "tgk"
+};
+
 async function sendMessage(chatId: string, text: string, replyMarkup?: any) {
   if (!BOT_TOKEN) return;
   const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
@@ -301,6 +336,81 @@ export async function POST(req: Request) {
       }
       return NextResponse.json({ ok: true }, { headers: corsHeaders });
     }
+    // 4.5 EDIT PRICES FLOW
+    if (session.step === "EDIT_PRICES_FLOW") {
+      if (text === "Главное меню 🏠") return NextResponse.json({ ok: true }, { headers: corsHeaders });
+      
+      const tempData = session.tempData as Record<string, any>;
+      const queue = tempData.queue;
+      const currentIndex = tempData.currentIndex;
+      const currentItem = queue[currentIndex];
+      
+      if (!tempData.prices[currentItem.platformKey]) {
+        tempData.prices[currentItem.platformKey] = {};
+      }
+      tempData.prices[currentItem.platformKey][currentItem.fieldKey] = text === "Пропустить ⏭" ? "-" : text;
+      
+      const nextIndex = currentIndex + 1;
+      
+      if (nextIndex < queue.length) {
+        tempData.currentIndex = nextIndex;
+        await prisma.bloggerBotSession.update({
+          where: { chatId: chatIdStr },
+          data: { tempData },
+        });
+        const nextItem = queue[nextIndex];
+        await sendMessage(chatIdStr, `<b>${nextItem.platformName}</b>\nУкажите цену за: <b>${nextItem.fieldLabel}</b>\n\nВведите цену или нажмите "Пропустить ⏭":`, {
+          keyboard: [[{ text: "Пропустить ⏭" }, { text: "Главное меню 🏠" }]],
+          resize_keyboard: true
+        });
+      } else {
+        // FINISHED! Save to DB.
+        const blogger = await prisma.blogger.findUnique({ where: { id: session.bloggerId! } });
+        const details = (blogger?.details as Record<string, any>) || {};
+        details.prices = tempData.prices;
+        
+        await prisma.blogger.update({
+          where: { id: session.bloggerId! },
+          data: { details },
+        });
+        
+        // Generate summary text
+        let summary = `<b>${blogger?.name}</b>\n\n`;
+        
+        // Group by platformKey
+        const platformsInQueue = Array.from(new Set(queue.map((q: any) => q.platformKey)));
+        for (const pKey of platformsInQueue as string[]) {
+          const basePlatform = pKey.split("_")[0];
+          const pName = PLATFORM_NAMES[basePlatform] || basePlatform;
+          const url = queue.find((q: any) => q.platformKey === pKey)?.url;
+          summary += `<b>${pName}:</b> ${url}\n`;
+          
+          const fields = PRICING_FIELDS[basePlatform] || [];
+          for (const f of fields) {
+             const price = tempData.prices[pKey]?.[f.key];
+             if (price) {
+               let separator = " ";
+               if (basePlatform === "vk") separator = " — ";
+               if (basePlatform === "telegram") separator = ": ";
+               summary += `${f.label}${separator}${price}\n`;
+             }
+          }
+          summary += "\n";
+        }
+        
+        await prisma.bloggerBotSession.update({
+          where: { chatId: chatIdStr },
+          data: { step: "START", bloggerId: null, tempData: null },
+        });
+        
+        await sendMessage(chatIdStr, `✅ <b>Цены сохранены!</b>\nВот готовая сводка:\n\n${summary}`, { remove_keyboard: true });
+        revalidatePath("/blogers");
+        revalidatePath("/statistics");
+        revalidatePath("/");
+      }
+      
+      return NextResponse.json({ ok: true }, { headers: corsHeaders });
+    }
 
     // 5. CALLBACKS (Inline Keyboard)
     if (callbackQuery) {
@@ -315,7 +425,8 @@ export async function POST(req: Request) {
 
         const buttons = [
           [{ text: "📝 Редактировать описание", callback_data: `action:details` }],
-          [{ text: "📱 Обновить соцсети / статистику", callback_data: `action:socials` }]
+          [{ text: "📱 Обновить соцсети / статистику", callback_data: `action:socials` }],
+          [{ text: "💰 Редактировать цены", callback_data: `action:prices` }]
         ];
         
         const blogger = await prisma.blogger.findUnique({ where: { id: bloggerId } });
@@ -359,6 +470,48 @@ export async function POST(req: Request) {
           });
 
           await sendMessage(chatIdStr, `Выберите соцсеть для редактирования:`, { inline_keyboard: buttons });
+        }
+      }
+      else if (data === "action:prices" && session.bloggerId) {
+        const blogger = await prisma.blogger.findUnique({ where: { id: session.bloggerId } });
+        const socials = (blogger?.socials as Record<string, any>) || {};
+        const socialKeys = Object.keys(socials);
+
+        if (socialKeys.length === 0) {
+          await sendMessage(chatIdStr, "У этого блогера не добавлено ни одной соцсети. Сначала добавьте соцсети!");
+        } else {
+          // Build queue
+          const queue: { platformKey: string, platformName: string, url: string, fieldKey: string, fieldLabel: string }[] = [];
+          
+          for (const key of socialKeys) {
+             const basePlatform = key.split("_")[0];
+             const fields = PRICING_FIELDS[basePlatform];
+             if (fields && socials[key]?.url) {
+               for (const f of fields) {
+                 queue.push({
+                   platformKey: key,
+                   platformName: PLATFORM_NAMES[basePlatform] || basePlatform,
+                   url: socials[key].url,
+                   fieldKey: f.key,
+                   fieldLabel: f.label
+                 });
+               }
+             }
+          }
+
+          if (queue.length === 0) {
+             await sendMessage(chatIdStr, "Нет соцсетей с заполненной ссылкой (URL). Сначала обновите ссылки на соцсети.");
+          } else {
+            await prisma.bloggerBotSession.update({
+              where: { chatId: chatIdStr },
+              data: { step: "EDIT_PRICES_FLOW", tempData: { queue, currentIndex: 0, prices: {} } },
+            });
+            const first = queue[0];
+            await sendMessage(chatIdStr, `<b>${first.platformName}</b>\nУкажите цену за: <b>${first.fieldLabel}</b>\n\nВведите цену или нажмите "Пропустить ⏭":`, {
+              keyboard: [[{ text: "Пропустить ⏭" }, { text: "Главное меню 🏠" }]],
+              resize_keyboard: true
+            });
+          }
         }
       }
       else if (data.startsWith("social:") && session.bloggerId) {
