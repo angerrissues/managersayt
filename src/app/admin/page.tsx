@@ -45,10 +45,17 @@ export default function AdminPage() {
           >
             Р Р°СЃСЃС‹Р»РєР°
           </div>
+          <div 
+            className={`botTab ${activeTab === 'chat' ? 'active' : ''}`}
+            onClick={() => setActiveTab('chat')}
+          >
+            Р§Р°С‚ СЃ РР
+          </div>
         </div>
 
         {activeTab === 'reminders' && <Reminders />}
         {activeTab === 'broadcast' && <Broadcast />}
+        {activeTab === 'chat' && <AIChat />}
         
       </div>
     </div>
@@ -269,6 +276,86 @@ function Reminders() {
             </div>
           ))
         )}
+      </div>
+    </div>
+  );
+}
+
+function AIChat() {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<{role: 'user'|'ai', text: string}[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+    
+    const userMsg = input.trim();
+    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setInput('');
+    setLoading(true);
+
+    try {
+      const response = await fetch(\\/api/chat\, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMsg })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setMessages(prev => [...prev, { role: 'ai', text: data.response }]);
+      } else {
+        setMessages(prev => [...prev, { role: 'ai', text: \Ошибка: \\ }]);
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'ai', text: 'Ошибка соединения с сервером бота.' }]);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="glassPanel" style={{ display: 'flex', flexDirection: 'column', height: '60vh' }}>
+      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>Чат с нейросетью</h2>
+      
+      <div style={{ flex: 1, overflowY: 'auto', marginBottom: 15, padding: 10, background: 'rgba(0,0,0,0.2)', borderRadius: 8 }}>
+        {messages.length === 0 ? (
+          <p style={{ color: 'var(--text-light)', textAlign: 'center', marginTop: 20 }}>Задайте вопрос по базе данных агентства...</p>
+        ) : (
+          messages.map((msg, i) => (
+            <div key={i} style={{ 
+              marginBottom: 10, 
+              textAlign: msg.role === 'user' ? 'right' : 'left' 
+            }}>
+              <span style={{ 
+                display: 'inline-block', 
+                padding: '8px 12px', 
+                borderRadius: 12,
+                backgroundColor: msg.role === 'user' ? 'var(--primary-pink)' : '#333',
+                color: 'white',
+                maxWidth: '80%',
+                wordWrap: 'break-word',
+                whiteSpace: 'pre-wrap'
+              }}>
+                {msg.text}
+              </span>
+            </div>
+          ))
+        )}
+        {loading && <div style={{ color: 'var(--text-light)', fontSize: 12 }}>Нейросеть печатает...</div>}
+      </div>
+
+      <div style={{ display: 'flex', gap: 10 }}>
+        <input 
+          className="botInput"
+          type="text" 
+          placeholder="Напишите сообщение..." 
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSend()}
+          style={{ flex: 1 }}
+        />
+        <button className="botBtn" onClick={handleSend} disabled={loading || !input.trim()}>
+          Отправить
+        </button>
       </div>
     </div>
   );
