@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from 'react';
 import { Send, Loader2, Bell, Clock, Plus, Trash2 } from 'lucide-react';
 import { useAdmin } from '@/components/shared/AdminProvider';
 import './admin.css';
 
-// Получаем URL бэкенда бота из переменных окружения. Если не задан - используем локальный
+// РџРѕР»СѓС‡Р°РµРј URL Р±СЌРєРµРЅРґР° Р±РѕС‚Р° РёР· РїРµСЂРµРјРµРЅРЅС‹С… РѕРєСЂСѓР¶РµРЅРёСЏ. Р•СЃР»Рё РЅРµ Р·Р°РґР°РЅ - РёСЃРїРѕР»СЊР·СѓРµРј Р»РѕРєР°Р»СЊРЅС‹Р№
 const API_BASE = process.env.NEXT_PUBLIC_BOT_API || 'http://localhost:8080';
 
 export default function AdminPage() {
@@ -16,9 +16,9 @@ export default function AdminPage() {
     return (
       <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', background: '#111' }}>
         <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Доступ закрыт</h1>
-          <p style={{ color: '#888' }}>У вас нет прав для просмотра этой страницы.</p>
-          <p style={{ color: '#555', fontSize: '12px', marginTop: '20px' }}>(Нажмите Ctrl+Alt+Y для входа)</p>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Р”РѕСЃС‚СѓРї Р·Р°РєСЂС‹С‚</h1>
+          <p style={{ color: '#888' }}>РЈ РІР°СЃ РЅРµС‚ РїСЂР°РІ РґР»СЏ РїСЂРѕСЃРјРѕС‚СЂР° СЌС‚РѕР№ СЃС‚СЂР°РЅРёС†С‹.</p>
+          <p style={{ color: '#555', fontSize: '12px', marginTop: '20px' }}>(РќР°Р¶РјРёС‚Рµ Ctrl+Alt+Y РґР»СЏ РІС…РѕРґР°)</p>
         </div>
       </div>
     );
@@ -28,8 +28,8 @@ export default function AdminPage() {
     <div className="botAdminBody">
       <div className="appContainer">
         <div style={{ textAlign: 'center', marginBottom: 30 }}>
-          <h1 className="botAdminTitle" style={{ justifyContent: 'center' }}>Панель Управления</h1>
-          <p style={{ color: 'var(--text-light)', marginTop: -10 }}>Агентство 82 (Telegram Bot)</p>
+          <h1 className="botAdminTitle" style={{ justifyContent: 'center' }}>РџР°РЅРµР»СЊ РЈРїСЂР°РІР»РµРЅРёСЏ</h1>
+          <p style={{ color: 'var(--text-light)', marginTop: -10 }}>РђРіРµРЅС‚СЃС‚РІРѕ 82 (Telegram Bot)</p>
         </div>
 
         <div className="botTabs">
@@ -37,19 +37,19 @@ export default function AdminPage() {
             className={`botTab ${activeTab === 'reminders' ? 'active' : ''}`}
             onClick={() => setActiveTab('reminders')}
           >
-            Напоминания
+            РќР°РїРѕРјРёРЅР°РЅРёСЏ
           </div>
           <div 
             className={`botTab ${activeTab === 'broadcast' ? 'active' : ''}`}
             onClick={() => setActiveTab('broadcast')}
           >
-            Рассылка
+            Р Р°СЃСЃС‹Р»РєР°
           </div>
           <div 
             className={`botTab ${activeTab === 'chat' ? 'active' : ''}`}
             onClick={() => setActiveTab('chat')}
           >
-            Чат с ИИ
+            Р§Р°С‚ СЃ РР
           </div>
         </div>
 
@@ -70,40 +70,40 @@ function Broadcast() {
   const handleSend = async () => {
     if (!message.trim()) return;
     
-    if (!confirm('Вы уверены, что хотите отправить это сообщение ВСЕМ блогерам?')) return;
+    if (!confirm('Р’С‹ СѓРІРµСЂРµРЅС‹, С‡С‚Рѕ С…РѕС‚РёС‚Рµ РѕС‚РїСЂР°РІРёС‚СЊ СЌС‚Рѕ СЃРѕРѕР±С‰РµРЅРёРµ Р’РЎР•Рњ Р±Р»РѕРіРµСЂР°Рј?')) return;
 
     setLoading(true);
     setStatus(null);
     try {
-      const response = await fetch(`${API_BASE}/api/broadcast`, {
+      const response = await fetch(`/api/bot/broadcast`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message })
       });
       const data = await response.json();
       if (response.ok) {
-        setStatus({ type: 'success', text: `Успешно отправлено ${data.sent} блогерам!` });
+        setStatus({ type: 'success', text: `РЈСЃРїРµС€РЅРѕ РѕС‚РїСЂР°РІР»РµРЅРѕ ${data.sent} Р±Р»РѕРіРµСЂР°Рј!` });
         setMessage('');
       } else {
-        setStatus({ type: 'error', text: data.error || 'Произошла ошибка' });
+        setStatus({ type: 'error', text: data.error || 'РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°' });
       }
     } catch (err) {
-      setStatus({ type: 'error', text: 'Ошибка соединения с сервером бота. Проверьте, что бот запущен.' });
+      setStatus({ type: 'error', text: 'РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ СЃРµСЂРІРµСЂРѕРј Р±РѕС‚Р°. РџСЂРѕРІРµСЂСЊС‚Рµ, С‡С‚Рѕ Р±РѕС‚ Р·Р°РїСѓС‰РµРЅ.' });
     }
     setLoading(false);
   };
 
   return (
     <div className="glassPanel">
-      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}><Send size={24} style={{ marginRight: 8 }} /> Массовая рассылка</h2>
+      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}><Send size={24} style={{ marginRight: 8 }} /> РњР°СЃСЃРѕРІР°СЏ СЂР°СЃСЃС‹Р»РєР°</h2>
       <p style={{ color: 'var(--text-light)', marginBottom: 20 }}>
-        Это сообщение будет отправлено всем чатам из папки "блогеры" от вашего лица.
+        Р­С‚Рѕ СЃРѕРѕР±С‰РµРЅРёРµ Р±СѓРґРµС‚ РѕС‚РїСЂР°РІР»РµРЅРѕ РІСЃРµРј С‡Р°С‚Р°Рј РёР· РїР°РїРєРё "Р±Р»РѕРіРµСЂС‹" РѕС‚ РІР°С€РµРіРѕ Р»РёС†Р°.
       </p>
       
       <textarea 
         className="botTextarea"
         rows={6} 
-        placeholder="Здравствуйте! Пожалуйста, пришлите актуальную статистику..."
+        placeholder="Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ! РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РїСЂРёС€Р»РёС‚Рµ Р°РєС‚СѓР°Р»СЊРЅСѓСЋ СЃС‚Р°С‚РёСЃС‚РёРєСѓ..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
@@ -122,7 +122,7 @@ function Broadcast() {
 
       <button className="botBtn" onClick={handleSend} disabled={loading || !message.trim()} style={{ width: '100%' }}>
         {loading ? <Loader2 className="animate-spin" /> : <Send size={20} />}
-        {loading ? 'Отправка...' : 'Отправить всем'}
+        {loading ? 'РћС‚РїСЂР°РІРєР°...' : 'РћС‚РїСЂР°РІРёС‚СЊ РІСЃРµРј'}
       </button>
     </div>
   );
@@ -137,7 +137,7 @@ function Reminders() {
 
   const fetchReminders = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/reminders`);
+      const res = await fetch(`/api/bot/reminders`);
       const data = await res.json();
       if (Array.isArray(data)) {
           setReminders(data);
@@ -157,7 +157,7 @@ function Reminders() {
     if (!newUsername || !newMessage || !newInterval) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/reminders`, {
+      const res = await fetch(`/api/bot/reminders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -173,17 +173,17 @@ function Reminders() {
         setNewInterval('5');
         fetchReminders();
       } else {
-        alert('Ошибка: ' + (data.error || 'Не удалось добавить'));
+        alert('РћС€РёР±РєР°: ' + (data.error || 'РќРµ СѓРґР°Р»РѕСЃСЊ РґРѕР±Р°РІРёС‚СЊ'));
       }
     } catch (e) {
-      alert('Ошибка соединения с сервером бота');
+      alert('РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ СЃРµСЂРІРµСЂРѕРј Р±РѕС‚Р°');
     }
     setLoading(false);
   };
 
   const handleToggle = async (id: number) => {
     try {
-      await fetch(`${API_BASE}/api/reminders/toggle`, {
+      await fetch(`/api/bot/reminders/toggle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -195,9 +195,9 @@ function Reminders() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Удалить напоминание?')) return;
+    if (!confirm('РЈРґР°Р»РёС‚СЊ РЅР°РїРѕРјРёРЅР°РЅРёРµ?')) return;
     try {
-      await fetch(`${API_BASE}/api/reminders/delete`, {
+      await fetch(`/api/bot/reminders/delete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -211,7 +211,7 @@ function Reminders() {
   return (
     <div>
       <div className="glassPanel">
-        <h2 className="botAdminTitle" style={{ marginBottom: 15 }}><Plus size={24} style={{ marginRight: 8 }} /> Новое напоминание</h2>
+        <h2 className="botAdminTitle" style={{ marginBottom: 15 }}><Plus size={24} style={{ marginRight: 8 }} /> РќРѕРІРѕРµ РЅР°РїРѕРјРёРЅР°РЅРёРµ</h2>
         
         <div style={{ display: 'flex', gap: 10 }}>
           <input 
@@ -223,38 +223,38 @@ function Reminders() {
             style={{ flex: 1, marginBottom: 10 }}
           />
           <select className="botSelect" value={newInterval} onChange={e => setNewInterval(e.target.value)} style={{ width: '120px', marginBottom: 10 }}>
-            <option value="1">1 час</option>
-            <option value="3">3 часа</option>
-            <option value="5">5 часов</option>
-            <option value="12">12 часов</option>
-            <option value="24">24 часа</option>
+            <option value="1">1 С‡Р°СЃ</option>
+            <option value="3">3 С‡Р°СЃР°</option>
+            <option value="5">5 С‡Р°СЃРѕРІ</option>
+            <option value="12">12 С‡Р°СЃРѕРІ</option>
+            <option value="24">24 С‡Р°СЃР°</option>
           </select>
         </div>
         
         <textarea 
           className="botTextarea"
           rows={3} 
-          placeholder="Напоминаю, нужно обновить сценарий!"
+          placeholder="РќР°РїРѕРјРёРЅР°СЋ, РЅСѓР¶РЅРѕ РѕР±РЅРѕРІРёС‚СЊ СЃС†РµРЅР°СЂРёР№!"
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
           style={{ marginBottom: 10 }}
         />
         
         <button className="botBtn" onClick={handleAdd} disabled={loading || !newUsername || !newMessage} style={{ padding: '8px 16px' }}>
-          Добавить
+          Р”РѕР±Р°РІРёС‚СЊ
         </button>
       </div>
 
       <div className="glassPanel">
-        <h2 className="botAdminTitle" style={{ marginBottom: 15 }}><Bell size={24} style={{ marginRight: 8 }} /> Активные напоминания</h2>
+        <h2 className="botAdminTitle" style={{ marginBottom: 15 }}><Bell size={24} style={{ marginRight: 8 }} /> РђРєС‚РёРІРЅС‹Рµ РЅР°РїРѕРјРёРЅР°РЅРёСЏ</h2>
         
         {reminders.length === 0 ? (
-          <p style={{ color: 'var(--text-light)', textAlign: 'center' }}>Нет активных напоминаний</p>
+          <p style={{ color: 'var(--text-light)', textAlign: 'center' }}>РќРµС‚ Р°РєС‚РёРІРЅС‹С… РЅР°РїРѕРјРёРЅР°РЅРёР№</p>
         ) : (
           reminders.map(rem => (
             <div key={rem.id} className="reminderItem" style={{ opacity: rem.is_active ? 1 : 0.6 }}>
               <div className="reminderInfo">
-                <h4>{rem.username} <span style={{ fontSize: 12, color: 'var(--primary-pink)' }}><Clock size={12} style={{verticalAlign: 'middle'}}/> Каждые {rem.interval_hours} ч.</span></h4>
+                <h4>{rem.username} <span style={{ fontSize: 12, color: 'var(--primary-pink)' }}><Clock size={12} style={{verticalAlign: 'middle'}}/> РљР°Р¶РґС‹Рµ {rem.interval_hours} С‡.</span></h4>
                 <p>{rem.message.length > 50 ? rem.message.substring(0, 50) + '...' : rem.message}</p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -295,7 +295,7 @@ function AIChat() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE}/api/chat`, {
+      const response = await fetch(`/api/bot/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg })
@@ -304,21 +304,21 @@ function AIChat() {
       if (response.ok) {
         setMessages(prev => [...prev, { role: 'ai', text: data.response }]);
       } else {
-        setMessages(prev => [...prev, { role: 'ai', text: `Ошибка: ${data.error}` }]);
+        setMessages(prev => [...prev, { role: 'ai', text: `РћС€РёР±РєР°: ${data.error}` }]);
       }
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'Ошибка соединения с сервером бота.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ СЃРµСЂРІРµСЂРѕРј Р±РѕС‚Р°.' }]);
     }
     setLoading(false);
   };
 
   return (
     <div className="glassPanel" style={{ display: 'flex', flexDirection: 'column', height: '60vh' }}>
-      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>Чат с нейросетью</h2>
+      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>Р§Р°С‚ СЃ РЅРµР№СЂРѕСЃРµС‚СЊСЋ</h2>
       
       <div style={{ flex: 1, overflowY: 'auto', marginBottom: 15, padding: 10, background: 'rgba(0,0,0,0.2)', borderRadius: 8 }}>
         {messages.length === 0 ? (
-          <p style={{ color: 'var(--text-light)', textAlign: 'center', marginTop: 20 }}>Задайте вопрос по базе данных агентства...</p>
+          <p style={{ color: 'var(--text-light)', textAlign: 'center', marginTop: 20 }}>Р—Р°РґР°Р№С‚Рµ РІРѕРїСЂРѕСЃ РїРѕ Р±Р°Р·Рµ РґР°РЅРЅС‹С… Р°РіРµРЅС‚СЃС‚РІР°...</p>
         ) : (
           messages.map((msg, i) => (
             <div key={i} style={{ 
@@ -340,23 +340,24 @@ function AIChat() {
             </div>
           ))
         )}
-        {loading && <div style={{ color: 'var(--text-light)', fontSize: 12 }}>Нейросеть печатает...</div>}
+        {loading && <div style={{ color: 'var(--text-light)', fontSize: 12 }}>РќРµР№СЂРѕСЃРµС‚СЊ РїРµС‡Р°С‚Р°РµС‚...</div>}
       </div>
 
       <div style={{ display: 'flex', gap: 10 }}>
         <input 
           className="botInput"
           type="text" 
-          placeholder="Напишите сообщение..." 
+          placeholder="РќР°РїРёС€РёС‚Рµ СЃРѕРѕР±С‰РµРЅРёРµ..." 
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSend()}
           style={{ flex: 1 }}
         />
         <button className="botBtn" onClick={handleSend} disabled={loading || !input.trim()}>
-          Отправить
+          РћС‚РїСЂР°РІРёС‚СЊ
         </button>
       </div>
     </div>
   );
 }
+
