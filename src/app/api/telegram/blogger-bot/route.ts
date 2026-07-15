@@ -343,8 +343,28 @@ export async function POST(req: Request) {
       const tempData = session.tempData as Record<string, any>;
       const queue = tempData.queue;
       const currentIndex = tempData.currentIndex;
-      const currentItem = queue[currentIndex];
       
+      if (text === "Назад ⬅️" && currentIndex > 0) {
+        tempData.currentIndex = currentIndex - 1;
+        await prisma.bloggerBotSession.update({
+          where: { chatId: chatIdStr },
+          data: { tempData },
+        });
+        const prevItem = queue[tempData.currentIndex];
+        const currentPrice = tempData.prices[prevItem.platformKey]?.[prevItem.fieldKey];
+        const priceStr = currentPrice ? `(сейчас = ${currentPrice})` : "(сейчас нету цены)";
+        
+        const keyboardRow = [{ text: "Пропустить ⏭" }];
+        if (tempData.currentIndex > 0) keyboardRow.push({ text: "Назад ⬅️" });
+        
+        await sendMessage(chatIdStr, `<b>${prevItem.platformName}</b>\nУкажите цену за: <b>${prevItem.fieldLabel}</b>\n${priceStr}\n\nВведите цену или нажмите "Пропустить ⏭":`, {
+          keyboard: [keyboardRow, [{ text: "Главное меню 🏠" }]],
+          resize_keyboard: true
+        });
+        return NextResponse.json({ ok: true }, { headers: corsHeaders });
+      }
+
+      const currentItem = queue[currentIndex];
       if (!tempData.prices[currentItem.platformKey]) {
         tempData.prices[currentItem.platformKey] = {};
       }
@@ -359,8 +379,13 @@ export async function POST(req: Request) {
           data: { tempData },
         });
         const nextItem = queue[nextIndex];
-        await sendMessage(chatIdStr, `<b>${nextItem.platformName}</b>\nУкажите цену за: <b>${nextItem.fieldLabel}</b>\n\nВведите цену или нажмите "Пропустить ⏭":`, {
-          keyboard: [[{ text: "Пропустить ⏭" }, { text: "Главное меню 🏠" }]],
+        const currentPrice = tempData.prices[nextItem.platformKey]?.[nextItem.fieldKey];
+        const priceStr = currentPrice ? `(сейчас = ${currentPrice})` : "(сейчас нету цены)";
+
+        const keyboardRow = [{ text: "Пропустить ⏭" }, { text: "Назад ⬅️" }];
+        
+        await sendMessage(chatIdStr, `<b>${nextItem.platformName}</b>\nУкажите цену за: <b>${nextItem.fieldLabel}</b>\n${priceStr}\n\nВведите цену или нажмите "Пропустить ⏭":`, {
+          keyboard: [keyboardRow, [{ text: "Главное меню 🏠" }]],
           resize_keyboard: true
         });
       } else {
@@ -403,7 +428,8 @@ export async function POST(req: Request) {
           data: { step: "START", bloggerId: null, tempData: null },
         });
         
-        await sendMessage(chatIdStr, `✅ <b>Цены сохранены!</b>\nВот готовая сводка:\n\n${summary}`, { remove_keyboard: true });
+        await sendMessage(chatIdStr, `✅ <b>Цены сохранены!</b>`, { remove_keyboard: true });
+        await sendMessage(chatIdStr, summary);
         revalidatePath("/blogers");
         revalidatePath("/statistics");
         revalidatePath("/");
@@ -502,13 +528,17 @@ export async function POST(req: Request) {
           if (queue.length === 0) {
              await sendMessage(chatIdStr, "Нет соцсетей с заполненной ссылкой (URL). Сначала обновите ссылки на соцсети.");
           } else {
+            const currentPrices = (blogger?.details as Record<string,any>)?.prices || {};
             await prisma.bloggerBotSession.update({
               where: { chatId: chatIdStr },
-              data: { step: "EDIT_PRICES_FLOW", tempData: { queue, currentIndex: 0, prices: {} } },
+              data: { step: "EDIT_PRICES_FLOW", tempData: { queue, currentIndex: 0, prices: currentPrices } },
             });
             const first = queue[0];
-            await sendMessage(chatIdStr, `<b>${first.platformName}</b>\nУкажите цену за: <b>${first.fieldLabel}</b>\n\nВведите цену или нажмите "Пропустить ⏭":`, {
-              keyboard: [[{ text: "Пропустить ⏭" }, { text: "Главное меню 🏠" }]],
+            const currentPrice = currentPrices[first.platformKey]?.[first.fieldKey];
+            const priceStr = currentPrice ? `(сейчас = ${currentPrice})` : "(сейчас нету цены)";
+            
+            await sendMessage(chatIdStr, `<b>${first.platformName}</b>\nУкажите цену за: <b>${first.fieldLabel}</b>\n${priceStr}\n\nВведите цену или нажмите "Пропустить ⏭":`, {
+              keyboard: [[{ text: "Пропустить ⏭" }], [{ text: "Главное меню 🏠" }]],
               resize_keyboard: true
             });
           }
