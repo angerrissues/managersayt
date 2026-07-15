@@ -42,7 +42,26 @@ export async function loginViaTelegram(initData: string) {
     const calculatedHash = crypto.createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
 
     if (calculatedHash === hash) {
-      // Подпись верна! Устанавливаем админскую куку.
+      // Пытаемся получить user.id из initData
+      const userParam = urlParams.get("user");
+      if (userParam) {
+        try {
+          const userObj = JSON.parse(decodeURIComponent(userParam));
+          const userId = String(userObj.id);
+          const allowedIds = (process.env.ALLOWED_MANAGER_IDS || "").split(",").map(id => id.trim());
+          
+          if (!allowedIds.includes(userId)) {
+            return { success: false, error: "Ваш Telegram ID не имеет прав администратора" };
+          }
+        } catch (e) {
+          // Если не смогли распарсить user, лучше запретить доступ
+          return { success: false, error: "Ошибка идентификации пользователя" };
+        }
+      } else {
+        return { success: false, error: "Данные пользователя отсутствуют" };
+      }
+
+      // Подпись верна и ID разрешен! Устанавливаем админскую куку.
       const cookieStore = await cookies();
       cookieStore.set("admin_token", "true", { httpOnly: true, secure: true, path: "/" });
       return { success: true };
