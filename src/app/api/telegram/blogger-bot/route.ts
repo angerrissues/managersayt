@@ -26,8 +26,8 @@ const PRICING_FIELDS: Record<string, { key: string, label: string }[]> = {
     { key: "video", label: "ролик" }
   ],
   instagram: [
-    { key: "post", label: "пост" },
-    { key: "story", label: "Стори" }
+    { key: "post", label: "рилс" },
+    { key: "story", label: "сторис" }
   ],
   youtube: [
     { key: "preroll", label: "Преролл" },
