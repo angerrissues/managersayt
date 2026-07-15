@@ -5,9 +5,6 @@ import { Send, Loader2, Bell, Clock, Plus, Trash2 } from 'lucide-react';
 import { useAdmin } from '@/components/shared/AdminProvider';
 import './admin.css';
 
-// Получаем URL бэкенда бота из переменных окружения. Если не задан - используем локальный
-const API_BASE = process.env.NEXT_PUBLIC_BOT_API || 'http://localhost:8080';
-
 export default function AdminPage() {
   const { isAdmin } = useAdmin();
   const [activeTab, setActiveTab] = useState('reminders');
@@ -149,7 +146,7 @@ function Reminders() {
 
   useEffect(() => {
     fetchReminders();
-    const interval = setInterval(fetchReminders, 10000); // refresh every 10s
+    const interval = setInterval(fetchReminders, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -359,4 +356,4 @@ function AIChat() {
       </div>
     </div>
   );
-}
+}

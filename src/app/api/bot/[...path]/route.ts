@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkIsAdmin } from "@/actions/admin";
 
-export async function GET(req: NextRequest, { params }: { params: { path: string[] } }) {
-  return proxyRequest(req, params.path, "GET");
+export async function GET(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const p = await params;
+  return proxyRequest(req, p.path, "GET");
 }
 
-export async function POST(req: NextRequest, { params }: { params: { path: string[] } }) {
-  return proxyRequest(req, params.path, "POST");
+export async function POST(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const p = await params;
+  return proxyRequest(req, p.path, "POST");
 }
 
 async function proxyRequest(req: NextRequest, pathArray: string[], method: string) {
