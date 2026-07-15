@@ -295,7 +295,7 @@ function AIChat() {
     setLoading(true);
 
     try {
-      const response = await fetch(\\/api/chat\, {
+      const response = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg })
@@ -304,21 +304,21 @@ function AIChat() {
       if (response.ok) {
         setMessages(prev => [...prev, { role: 'ai', text: data.response }]);
       } else {
-        setMessages(prev => [...prev, { role: 'ai', text: \: \\ }]);
+        setMessages(prev => [...prev, { role: 'ai', text: `Ошибка: ${data.error}` }]);
       }
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'ai', text: '    .' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'Ошибка соединения с сервером бота.' }]);
     }
     setLoading(false);
   };
 
   return (
     <div className="glassPanel" style={{ display: 'flex', flexDirection: 'column', height: '60vh' }}>
-      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>  </h2>
+      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>Чат с нейросетью</h2>
       
       <div style={{ flex: 1, overflowY: 'auto', marginBottom: 15, padding: 10, background: 'rgba(0,0,0,0.2)', borderRadius: 8 }}>
         {messages.length === 0 ? (
-          <p style={{ color: 'var(--text-light)', textAlign: 'center', marginTop: 20 }}>     ...</p>
+          <p style={{ color: 'var(--text-light)', textAlign: 'center', marginTop: 20 }}>Задайте вопрос по базе данных агентства...</p>
         ) : (
           messages.map((msg, i) => (
             <div key={i} style={{ 
@@ -340,21 +340,21 @@ function AIChat() {
             </div>
           ))
         )}
-        {loading && <div style={{ color: 'var(--text-light)', fontSize: 12 }}> ...</div>}
+        {loading && <div style={{ color: 'var(--text-light)', fontSize: 12 }}>Нейросеть печатает...</div>}
       </div>
 
       <div style={{ display: 'flex', gap: 10 }}>
         <input 
           className="botInput"
           type="text" 
-          placeholder=" ..." 
+          placeholder="Напишите сообщение..." 
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSend()}
           style={{ flex: 1 }}
         />
         <button className="botBtn" onClick={handleSend} disabled={loading || !input.trim()}>
-          
+          Отправить
         </button>
       </div>
     </div>
