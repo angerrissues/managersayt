@@ -277,12 +277,17 @@ function Reminders() {
         ) : (
           reminders.map(rem => (
             <div key={rem.id} className="reminderItem" style={{ opacity: rem.is_active ? 1 : 0.6 }}>
-              <div className="reminderInfo" style={{ flex: 1 }}>
-                <h4>
-                  {rem.username} 
-                  <span style={{ fontSize: 12, color: 'var(--primary-pink)', marginLeft: 8 }}><Clock size={12} style={{verticalAlign: 'middle', marginRight: 2}}/> Каждые {rem.interval_hours} ч.</span>
-                  <span style={{ fontSize: 12, color: '#888', marginLeft: 8 }}>Отправлено: {rem.sent_count || 0} раз</span>
-                </h4>
+              <div className="reminderInfo" style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                  <span style={{ fontWeight: 'bold', color: 'var(--text-dark)' }}>{rem.username}</span>
+                  <span style={{ fontSize: 12, color: 'var(--primary-pink)', display: 'inline-flex', alignItems: 'center', background: 'rgba(255, 107, 158, 0.1)', padding: '2px 8px', borderRadius: 12 }}>
+                    <Clock size={12} style={{ marginRight: 4 }}/> 
+                    Каждые {rem.interval_hours} ч.
+                  </span>
+                  <span style={{ fontSize: 12, color: '#888', background: 'rgba(0,0,0,0.05)', padding: '2px 8px', borderRadius: 12 }}>
+                    Отправлено: {rem.sent_count || 0} раз
+                  </span>
+                </div>
                 {editingId === rem.id ? (
                   <div style={{ marginTop: 8 }}>
                     <textarea 
@@ -297,10 +302,10 @@ function Reminders() {
                     </div>
                   </div>
                 ) : (
-                  <p>{rem.message}</p>
+                  <p style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>{rem.message}</p>
                 )}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                 <Edit2 
                   size={20} 
                   color="#bbb" 
