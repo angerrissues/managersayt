@@ -416,13 +416,12 @@ export async function POST(req: Request) {
           
           const fields = PRICING_FIELDS[basePlatform] || [];
           for (const f of fields) {
-             const price = tempData.prices[pKey]?.[f.key];
-             if (price) {
-               let separator = " ";
-               if (basePlatform === "vk") separator = " — ";
-               if (basePlatform === "telegram") separator = ": ";
-               summary += `${f.label}${separator}${price}\n`;
-             }
+             const rawPrice = tempData.prices[pKey]?.[f.key];
+             const price = (rawPrice && rawPrice.trim() !== "") ? rawPrice : "-";
+             let separator = " ";
+             if (basePlatform === "vk") separator = " — ";
+             if (basePlatform === "telegram") separator = ": ";
+             summary += `${f.label}${separator}${price}\n`;
           }
           summary += "\n";
         }
