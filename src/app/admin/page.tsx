@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Send, Loader2, Bell, Clock, Plus, Trash2 } from 'lucide-react';
+import { Send, Loader2, Bell, Clock, Plus, Trash2, Edit2, Check, X } from 'lucide-react';
 import { useAdmin } from '@/components/shared/AdminProvider';
 import './admin.css';
 
@@ -131,6 +131,8 @@ function Reminders() {
   const [newMessage, setNewMessage] = useState('');
   const [newInterval, setNewInterval] = useState('5');
   const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingMessage, setEditingMessage] = useState('');
 
   const fetchReminders = async () => {
     try {
@@ -176,6 +178,30 @@ function Reminders() {
       alert('Ошибка соединения с сервером бота');
     }
     setLoading(false);
+  };
+
+  const handleEdit = (rem: any) => {
+    setEditingId(rem.id);
+    setEditingMessage(rem.message);
+  };
+
+  const handleSaveEdit = async (id: number) => {
+    try {
+      const res = await fetch(`/api/bot/reminders/edit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, message: editingMessage })
+      });
+      if (res.ok) {
+        setEditingId(null);
+        fetchReminders();
+      } else {
+        const data = await res.json();
+        alert('Ошибка: ' + (data.error || 'Не удалось сохранить'));
+      }
+    } catch (e) {
+      alert('Ошибка соединения с сервером бота');
+    }
   };
 
   const handleToggle = async (id: number) => {
@@ -250,11 +276,36 @@ function Reminders() {
         ) : (
           reminders.map(rem => (
             <div key={rem.id} className="reminderItem" style={{ opacity: rem.is_active ? 1 : 0.6 }}>
-              <div className="reminderInfo">
-                <h4>{rem.username} <span style={{ fontSize: 12, color: 'var(--primary-pink)' }}><Clock size={12} style={{verticalAlign: 'middle'}}/> Каждые {rem.interval_hours} ч.</span></h4>
-                <p>{rem.message.length > 50 ? rem.message.substring(0, 50) + '...' : rem.message}</p>
+              <div className="reminderInfo" style={{ flex: 1 }}>
+                <h4>
+                  {rem.username} 
+                  <span style={{ fontSize: 12, color: 'var(--primary-pink)', marginLeft: 8 }}><Clock size={12} style={{verticalAlign: 'middle', marginRight: 2}}/> Каждые {rem.interval_hours} ч.</span>
+                  <span style={{ fontSize: 12, color: '#888', marginLeft: 8 }}>Отправлено: {rem.sent_count || 0} раз</span>
+                </h4>
+                {editingId === rem.id ? (
+                  <div style={{ marginTop: 8 }}>
+                    <textarea 
+                      className="botTextarea" 
+                      rows={3} 
+                      value={editingMessage}
+                      onChange={(e) => setEditingMessage(e.target.value)}
+                    />
+                    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                      <button className="botBtn" onClick={() => handleSaveEdit(rem.id)} style={{ padding: '6px 12px', fontSize: 14 }}><Check size={16} style={{ marginRight: 4 }}/> Сохранить</button>
+                      <button className="botBtn" onClick={() => setEditingId(null)} style={{ padding: '6px 12px', fontSize: 14, background: '#555' }}><X size={16} style={{ marginRight: 4 }}/> Отмена</button>
+                    </div>
+                  </div>
+                ) : (
+                  <p>{rem.message}</p>
+                )}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <Edit2 
+                  size={20} 
+                  color="#bbb" 
+                  style={{ cursor: 'pointer' }} 
+                  onClick={() => handleEdit(rem)}
+                />
                 <label className="switch">
                   <input 
                     type="checkbox" 

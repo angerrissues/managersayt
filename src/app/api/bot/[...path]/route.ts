@@ -41,7 +41,13 @@ async function proxyRequest(req: NextRequest, pathArray: string[], method: strin
       body,
     });
 
-    const data = await response.json().catch(() => ({}));
+    let data;
+    try {
+      const text = await response.text();
+      data = JSON.parse(text);
+    } catch (e) {
+      data = { error: "Non-JSON response from bot: " + response.statusText };
+    }
 
     return NextResponse.json(data, { status: response.status });
   } catch (error: any) {
