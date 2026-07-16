@@ -30,7 +30,9 @@ export default function AdminPage() {
     try {
       const res = await syncFolders();
       if (res.success) {
-        alert(`Синхронизация завершена успешно! Актуальных чатов в папках: ${res.count}`);
+        const c = res.count || {blogger: 0, project: 0, advertiser: 0};
+        const total = c.blogger + c.project + c.advertiser;
+        alert(`Синхронизация завершена успешно!\n\nВсего чатов в базе: ${total}\nИз них:\n— Блогеры: ${c.blogger}\n— Проекты: ${c.project}\n— Рекламодатели: ${c.advertiser}`);
       } else {
         alert("Ошибка: " + res.error);
       }
