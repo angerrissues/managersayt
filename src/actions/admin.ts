@@ -180,3 +180,33 @@ export async function getCloudinarySignature(params: Record<string, string> = {}
     cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
   };
 }
+
+// -- SYNC FOLDERS --
+
+export async function syncFolders() {
+  const isAdmin = await checkIsAdmin();
+  if (!isAdmin) return { error: "Unauthorized" };
+
+  try {
+    const BOT_API = process.env.NEXT_PUBLIC_BOT_API || "http://212.43.151.126:8080";
+    const BOT_API_KEY = process.env.BOT_API_KEY || "SECURE_API_KEY_82AGENCY_9918231";
+    
+    const url = `${BOT_API}/api/sync_folders`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": BOT_API_KEY,
+      },
+    });
+    
+    if (!response.ok) {
+      return { error: `Bot API returned ${response.status}: ${await response.text()}` };
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error syncing folders:", error);
+    return { error: String(error) };
+  }
+}

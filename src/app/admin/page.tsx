@@ -5,9 +5,12 @@ import { Send, Loader2, Bell, Clock, Plus, Trash2, Edit2, Check, X } from 'lucid
 import { useAdmin } from '@/components/shared/AdminProvider';
 import './admin.css';
 
+import { syncFolders } from '@/actions/admin';
+
 export default function AdminPage() {
   const { isAdmin, error } = useAdmin();
   const [activeTab, setActiveTab] = useState('reminders');
+  const [syncing, setSyncing] = useState(false);
 
   if (!isAdmin) {
     return (
@@ -22,12 +25,35 @@ export default function AdminPage() {
     );
   }
 
+  const handleSyncFolders = async () => {
+    setSyncing(true);
+    try {
+      const res = await syncFolders();
+      if (res.success) {
+        alert("Папки успешно синхронизированы!");
+      } else {
+        alert("Ошибка: " + res.error);
+      }
+    } catch (e) {
+      alert("Ошибка синхронизации");
+    }
+    setSyncing(false);
+  };
+
   return (
     <div className="botAdminBody">
       <div className="appContainer">
-        <div style={{ textAlign: 'center', marginBottom: 30 }}>
+        <div style={{ textAlign: 'center', marginBottom: 30, position: 'relative' }}>
           <h1 className="botAdminTitle" style={{ justifyContent: 'center' }}>Панель Управления</h1>
           <p style={{ color: 'var(--text-light)', marginTop: -10 }}>Агентство 82 (Telegram Bot)</p>
+          <button 
+            className="botBtn" 
+            onClick={handleSyncFolders} 
+            disabled={syncing}
+            style={{ position: 'absolute', right: 0, top: 0, padding: '6px 12px', fontSize: 14 }}
+          >
+            {syncing ? <Loader2 className="animate-spin" size={16}/> : '🔄'} Синхр. чаты
+          </button>
         </div>
 
         <div className="botTabs">
