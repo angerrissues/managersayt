@@ -30,7 +30,7 @@ export default function AdminPage() {
     try {
       const res = await syncFolders();
       if (res.success) {
-        alert("Папки успешно синхронизированы!");
+        alert(`Синхронизация завершена успешно! Актуальных чатов в папках: ${res.count}`);
       } else {
         alert("Ошибка: " + res.error);
       }
@@ -43,16 +43,18 @@ export default function AdminPage() {
   return (
     <div className="botAdminBody">
       <div className="appContainer">
-        <div style={{ textAlign: 'center', marginBottom: 30, position: 'relative' }}>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <h1 className="botAdminTitle" style={{ justifyContent: 'center' }}>Панель Управления</h1>
-          <p style={{ color: 'var(--text-light)', marginTop: -10 }}>Агентство 82 (Telegram Bot)</p>
+          <p style={{ color: 'var(--text-light)', marginTop: -10, marginBottom: 15 }}>Агентство 82 (Telegram Bot)</p>
+          
           <button 
             className="botBtn" 
             onClick={handleSyncFolders} 
             disabled={syncing}
-            style={{ position: 'absolute', right: 0, top: 0, padding: '6px 12px', fontSize: 14 }}
+            style={{ padding: '8px 16px', fontSize: 14, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 8 }}
           >
-            {syncing ? <Loader2 className="animate-spin" size={16}/> : '🔄'} Синхр. чаты
+            {syncing ? <Loader2 className="animate-spin" size={16}/> : '🔄'}
+            {syncing ? 'Синхронизация...' : 'Синхронизировать чаты'}
           </button>
         </div>
 

@@ -204,7 +204,8 @@ export async function syncFolders() {
       return { error: `Bot API returned ${response.status}: ${await response.text()}` };
     }
     
-    return { success: true };
+    const data = await response.json();
+    return { success: true, count: data.count };
   } catch (error) {
     console.error("Error syncing folders:", error);
     return { error: String(error) };
