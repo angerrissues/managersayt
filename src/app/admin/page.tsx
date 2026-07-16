@@ -32,6 +32,12 @@ export default function AdminPage() {
 
         <div className="botTabs">
           <div 
+            className={`botTab ${activeTab === 'tasks' ? 'active' : ''}`}
+            onClick={() => setActiveTab('tasks')}
+          >
+            Задачи
+          </div>
+          <div 
             className={`botTab ${activeTab === 'reminders' ? 'active' : ''}`}
             onClick={() => setActiveTab('reminders')}
           >
@@ -51,10 +57,152 @@ export default function AdminPage() {
           </div>
         </div>
 
+        {activeTab === 'tasks' && <TasksTab />}
         {activeTab === 'reminders' && <Reminders />}
         {activeTab === 'broadcast' && <Broadcast />}
         {activeTab === 'chat' && <AIChat />}
         
+      </div>
+    </div>
+  );
+}
+
+import { getActiveTasks, getCompletedTasks, saveTask, updateTaskStatus, deleteTask } from '@/actions/tasks';
+import type { Task } from '@prisma/client';
+
+function TasksTab() {
+  const [activeTasks, setActiveTasks] = useState<Task[]>([]);
+  const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
+  
+  // Form state
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState('MEDIUM');
+  const [deadline, setDeadline] = useState('');
+
+  const fetchTasks = async () => {
+    try {
+      const active = await getActiveTasks();
+      setActiveTasks(active);
+      const completed = await getCompletedTasks();
+      setCompletedTasks(completed);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const handleCreate = async () => {
+    if (!title) return;
+    setLoading(true);
+    try {
+      await saveTask({
+        title,
+        description,
+        priority,
+        deadline: deadline ? new Date(deadline) : undefined,
+      });
+      setTitle('');
+      setDescription('');
+      setPriority('MEDIUM');
+      setDeadline('');
+      fetchTasks();
+    } catch (e) {
+      alert("Ошибка создания задачи");
+    }
+    setLoading(false);
+  };
+
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    setLoading(true);
+    try {
+      await updateTaskStatus(id, newStatus);
+      fetchTasks();
+    } catch (e) {
+      alert("Ошибка обновления статуса");
+    }
+    setLoading(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Удалить задачу?')) return;
+    setLoading(true);
+    try {
+      await deleteTask(id);
+      fetchTasks();
+    } catch (e) {
+      alert("Ошибка удаления");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div>
+      <div className="glassPanel" style={{ marginBottom: 20 }}>
+        <h2 className="botAdminTitle" style={{ marginBottom: 15 }}><Plus size={24} style={{ marginRight: 8 }} /> Создать задачу</h2>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+          <input className="botInput" style={{ flex: 2, minWidth: 200 }} placeholder="Название задачи" value={title} onChange={e => setTitle(e.target.value)} />
+          <select className="botSelect" style={{ flex: 1, minWidth: 120 }} value={priority} onChange={e => setPriority(e.target.value)}>
+            <option value="LOW">Низкий (LOW)</option>
+            <option value="MEDIUM">Средний (MEDIUM)</option>
+            <option value="HIGH">Высокий (HIGH)</option>
+          </select>
+          <input className="botInput" type="datetime-local" style={{ flex: 1, minWidth: 150 }} value={deadline} onChange={e => setDeadline(e.target.value)} />
+        </div>
+        <textarea className="botTextarea" rows={2} placeholder="Описание (опционально)" value={description} onChange={e => setDescription(e.target.value)} style={{ marginBottom: 10 }} />
+        <button className="botBtn" onClick={handleCreate} disabled={loading || !title}>Добавить задачу</button>
+      </div>
+
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+        <button className="botBtn" style={{ background: !showArchive ? 'var(--primary-pink)' : '#333' }} onClick={() => setShowArchive(false)}>Активные задачи ({activeTasks.length})</button>
+        <button className="botBtn" style={{ background: showArchive ? 'var(--primary-pink)' : '#333' }} onClick={() => setShowArchive(true)}>Архив ({completedTasks.length})</button>
+      </div>
+
+      <div className="glassPanel">
+        <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>
+          {showArchive ? 'Архив (Завершенные)' : 'Активные задачи'}
+        </h2>
+        
+        {(showArchive ? completedTasks : activeTasks).length === 0 ? (
+          <p style={{ color: 'var(--text-light)', textAlign: 'center' }}>Нет задач</p>
+        ) : (
+          (showArchive ? completedTasks : activeTasks).map(task => (
+            <div key={task.id} className="reminderItem" style={{ opacity: task.status === 'COMPLETED' ? 0.6 : 1, flexDirection: 'column', alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                <div>
+                  <h3 style={{ margin: 0, color: 'white', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {task.title}
+                    {task.priority === 'HIGH' && <span style={{ background: '#E53E3E', color: 'white', fontSize: 10, padding: '2px 6px', borderRadius: 4 }}>СРОЧНО</span>}
+                  </h3>
+                  {task.deadline && (
+                    <span style={{ fontSize: 12, color: 'var(--primary-pink)', display: 'inline-flex', alignItems: 'center', marginTop: 4 }}>
+                      <Clock size={12} style={{ marginRight: 4 }}/> Дедлайн: {new Date(task.deadline).toLocaleString('ru-RU')}
+                    </span>
+                  )}
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <select 
+                    className="botSelect" 
+                    value={task.status} 
+                    onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                    style={{ padding: '4px 8px', fontSize: 12, height: 'auto' }}
+                  >
+                    <option value="NEW">Новая</option>
+                    <option value="IN_PROGRESS">В процессе</option>
+                    <option value="COMPLETED">Выполнено</option>
+                  </select>
+                  <Trash2 size={18} color="#E53E3E" style={{ cursor: 'pointer', alignSelf: 'center' }} onClick={() => handleDelete(task.id)} />
+                </div>
+              </div>
+              {task.description && <p style={{ margin: 0, fontSize: 14, color: '#bbb' }}>{task.description}</p>}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

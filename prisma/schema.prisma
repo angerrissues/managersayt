@@ -92,3 +92,16 @@ model BloggerBotSession {
 
   @@map("blogger_bot_sessions")
 }
+
+model Task {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH
+  deadline    DateTime?
+  status      String   @default("NEW") // NEW, IN_PROGRESS, COMPLETED
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("tasks")
+}
