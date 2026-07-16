@@ -67,18 +67,23 @@ export async function saveTask(data: Partial<Task>) {
 
   const isNew = !data.id;
   
-  // Custom sorting or validation can go here
-  const result = await prisma.task.upsert({
-    where: { id: data.id || "new-id" },
-    update: data,
-    create: {
-      title: data.title!,
-      description: data.description,
-      priority: data.priority || "MEDIUM",
-      deadline: data.deadline,
-      status: data.status || "NEW",
-    },
-  });
+  let result;
+  if (isNew) {
+    result = await prisma.task.create({
+      data: {
+        title: data.title!,
+        description: data.description,
+        priority: data.priority || "MEDIUM",
+        deadline: data.deadline,
+        status: data.status || "NEW",
+      },
+    });
+  } else {
+    result = await prisma.task.update({
+      where: { id: data.id },
+      data,
+    });
+  }
 
   revalidatePath("/tasks");
   
