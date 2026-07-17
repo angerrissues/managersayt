@@ -211,3 +211,36 @@ export async function syncFolders() {
     return { error: String(error) };
   }
 }
+
+// -- GENERATOR --
+
+export async function sendQuestionnaire(text: string) {
+  const isAdmin = await checkIsAdmin();
+  if (!isAdmin) return { error: "Unauthorized" };
+
+  if (!TELEGRAM_BOT_TOKEN) {
+    return { error: "No TELEGRAM_BOT_TOKEN found in env" };
+  }
+
+  const TARGET_CHAT_ID = "7915041131";
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TARGET_CHAT_ID,
+        text: text,
+        disable_web_page_preview: true
+      })
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      return { error: data.description || "Telegram API Error" };
+    }
+    return { success: true };
+  } catch (e) {
+    return { error: String(e) };
+  }
+}

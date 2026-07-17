@@ -85,12 +85,20 @@ export default function AdminPage() {
           >
             Чат с ИИ
           </div>
+          <div 
+            className={`botTab ${activeTab === 'generator' ? 'active' : ''}`}
+            onClick={() => setActiveTab('generator')}
+          >
+            Генератор
+          </div>
         </div>
+
 
         {activeTab === 'tasks' && <TasksTab />}
         {activeTab === 'reminders' && <Reminders />}
         {activeTab === 'broadcast' && <Broadcast />}
         {activeTab === 'chat' && <AIChat />}
+        {activeTab === 'generator' && <GeneratorTab />}
         
       </div>
     </div>
@@ -99,6 +107,7 @@ export default function AdminPage() {
 
 import { getActiveTasks, getCompletedTasks, saveTask, updateTaskStatus, deleteTask } from '@/actions/tasks';
 import type { Task } from '@prisma/client';
+import GeneratorTab from '@/components/admin/GeneratorTab';
 
 function TasksTab() {
   const [activeTasks, setActiveTasks] = useState<Task[]>([]);
