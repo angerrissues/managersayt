@@ -70,7 +70,7 @@ export default function Footer() {
 
             {/* Telegram Manager */}
             <a
-              href="https://t.me/manager_hanguki"
+              href="https://t.me/agency_82pr"
               target="_blank"
               rel="noreferrer"
               className="flex items-center p-3 md:p-4 bg-gradient-to-br from-[#0088cc]/5 to-[#00aaff]/5 border border-white/10 rounded-2xl hover:border-white/30 transition-all hover:-translate-y-1 sm:col-span-2 group"
@@ -79,7 +79,7 @@ export default function Footer() {
                 <FaTelegram className="text-white/60 group-hover:text-white transition-colors w-6 h-6 md:w-7 md:h-7 shrink-0" />
                 <div className="flex flex-col">
                   <span className="font-bold text-sm md:text-lg uppercase tracking-wide">Связь с менеджером</span>
-                  <span className="text-[10px] md:text-xs text-white/50">@manager_hanguki</span>
+                  <span className="text-[10px] md:text-xs text-white/50">@agency_82pr</span>
                 </div>
               </div>
             </a>

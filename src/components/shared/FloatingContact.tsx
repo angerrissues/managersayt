@@ -54,7 +54,7 @@ export default function FloatingContact() {
   return (
     <div ref={ref} className="fixed bottom-4 right-4 md:bottom-10 md:right-10 z-[100]">
       <motion.div style={isTouchDevice ? {} : { x: springX, y: springY }}>
-        <Link href="https://t.me/manager_hanguki" target="_blank" className="relative flex items-center justify-center w-20 h-20 md:w-36 md:h-36 group cursor-none">
+        <Link href="https://t.me/agency_82pr" target="_blank" className="relative flex items-center justify-center w-20 h-20 md:w-36 md:h-36 group cursor-none">
           
           {/* Вращающийся текст */}
           <motion.div 

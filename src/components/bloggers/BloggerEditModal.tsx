@@ -22,7 +22,7 @@ export default function BloggerEditModal({
     avatarPath: blogger.avatarPath || "/blogersphoto/placeholder.jpg",
     geo: blogger.geo || "Россия",
     rknStatus: blogger.rknStatus || false,
-    contact: blogger.contact || "@manager_hanguki",
+    contact: blogger.contact || "@agency_82pr",
     socials: blogger.socials || {},
     details: blogger.details || {},
   });
