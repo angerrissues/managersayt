@@ -76,6 +76,7 @@ export async function saveTask(data: Partial<Task>) {
         priority: data.priority || "MEDIUM",
         deadline: data.deadline,
         status: data.status || "NEW",
+        attachmentUrl: data.attachmentUrl,
       },
     });
   } else {

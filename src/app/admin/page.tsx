@@ -120,6 +120,7 @@ function TasksTab() {
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('MEDIUM');
   const [deadline, setDeadline] = useState('');
+  const [file, setFile] = useState<File | null>(null);
 
   const fetchTasks = async () => {
     try {
@@ -140,21 +141,77 @@ function TasksTab() {
     if (!title) return;
     setLoading(true);
     try {
+      let attachmentUrl = undefined;
+      
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'agency_uploads'); // Or use server action
+        
+        // Since we don't know the exact cloudinary setup, let's use a server action we will create
+        const { uploadTaskFile } = await import('@/actions/upload');
+        const res = await uploadTaskFile(formData);
+        if (res.url) {
+          attachmentUrl = res.url;
+        }
+      }
+
+      let parsedDeadline: Date | undefined = undefined;
+      if (deadline) {
+        // Handle smart dates if it doesn't parse as normal date
+        const lower = deadline.toLowerCase().trim();
+        const now = new Date();
+        if (lower === 'завтра') {
+          now.setDate(now.getDate() + 1);
+          now.setHours(12, 0, 0, 0);
+          parsedDeadline = now;
+        } else if (lower === 'послезавтра') {
+          now.setDate(now.getDate() + 2);
+          now.setHours(12, 0, 0, 0);
+          parsedDeadline = now;
+        } else if (lower.startsWith('через')) {
+           const match = lower.match(/через\s+(\d+)\s+(дн|час|мин)/);
+           if (match) {
+             const val = parseInt(match[1]);
+             if (match[2].startsWith('дн')) now.setDate(now.getDate() + val);
+             if (match[2].startsWith('час')) now.setHours(now.getHours() + val);
+             if (match[2].startsWith('мин')) now.setMinutes(now.getMinutes() + val);
+             parsedDeadline = now;
+           }
+        }
+        
+        if (!parsedDeadline) {
+          parsedDeadline = new Date(deadline);
+        }
+      }
+      
       await saveTask({
         title,
         description,
         priority,
-        deadline: deadline ? new Date(deadline) : undefined,
+        deadline: parsedDeadline,
+        attachmentUrl
       });
       setTitle('');
       setDescription('');
       setPriority('MEDIUM');
       setDeadline('');
+      setFile(null);
       fetchTasks();
     } catch (e) {
-      alert("Ошибка создания задачи");
+      alert("Ошибка создания задачи: " + String(e));
     }
     setLoading(false);
+  };
+  
+  const setQuickDate = (days: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    d.setHours(12, 0, 0, 0);
+    // format as YYYY-MM-DDTHH:mm
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+    const localISOTime = (new Date(d.getTime() - tzoffset)).toISOString().slice(0, 16);
+    setDeadline(localISOTime);
   };
 
   const handleStatusChange = async (id: string, newStatus: string) => {
@@ -185,15 +242,37 @@ function TasksTab() {
       <div className="glassPanel" style={{ marginBottom: 20 }}>
         <h2 className="botAdminTitle" style={{ marginBottom: 15 }}><Plus size={24} style={{ marginRight: 8 }} /> Создать задачу</h2>
         <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
-          <input className="botInput" style={{ flex: 2, minWidth: 200 }} placeholder="Название задачи" value={title} onChange={e => setTitle(e.target.value)} />
-          <select className="botSelect" style={{ flex: 1, minWidth: 120 }} value={priority} onChange={e => setPriority(e.target.value)}>
-            <option value="LOW">Низкий (LOW)</option>
-            <option value="MEDIUM">Средний (MEDIUM)</option>
-            <option value="HIGH">Высокий (HIGH)</option>
+          <input className="botInput" style={{ flex: 2, minWidth: 200, marginBottom: 0 }} placeholder="Название задачи" value={title} onChange={e => setTitle(e.target.value)} />
+          <select className="botSelect" style={{ flex: 1, minWidth: 120, marginBottom: 0 }} value={priority} onChange={e => setPriority(e.target.value)}>
+            <option value="LOW">🟢 Низкий</option>
+            <option value="MEDIUM">🟡 Средний</option>
+            <option value="HIGH">🔴 Высокий</option>
           </select>
-          <input className="botInput" type="datetime-local" style={{ flex: 1, minWidth: 150 }} value={deadline} onChange={e => setDeadline(e.target.value)} />
         </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 10 }}>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <input className="botInput" type="datetime-local" style={{ flex: 1, marginBottom: 0 }} value={deadline} onChange={e => setDeadline(e.target.value)} />
+            <input className="botInput" type="text" placeholder='Или текстом: "завтра", "через 2 часа"' style={{ flex: 1, marginBottom: 0 }} value={deadline} onChange={e => setDeadline(e.target.value)} />
+          </div>
+          <div style={{ display: 'flex', gap: 5 }}>
+            <button className="botBtn" style={{ padding: '4px 10px', fontSize: 12, background: 'rgba(255,255,255,0.5)', color: '#333' }} onClick={() => setQuickDate(1)}>На завтра</button>
+            <button className="botBtn" style={{ padding: '4px 10px', fontSize: 12, background: 'rgba(255,255,255,0.5)', color: '#333' }} onClick={() => setQuickDate(2)}>Послезавтра</button>
+            <button className="botBtn" style={{ padding: '4px 10px', fontSize: 12, background: 'rgba(255,255,255,0.5)', color: '#333' }} onClick={() => setQuickDate(7)}>Через неделю</button>
+          </div>
+        </div>
+        
         <textarea className="botTextarea" rows={2} placeholder="Описание (опционально)" value={description} onChange={e => setDescription(e.target.value)} style={{ marginBottom: 10 }} />
+        
+        <div style={{ marginBottom: 15 }}>
+          <label style={{ fontSize: 14, color: 'var(--text-dark)', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+            <div style={{ background: 'rgba(255,255,255,0.8)', border: '1px solid var(--primary-pink)', padding: '8px 12px', borderRadius: 8, fontSize: 14 }}>
+              {file ? file.name : "📎 Прикрепить фото/файл"}
+            </div>
+            <input type="file" style={{ display: 'none' }} onChange={e => setFile(e.target.files ? e.target.files[0] : null)} />
+          </label>
+        </div>
+
         <button className="botBtn" onClick={handleCreate} disabled={loading || !title}>Добавить задачу</button>
       </div>
 
@@ -238,7 +317,12 @@ function TasksTab() {
                   <Trash2 size={18} color="#E53E3E" style={{ cursor: 'pointer', alignSelf: 'center' }} onClick={() => handleDelete(task.id)} />
                 </div>
               </div>
-              {task.description && <p style={{ margin: 0, fontSize: 14, color: '#bbb' }}>{task.description}</p>}
+              {task.description && <p style={{ margin: '0 0 10px 0', fontSize: 14, color: '#bbb' }}>{task.description}</p>}
+              {task.attachmentUrl && (
+                <a href={task.attachmentUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--primary-pink)', textDecoration: 'underline' }}>
+                  📎 Посмотреть вложение
+                </a>
+              )}
             </div>
           ))
         )}

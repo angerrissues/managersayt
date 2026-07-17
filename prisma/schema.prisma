@@ -100,6 +100,8 @@ model Task {
   priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH
   deadline    DateTime?
   status      String   @default("NEW") // NEW, IN_PROGRESS, COMPLETED
+  attachmentUrl String? @map("attachment_url")
+  reminderSent  Boolean @default(false) @map("reminder_sent")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
