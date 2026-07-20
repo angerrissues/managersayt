@@ -291,11 +291,11 @@ function TasksTab() {
         ) : (
           (showArchive ? completedTasks : activeTasks).map(task => (
             <div key={task.id} className="reminderItem" style={{ opacity: task.status === 'COMPLETED' ? 0.6 : 1, flexDirection: 'column', alignItems: 'flex-start' }}>
-              <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-                <div>
-                  <h3 style={{ margin: 0, color: 'white', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10, gap: 10 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <h3 style={{ margin: 0, color: 'white', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', wordBreak: 'break-word' }}>
                     {task.title}
-                    {task.priority === 'HIGH' && <span style={{ background: '#E53E3E', color: 'white', fontSize: 10, padding: '2px 6px', borderRadius: 4 }}>СРОЧНО</span>}
+                    {task.priority === 'HIGH' && <span style={{ background: '#E53E3E', color: 'white', fontSize: 10, padding: '2px 6px', borderRadius: 4, whiteSpace: 'nowrap' }}>СРОЧНО</span>}
                   </h3>
                   {task.deadline && (
                     <span style={{ fontSize: 12, color: 'var(--primary-pink)', display: 'inline-flex', alignItems: 'center', marginTop: 4 }}>
@@ -303,21 +303,21 @@ function TasksTab() {
                     </span>
                   )}
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8, flexShrink: 0, alignItems: 'center' }}>
                   <select 
                     className="botSelect" 
                     value={task.status} 
                     onChange={(e) => handleStatusChange(task.id, e.target.value)}
-                    style={{ padding: '4px 8px', fontSize: 12, height: 'auto' }}
+                    style={{ padding: '4px 8px', fontSize: 12, height: 'auto', minWidth: '100px' }}
                   >
                     <option value="NEW">Новая</option>
                     <option value="IN_PROGRESS">В процессе</option>
                     <option value="COMPLETED">Выполнено</option>
                   </select>
-                  <Trash2 size={18} color="#E53E3E" style={{ cursor: 'pointer', alignSelf: 'center' }} onClick={() => handleDelete(task.id)} />
+                  <Trash2 size={18} color="#E53E3E" style={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => handleDelete(task.id)} />
                 </div>
               </div>
-              {task.description && <p style={{ margin: '0 0 10px 0', fontSize: 14, color: '#bbb' }}>{task.description}</p>}
+              {task.description && <p style={{ margin: '0 0 10px 0', fontSize: 14, color: '#bbb', wordBreak: 'break-word', whiteSpace: 'pre-wrap', width: '100%' }}>{task.description}</p>}
               {task.attachmentUrl && (
                 <a href={task.attachmentUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--primary-pink)', textDecoration: 'underline' }}>
                   📎 Посмотреть вложение
