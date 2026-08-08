@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Send, Loader2, Bell, Clock, Plus, Trash2, Edit2, Check, X } from 'lucide-react';
+import { Send, Loader2, Bell, Clock, Plus, Trash2, Edit2, Check, X, Eye } from 'lucide-react';
 import { useAdmin } from '@/components/shared/AdminProvider';
 import './admin.css';
 
@@ -91,6 +91,12 @@ export default function AdminPage() {
           >
             Генератор
           </div>
+          <div 
+            className={`botTab ${activeTab === 'ignore' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ignore')}
+          >
+            Игнор-радар
+          </div>
         </div>
 
 
@@ -99,6 +105,7 @@ export default function AdminPage() {
         {activeTab === 'broadcast' && <Broadcast />}
         {activeTab === 'chat' && <AIChat />}
         {activeTab === 'generator' && <GeneratorTab />}
+        {activeTab === 'ignore' && <IgnoreRadar />}
         
       </div>
     </div>
@@ -681,6 +688,118 @@ function AIChat() {
         <button className="botBtn" onClick={handleSend} disabled={loading || !input.trim()}>
           Отправить
         </button>
+      </div>
+    </div>
+  );
+}
+
+function IgnoreRadar() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const fetchIgnoreStatus = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/bot/ignore_status');
+      if (res.ok) {
+        const json = await res.json();
+        setData(json);
+        setLastUpdated(new Date());
+      }
+    } catch (e) {
+      console.error("Ignore radar error:", e);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchIgnoreStatus();
+    const interval = setInterval(fetchIgnoreStatus, 30000); // 30 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const waitingForThem = data.filter(d => d.is_waiting_for_them);
+  const waitingForUs = data.filter(d => !d.is_waiting_for_them);
+
+  const renderCard = (msg: any) => {
+    const isOverdue = msg.hours_passed >= 5;
+    const hrs = Math.floor(msg.hours_passed);
+    const mins = Math.floor((msg.hours_passed - hrs) * 60);
+    const passedStr = `${hrs}ч ${mins}м`;
+
+    return (
+      <div key={`${msg.chat_id}_${msg.topic_id}`} className="reminderItem" style={{ flexDirection: 'column', alignItems: 'flex-start', borderLeft: isOverdue ? '4px solid #E53E3E' : '4px solid var(--primary-pink)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 5 }}>
+          <h3 style={{ margin: 0, fontSize: 16, color: 'var(--text-dark)', fontWeight: 'bold' }}>
+            {msg.chat_title}
+            {msg.topic_title && <span style={{ color: 'var(--primary-pink)', fontSize: 14, marginLeft: 8 }}>{msg.topic_title}</span>}
+          </h3>
+          <div style={{ 
+            fontSize: 12, 
+            padding: '4px 8px', 
+            borderRadius: 12, 
+            background: isOverdue ? '#FED7D7' : 'rgba(255, 107, 158, 0.1)', 
+            color: isOverdue ? '#C53030' : 'var(--primary-pink)',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4
+          }}>
+            <Clock size={12} />
+            {isOverdue ? '❗️ Уведомление отправлено' : `Осталось до 5ч: ${4 - hrs}ч ${60 - mins}м`}
+          </div>
+        </div>
+        
+        <p style={{ margin: '5px 0', fontSize: 13, color: '#666', background: 'rgba(0,0,0,0.02)', padding: 8, borderRadius: 6, fontStyle: 'italic', wordBreak: 'break-word', width: '100%' }}>
+          «{msg.text_preview}»
+        </p>
+        
+        <div style={{ fontSize: 12, color: '#888', marginTop: 5 }}>
+          Последнее сообщение от: <span style={{ color: 'var(--text-dark)' }}>{msg.sender_id === 7915041131 ? 'вас' : msg.sender_id || 'Неизвестно'}</span> • Прошло: {passedStr}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
+        <h2 className="botAdminTitle" style={{ marginBottom: 0 }}><Eye size={24} style={{ marginRight: 8 }} /> Игнор-Радар</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 12, color: 'var(--text-light)' }}>
+            {lastUpdated ? `Обновлено: ${lastUpdated.toLocaleTimeString('ru-RU')}` : 'Загрузка...'}
+          </span>
+          <button className="botBtn" onClick={fetchIgnoreStatus} disabled={loading} style={{ padding: '6px 12px', fontSize: 12 }}>
+            {loading ? <Loader2 size={14} className="animate-spin" /> : 'Обновить'}
+          </button>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        <div className="glassPanel">
+          <h3 style={{ fontSize: 16, marginBottom: 15, color: '#C53030', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#C53030' }}></span> 
+            Ждем ответа от других ({waitingForThem.length})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: '60vh', overflowY: 'auto', paddingRight: 5 }}>
+            {waitingForThem.length === 0 ? (
+              <p style={{ fontSize: 14, color: '#888', textAlign: 'center', margin: '20px 0' }}>Все отлично! Никто вас не игнорирует.</p>
+            ) : waitingForThem.map(renderCard)}
+          </div>
+        </div>
+
+        <div className="glassPanel">
+          <h3 style={{ fontSize: 16, marginBottom: 15, color: '#2F855A', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2F855A' }}></span> 
+            Нужно ответить нам ({waitingForUs.length})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: '60vh', overflowY: 'auto', paddingRight: 5 }}>
+            {waitingForUs.length === 0 ? (
+              <p style={{ fontSize: 14, color: '#888', textAlign: 'center', margin: '20px 0' }}>У вас нет неотвеченных диалогов.</p>
+            ) : waitingForUs.map(renderCard)}
+          </div>
+        </div>
       </div>
     </div>
   );
