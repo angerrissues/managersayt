@@ -737,6 +737,9 @@ function IgnoreRadar() {
     if (msg.is_weekend) {
       timerText = "⏸ Выходной (Пауза)";
       isUrgent = false;
+    } else if (msg.is_nighttime) {
+      timerText = "🌙 Ночь (Пауза до 10:00)";
+      isUrgent = false;
     } else if (timeLeft <= 0) {
       timerText = "❗️ Отправка...";
       isUrgent = true;
