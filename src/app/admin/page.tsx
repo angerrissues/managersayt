@@ -723,40 +723,57 @@ function IgnoreRadar() {
   const waitingForUs = data.filter(d => !d.is_waiting_for_them);
 
   const renderCard = (msg: any) => {
-    const isOverdue = msg.hours_passed >= 5;
-    const hrs = Math.floor(msg.hours_passed);
-    const mins = Math.floor((msg.hours_passed - hrs) * 60);
-    const passedStr = `${hrs}ч ${mins}м`;
+    const timeLeft = msg.time_left_hours || 0;
+    const hrsLeft = Math.max(0, Math.floor(timeLeft));
+    const minsLeft = Math.max(0, Math.floor((timeLeft - hrsLeft) * 60));
+    
+    let timerText = "";
+    let isUrgent = false;
+
+    if (msg.is_weekend) {
+      timerText = "⏸ Выходной (Пауза)";
+      isUrgent = false;
+    } else if (timeLeft <= 0) {
+      timerText = "❗️ Отправка...";
+      isUrgent = true;
+    } else if (msg.is_notified) {
+      timerText = `⏳ Повтор через: ${hrsLeft}ч ${minsLeft}м`;
+      isUrgent = true; // Still show as urgent because it's overdue globally
+    } else {
+      timerText = `⏳ До уведомления: ${hrsLeft}ч ${minsLeft}м`;
+      isUrgent = false;
+    }
 
     return (
-      <div key={`${msg.chat_id}_${msg.topic_id}`} className="reminderItem" style={{ flexDirection: 'column', alignItems: 'flex-start', borderLeft: isOverdue ? '4px solid #E53E3E' : '4px solid var(--primary-pink)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 5 }}>
-          <h3 style={{ margin: 0, fontSize: 16, color: 'var(--text-dark)', fontWeight: 'bold' }}>
+      <div key={`${msg.chat_id}_${msg.topic_id}`} className="reminderItem" style={{ flexDirection: 'column', alignItems: 'flex-start', borderLeft: isUrgent ? '4px solid #E53E3E' : '4px solid var(--primary-pink)', padding: '12px 16px', gap: 8 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+          <h3 style={{ margin: 0, fontSize: 16, color: 'var(--text-dark)', fontWeight: 'bold', wordBreak: 'break-word', flex: 1, minWidth: '150px' }}>
             {msg.chat_title}
-            {msg.topic_title && <span style={{ color: 'var(--primary-pink)', fontSize: 14, marginLeft: 8 }}>{msg.topic_title}</span>}
+            {msg.topic_title && <span style={{ color: 'var(--primary-pink)', fontSize: 13, marginLeft: 8, fontWeight: 'normal' }}>{msg.topic_title}</span>}
           </h3>
           <div style={{ 
             fontSize: 12, 
-            padding: '4px 8px', 
+            padding: '4px 10px', 
             borderRadius: 12, 
-            background: isOverdue ? '#FED7D7' : 'rgba(255, 107, 158, 0.1)', 
-            color: isOverdue ? '#C53030' : 'var(--primary-pink)',
+            background: isUrgent ? '#FED7D7' : 'rgba(255, 107, 158, 0.1)', 
+            color: isUrgent ? '#C53030' : 'var(--primary-pink)',
             fontWeight: 'bold',
             display: 'flex',
             alignItems: 'center',
-            gap: 4
+            gap: 4,
+            whiteSpace: 'nowrap'
           }}>
-            <Clock size={12} />
-            {isOverdue ? '❗️ Уведомление отправлено' : `Осталось до 5ч: ${4 - hrs}ч ${60 - mins}м`}
+            {timerText}
           </div>
         </div>
         
-        <p style={{ margin: '5px 0', fontSize: 13, color: '#666', background: 'rgba(0,0,0,0.02)', padding: 8, borderRadius: 6, fontStyle: 'italic', wordBreak: 'break-word', width: '100%' }}>
+        <p style={{ margin: '0', fontSize: 13, color: '#555', background: 'rgba(0,0,0,0.03)', padding: '10px 12px', borderRadius: 8, fontStyle: 'italic', wordBreak: 'break-word', width: '100%', lineHeight: '1.4' }}>
           «{msg.text_preview}»
         </p>
         
-        <div style={{ fontSize: 12, color: '#888', marginTop: 5 }}>
-          Последнее сообщение от: <span style={{ color: 'var(--text-dark)' }}>{msg.sender_id === 7915041131 ? 'вас' : msg.sender_id || 'Неизвестно'}</span> • Прошло: {passedStr}
+        <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
+          Последнее сообщение от: <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>{msg.sender_id === 7915041131 ? 'вас' : msg.sender_id || 'Неизвестно'}</span> • Прошло: {passedStr}
+          {msg.is_notified && <span style={{ marginLeft: 8, color: '#E53E3E' }}>(Уже уведомляли)</span>}
         </div>
       </div>
     );
@@ -771,18 +788,25 @@ function IgnoreRadar() {
             {lastUpdated ? `Обновлено: ${lastUpdated.toLocaleTimeString('ru-RU')}` : 'Загрузка...'}
           </span>
           <button className="botBtn" onClick={fetchIgnoreStatus} disabled={loading} style={{ padding: '6px 12px', fontSize: 12 }}>
-            {loading ? <Loader2 size={14} className="animate-spin" /> : 'Обновить'}
+            {loading ? <Loader2 size={14} className="animate-spin" /> : '🔄 Обновить'}
           </button>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 107, 158, 0.3); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 158, 0.6); }
+      `}} />
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
         <div className="glassPanel">
           <h3 style={{ fontSize: 16, marginBottom: 15, color: '#C53030', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#C53030' }}></span> 
             Ждем ответа от других ({waitingForThem.length})
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: '60vh', overflowY: 'auto', paddingRight: 5 }}>
+          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '65vh', overflowY: 'auto', paddingRight: 8 }}>
             {waitingForThem.length === 0 ? (
               <p style={{ fontSize: 14, color: '#888', textAlign: 'center', margin: '20px 0' }}>Все отлично! Никто вас не игнорирует.</p>
             ) : waitingForThem.map(renderCard)}
@@ -794,7 +818,7 @@ function IgnoreRadar() {
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2F855A' }}></span> 
             Нужно ответить нам ({waitingForUs.length})
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: '60vh', overflowY: 'auto', paddingRight: 5 }}>
+          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '65vh', overflowY: 'auto', paddingRight: 8 }}>
             {waitingForUs.length === 0 ? (
               <p style={{ fontSize: 14, color: '#888', textAlign: 'center', margin: '20px 0' }}>У вас нет неотвеченных диалогов.</p>
             ) : waitingForUs.map(renderCard)}
