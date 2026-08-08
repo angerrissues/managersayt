@@ -727,6 +727,10 @@ function IgnoreRadar() {
     const hrsLeft = Math.max(0, Math.floor(timeLeft));
     const minsLeft = Math.max(0, Math.floor((timeLeft - hrsLeft) * 60));
     
+    const hrsPassed = Math.floor(msg.hours_passed || 0);
+    const minsPassed = Math.floor(((msg.hours_passed || 0) - hrsPassed) * 60);
+    const passedStr = `${hrsPassed}ч ${minsPassed}м`;
+    
     let timerText = "";
     let isUrgent = false;
 
