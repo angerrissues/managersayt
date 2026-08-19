@@ -730,65 +730,124 @@ function IgnoreRadar() {
   const waitingForUs = data.filter(d => !d.is_waiting_for_them);
 
   const renderCard = (msg: any) => {
-    const timeLeft = msg.time_left_hours || 0;
-    const hrsLeft = Math.max(0, Math.floor(timeLeft));
-    const minsLeft = Math.max(0, Math.round((timeLeft - hrsLeft) * 60));
+    let timerText = "";
+    let statusColor = "";
+    let bgColor = "";
+    let progress = 0;
     
+    const now = new Date();
+    
+    // Вычисляем время
     const hrsPassed = Math.floor(msg.hours_passed || 0);
     const minsPassed = Math.floor(((msg.hours_passed || 0) - hrsPassed) * 60);
     const passedStr = `${hrsPassed}ч ${minsPassed}м`;
     
-    let timerText = "";
-    let isUrgent = false;
-
     if (msg.is_weekend) {
-      timerText = "⏸ Выходной (Пауза)";
-      isUrgent = false;
+      timerText = "⏸ Пауза (Выходной)";
+      statusColor = "#718096";
+      bgColor = "rgba(113, 128, 150, 0.1)";
+      progress = 0;
     } else if (msg.is_nighttime) {
       timerText = "🌙 Ночь (Пауза до 10:00)";
-      isUrgent = false;
-    } else if (timeLeft <= 0) {
-      timerText = "❗️ Ждет проверки ботом";
-      isUrgent = true;
-    } else if (msg.is_notified) {
-      timerText = `⏳ Повтор через: ${hrsLeft}ч ${minsLeft}м`;
-      isUrgent = true; // Still show as urgent because it's overdue globally
+      statusColor = "#805AD5";
+      bgColor = "rgba(128, 90, 213, 0.1)";
+      progress = 0;
+    } else if (msg.is_notified && msg.notified_at) {
+      // Если уже было отправлено уведомление, ждем 5 часов с момента последнего
+      const nextTime = new Date(new Date(msg.notified_at).getTime() + 5 * 3600 * 1000);
+      const diffMs = nextTime.getTime() - now.getTime();
+      
+      if (diffMs > 0) {
+        const hrsLeft = Math.floor(diffMs / 3600000);
+        const minsLeft = Math.floor((diffMs % 3600000) / 60000);
+        timerText = `🔔 Уведомлен (Повтор через ${hrsLeft}ч ${minsLeft}м)`;
+        statusColor = "#D69E2E"; // Желтый/оранжевый
+        bgColor = "rgba(214, 158, 46, 0.1)";
+        progress = Math.max(0, Math.min(100, 100 - (diffMs / (5 * 3600000)) * 100)); // прогресс от 0 до 100% за 5 часов
+      } else {
+        timerText = "❗️ Ожидает уведомления (Очередь)";
+        statusColor = "#E53E3E"; // Красный
+        bgColor = "rgba(229, 62, 62, 0.1)";
+        progress = 100;
+      }
     } else {
-      timerText = `⏳ До уведомления: ${hrsLeft}ч ${minsLeft}м`;
-      isUrgent = false;
+      // Первое ожидание (до первого уведомления)
+      const timeLeft = msg.time_left_hours || 0;
+      if (timeLeft > 0) {
+        const hrsLeft = Math.floor(timeLeft);
+        const minsLeft = Math.floor((timeLeft - hrsLeft) * 60);
+        timerText = `🟢 Ожидаем ответа (Осталось ${hrsLeft}ч ${minsLeft}м)`;
+        statusColor = "#38A169"; // Зеленый
+        bgColor = "rgba(56, 161, 105, 0.1)";
+        progress = Math.max(0, Math.min(100, ((5 - timeLeft) / 5) * 100));
+      } else {
+        timerText = "❗️ Ожидает уведомления (Просрочено)";
+        statusColor = "#E53E3E"; // Красный
+        bgColor = "rgba(229, 62, 62, 0.1)";
+        progress = 100;
+      }
     }
 
     return (
-      <div key={`${msg.chat_id}_${msg.topic_id}`} className="reminderItem" style={{ flexDirection: 'column', alignItems: 'flex-start', borderLeft: isUrgent ? '4px solid #E53E3E' : '4px solid var(--primary-pink)', padding: '12px 16px', gap: 8 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-          <h3 style={{ margin: 0, fontSize: 16, color: 'var(--text-dark)', fontWeight: 'bold', wordBreak: 'break-word', flex: 1, minWidth: '150px' }}>
-            {msg.chat_title}
-            {msg.topic_title && <span style={{ color: 'var(--primary-pink)', fontSize: 13, marginLeft: 8, fontWeight: 'normal' }}>{msg.topic_title}</span>}
-          </h3>
+      <div key={`${msg.chat_id}_${msg.topic_id}`} className="reminderItem" style={{ flexDirection: 'column', alignItems: 'flex-start', borderLeft: `4px solid ${statusColor}`, padding: '16px', gap: 12 }}>
+        
+        {/* Заголовок и статус */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ flex: 1, minWidth: '150px' }}>
+            <h3 style={{ margin: 0, fontSize: 17, color: 'var(--text-dark)', fontWeight: 'bold', wordBreak: 'break-word', display: 'flex', alignItems: 'center', gap: 8 }}>
+              {msg.chat_title}
+              {msg.topic_title && <span style={{ color: 'var(--primary-pink)', fontSize: 13, fontWeight: 'normal', background: 'rgba(255,107,158,0.1)', padding: '2px 8px', borderRadius: 10 }}>{msg.topic_title}</span>}
+            </h3>
+            <div style={{ fontSize: 12, color: '#888', marginTop: 6, display: 'flex', gap: 12 }}>
+              <span>От: <strong style={{ color: '#555' }}>{msg.sender_id === 7915041131 ? 'вас' : msg.sender_id || 'Неизвестно'}</strong></span>
+              <span>Время: <strong style={{ color: '#555' }}>{passedStr}</strong> назад</span>
+            </div>
+          </div>
+          
           <div style={{ 
             fontSize: 12, 
-            padding: '4px 10px', 
-            borderRadius: 12, 
-            background: isUrgent ? '#FED7D7' : 'rgba(255, 107, 158, 0.1)', 
-            color: isUrgent ? '#C53030' : 'var(--primary-pink)',
-            fontWeight: 'bold',
+            padding: '6px 12px', 
+            borderRadius: 8, 
+            background: bgColor, 
+            color: statusColor,
+            fontWeight: '600',
             display: 'flex',
             alignItems: 'center',
-            gap: 4,
-            whiteSpace: 'nowrap'
+            boxShadow: `0 2px 5px ${bgColor.replace('0.1)', '0.3)')}`
           }}>
             {timerText}
           </div>
         </div>
         
-        <p style={{ margin: '0', fontSize: 13, color: '#555', background: 'rgba(0,0,0,0.03)', padding: '10px 12px', borderRadius: 8, fontStyle: 'italic', wordBreak: 'break-word', width: '100%', lineHeight: '1.4' }}>
+        {/* Текст сообщения */}
+        <div style={{ 
+          margin: '0', 
+          fontSize: 14, 
+          color: '#4a5568', 
+          background: '#f7fafc', 
+          padding: '12px 14px', 
+          borderRadius: 8, 
+          fontStyle: 'italic', 
+          wordBreak: 'break-word', 
+          width: '100%', 
+          lineHeight: '1.5',
+          borderLeft: '2px solid #e2e8f0'
+        }}>
           «{msg.text_preview}»
-        </p>
-        
-        <div style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
-          Последнее сообщение от: <span style={{ color: 'var(--text-dark)', fontWeight: '500' }}>{msg.sender_id === 7915041131 ? 'вас' : msg.sender_id || 'Неизвестно'}</span> • Прошло: {passedStr}
-          {msg.is_notified && <span style={{ marginLeft: 8, color: '#E53E3E' }}>(Уже уведомляли)</span>}
         </div>
+        
+        {/* Прогресс-бар */}
+        {progress > 0 && !msg.is_weekend && !msg.is_nighttime && (
+          <div style={{ width: '100%', height: '6px', background: '#edf2f7', borderRadius: '3px', overflow: 'hidden', marginTop: 4 }}>
+            <div style={{ 
+              height: '100%', 
+              width: `${progress}%`, 
+              background: statusColor,
+              borderRadius: '3px',
+              transition: 'width 0.5s ease'
+            }}></div>
+          </div>
+        )}
       </div>
     );
   };
