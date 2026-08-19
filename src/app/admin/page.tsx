@@ -97,15 +97,22 @@ export default function AdminPage() {
           >
             Игнор-радар
           </div>
+          <div 
+            className={`botTab ${activeTab === 'blacklist' ? 'active' : ''}`}
+            onClick={() => setActiveTab('blacklist')}
+          >
+            Игнор-чаты
+          </div>
         </div>
 
 
         {activeTab === 'tasks' && <TasksTab />}
         {activeTab === 'reminders' && <Reminders />}
         {activeTab === 'broadcast' && <Broadcast />}
-        {activeTab === 'chat' && <AIChat />}
-        {activeTab === 'generator' && <GeneratorTab />}
+        {activeTab === 'chat' && <AILogs />}
+        {activeTab === 'generator' && <Generator />}
         {activeTab === 'ignore' && <IgnoreRadar />}
+        {activeTab === 'blacklist' && <Blacklist />}
         
       </div>
     </div>
@@ -300,7 +307,7 @@ function TasksTab() {
             <div key={task.id} className="reminderItem" style={{ opacity: task.status === 'COMPLETED' ? 0.6 : 1, flexDirection: 'column', alignItems: 'flex-start' }}>
               <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10, gap: 10 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <h3 style={{ margin: 0, color: 'white', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', wordBreak: 'break-word' }}>
+                  <h3 style={{ margin: 0, color: 'var(--text-dark)', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', wordBreak: 'break-word' }}>
                     {task.title}
                     {task.priority === 'HIGH' && <span style={{ background: '#E53E3E', color: 'white', fontSize: 10, padding: '2px 6px', borderRadius: 4, whiteSpace: 'nowrap' }}>СРОЧНО</span>}
                   </h3>
@@ -324,7 +331,7 @@ function TasksTab() {
                   <Trash2 size={18} color="#E53E3E" style={{ cursor: 'pointer', flexShrink: 0 }} onClick={() => handleDelete(task.id)} />
                 </div>
               </div>
-              {task.description && <p style={{ margin: '0 0 10px 0', fontSize: 14, color: '#bbb', wordBreak: 'break-word', whiteSpace: 'pre-wrap', width: '100%' }}>{task.description}</p>}
+              {task.description && <p style={{ margin: '0 0 10px 0', fontSize: 14, color: 'var(--text-light)', wordBreak: 'break-word', whiteSpace: 'pre-wrap', width: '100%' }}>{task.description}</p>}
               {task.attachmentUrl && (
                 <a href={task.attachmentUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--primary-pink)', textDecoration: 'underline' }}>
                   📎 Посмотреть вложение
@@ -813,7 +820,7 @@ function IgnoreRadar() {
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#C53030' }}></span> 
             Ждем ответа от других ({waitingForThem.length})
           </h3>
-          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '65vh', overflowY: 'auto', paddingRight: 8 }}>
+          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '500px', overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 8 }}>
             {waitingForThem.length === 0 ? (
               <p style={{ fontSize: 14, color: '#888', textAlign: 'center', margin: '20px 0' }}>Все отлично! Никто вас не игнорирует.</p>
             ) : waitingForThem.map(renderCard)}
@@ -825,12 +832,116 @@ function IgnoreRadar() {
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2F855A' }}></span> 
             Нужно ответить нам ({waitingForUs.length})
           </h3>
-          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '65vh', overflowY: 'auto', paddingRight: 8 }}>
+          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '500px', overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 8 }}>
             {waitingForUs.length === 0 ? (
               <p style={{ fontSize: 14, color: '#888', textAlign: 'center', margin: '20px 0' }}>У вас нет неотвеченных диалогов.</p>
             ) : waitingForUs.map(renderCard)}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function Blacklist() {
+  const [chats, setChats] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [newChat, setNewChat] = useState('');
+
+  const fetchChats = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/bot/ignored_chats');
+      if (res.ok) {
+        const json = await res.json();
+        setChats(json);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchChats();
+  }, []);
+
+  const handleAdd = async () => {
+    if (!newChat.trim()) return;
+    try {
+      const res = await fetch('/api/bot/ignored_chats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: newChat.trim() })
+      });
+      if (res.ok) {
+        setNewChat('');
+        fetchChats();
+      } else {
+        alert("Ошибка при добавлении");
+      }
+    } catch (e) {
+      alert("Ошибка при добавлении");
+    }
+  };
+
+  const handleRemove = async (username: string) => {
+    if (!confirm(`Удалить ${username} из черного списка?`)) return;
+    try {
+      const res = await fetch('/api/bot/ignored_chats', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+      if (res.ok) {
+        fetchChats();
+      } else {
+        alert("Ошибка при удалении");
+      }
+    } catch (e) {
+      alert("Ошибка при удалении");
+    }
+  };
+
+  return (
+    <div className="glassPanel">
+      <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>Черный список чатов</h2>
+      <p style={{ color: 'var(--text-light)', fontSize: 14, marginBottom: 20 }}>
+        Боту не будут приходить уведомления из этих чатов, и они не будут отображаться в Игнор-радаре. Можно добавлять @username, названия чатов, или ID.
+      </p>
+
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+        <input 
+          type="text" 
+          className="botInput" 
+          placeholder="@username или Название чата" 
+          value={newChat} 
+          onChange={(e) => setNewChat(e.target.value)} 
+          style={{ marginBottom: 0 }}
+        />
+        <button className="botBtn" onClick={handleAdd} disabled={!newChat.trim()}>
+          <Plus size={20} />
+        </button>
+      </div>
+
+      <div>
+        {loading ? (
+          <p style={{ color: 'var(--text-light)' }}>Загрузка...</p>
+        ) : chats.length === 0 ? (
+          <p style={{ color: 'var(--text-light)' }}>Список пуст</p>
+        ) : (
+          chats.map(chat => (
+            <div key={chat.username} className="reminderItem" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ flex: 1 }}>
+                <h4 style={{ margin: 0, color: 'var(--text-dark)' }}>{chat.username}</h4>
+                <p style={{ margin: 0, fontSize: 12, color: 'var(--text-light)' }}>
+                  Добавлено: {new Date(chat.added_at).toLocaleDateString('ru-RU')}
+                </p>
+              </div>
+              <Trash2 size={20} color="#E53E3E" style={{ cursor: 'pointer' }} onClick={() => handleRemove(chat.username)} />
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
