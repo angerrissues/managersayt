@@ -748,7 +748,7 @@ function IgnoreRadar() {
       timerText = "🌙 Ночь (Пауза до 10:00)";
       isUrgent = false;
     } else if (timeLeft <= 0) {
-      timerText = "❗️ Отправка...";
+      timerText = "❗️ Ждет проверки ботом";
       isUrgent = true;
     } else if (msg.is_notified) {
       timerText = `⏳ Повтор через: ${hrsLeft}ч ${minsLeft}м`;
@@ -820,7 +820,7 @@ function IgnoreRadar() {
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#C53030' }}></span> 
             Ждем ответа от других ({waitingForThem.length})
           </h3>
-          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '500px', overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 8 }}>
+          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, height: '400px', overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 8 }}>
             {waitingForThem.length === 0 ? (
               <p style={{ fontSize: 14, color: '#888', textAlign: 'center', margin: '20px 0' }}>Все отлично! Никто вас не игнорирует.</p>
             ) : waitingForThem.map(renderCard)}
@@ -832,7 +832,7 @@ function IgnoreRadar() {
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2F855A' }}></span> 
             Нужно ответить нам ({waitingForUs.length})
           </h3>
-          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: '500px', overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 8 }}>
+          <div className="custom-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: 12, height: '400px', overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 8 }}>
             {waitingForUs.length === 0 ? (
               <p style={{ fontSize: 14, color: '#888', textAlign: 'center', margin: '20px 0' }}>У вас нет неотвеченных диалогов.</p>
             ) : waitingForUs.map(renderCard)}
