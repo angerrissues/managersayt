@@ -1114,11 +1114,6 @@ function Blacklist() {
               <div style={{ flex: 1 }}>
                 <h4 style={{ margin: 0, color: 'var(--text-dark)', display: 'flex', alignItems: 'center', gap: 8 }}>
                   {chat.username}
-                  {chat.found ? (
-                    <span style={{ fontSize: 11, background: 'rgba(47, 133, 90, 0.1)', color: '#2F855A', padding: '2px 8px', borderRadius: 10, fontWeight: 'normal' }}>чат найден, игнорируется</span>
-                  ) : (
-                    <span style={{ fontSize: 11, background: 'rgba(197, 48, 48, 0.1)', color: '#C53030', padding: '2px 8px', borderRadius: 10, fontWeight: 'normal' }}>не получилось найти чат по этим данным</span>
-                  )}
                 </h4>
                 <p style={{ margin: 0, fontSize: 12, color: 'var(--text-light)', marginTop: 4 }}>
                   Добавлено: {new Date(chat.added_at).toLocaleDateString('ru-RU')}
