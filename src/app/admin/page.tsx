@@ -103,9 +103,6 @@ function AiAnalytics() {
                   <button className="botBtn" style={{ background: '#edf2f7', color: '#4a5568', padding: '6px 12px', fontSize: 13, flex: 1 }} onClick={() => setExpandedReport(expandedReport === chat.chat_id ? null : chat.chat_id)}>
                     {expandedReport === chat.chat_id ? 'Скрыть отчет' : 'Читать полный отчет'}
                   </button>
-                  <button className="botBtn" style={{ background: '#FED7D7', color: '#C53030', padding: '6px 12px', fontSize: 13 }} onClick={() => { setNewIgnore(String(chat.chat_id)); handleAddIgnore(); }}>
-                    В игнор ИИ
-                  </button>
                 </div>
 
                 {expandedReport === chat.chat_id && (
@@ -114,39 +111,6 @@ function AiAnalytics() {
                     <p>Для просмотра полного содержимого отчета откройте файл {chat.report_path} на сервере. Вскоре здесь появится возможность скачивать файл напрямую.</p>
                   </div>
                 )}
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* AI Blacklist */}
-      <div className="glassPanel">
-        <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>Игнор-лист ИИ</h2>
-        <p style={{ color: 'var(--text-light)', fontSize: 14, marginBottom: 20 }}>
-          Введите ID чата, чтобы ИИ больше никогда не анализировал его.
-        </p>
-        <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
-          <input 
-            type="text" 
-            className="botInput" 
-            placeholder="ID чата (например: -1001234567)" 
-            value={newIgnore} 
-            onChange={(e) => setNewIgnore(e.target.value)} 
-            style={{ marginBottom: 0 }}
-          />
-          <button className="botBtn" onClick={handleAddIgnore} disabled={!newIgnore.trim()}>
-            <Plus size={20} />
-          </button>
-        </div>
-        <div>
-          {ignored.length === 0 ? (
-            <p style={{ color: 'var(--text-light)' }}>Игнор-лист пуст</p>
-          ) : (
-            ignored.map(chat_id => (
-              <div key={chat_id} className="reminderItem" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--text-dark)' }}>Chat ID: {chat_id}</span>
-                <Trash2 size={20} color="#E53E3E" style={{ cursor: 'pointer' }} onClick={() => handleRemoveIgnore(chat_id)} />
               </div>
             ))
           )}
