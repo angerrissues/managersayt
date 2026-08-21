@@ -7,6 +7,155 @@ import './admin.css';
 
 import { syncFolders } from '@/actions/admin';
 
+function AiAnalytics() {
+  const [analyzed, setAnalyzed] = useState<any[]>([]);
+  const [ignored, setIgnored] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [newIgnore, setNewIgnore] = useState('');
+  const [expandedReport, setExpandedReport] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [resAnalyzed, resIgnored] = await Promise.all([
+        fetch('/api/bot/ai_analyzed_chats'),
+        fetch('/api/bot/ai_ignored_chats')
+      ]);
+      if (resAnalyzed.ok) {
+        setAnalyzed(await resAnalyzed.json());
+      }
+      if (resIgnored.ok) {
+        setIgnored(await resIgnored.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleAddIgnore = async () => {
+    if (!newIgnore.trim()) return;
+    try {
+      // Assuming newIgnore is chat_id for simplicity, since AI blacklist uses chat_id
+      const res = await fetch('/api/bot/ai_ignored_chats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: newIgnore.trim() })
+      });
+      if (res.ok) {
+        setNewIgnore('');
+        fetchData();
+      } else {
+        alert("Ошибка при добавлении (возможно нужен точный ID чата)");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleRemoveIgnore = async (chat_id: string) => {
+    try {
+      const res = await fetch('/api/bot/ai_ignored_chats', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id })
+      });
+      if (res.ok) {
+        fetchData();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Analyzed Chats */}
+      <div className="glassPanel">
+        <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>Проанализированные чаты (AI)</h2>
+        <p style={{ color: 'var(--text-light)', fontSize: 14, marginBottom: 20 }}>
+          Здесь отображаются затихшие чаты, которые были проанализированы нейросетью.
+        </p>
+
+        <div>
+          {loading ? (
+            <p style={{ color: 'var(--text-light)' }}>Загрузка...</p>
+          ) : analyzed.length === 0 ? (
+            <p style={{ color: 'var(--text-light)' }}>Пока нет проанализированных чатов</p>
+          ) : (
+            analyzed.map(chat => (
+              <div key={chat.chat_id} className="reminderItem" style={{ borderLeft: chat.status === 'success' ? '4px solid #38A169' : '4px solid #E53E3E' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                  <h4 style={{ margin: 0, color: 'var(--text-dark)', fontSize: 16 }}>{chat.title || `Chat ID: ${chat.chat_id}`}</h4>
+                  <div style={{ fontSize: 12, padding: '4px 8px', borderRadius: 8, background: chat.status === 'success' ? '#C6F6D5' : '#FED7D7', color: chat.status === 'success' ? '#2F855A' : '#C53030', fontWeight: 'bold' }}>
+                    {chat.status === 'success' ? 'Успешная сделка' : 'Сорвалась / Молчат'}
+                  </div>
+                </div>
+                <p style={{ fontSize: 12, color: '#888', margin: '4px 0 10px' }}>
+                  Проанализировано: {new Date(chat.analyzed_at).toLocaleString('ru-RU')}
+                </p>
+                
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button className="botBtn" style={{ background: '#edf2f7', color: '#4a5568', padding: '6px 12px', fontSize: 13, flex: 1 }} onClick={() => setExpandedReport(expandedReport === chat.chat_id ? null : chat.chat_id)}>
+                    {expandedReport === chat.chat_id ? 'Скрыть отчет' : 'Читать полный отчет'}
+                  </button>
+                  <button className="botBtn" style={{ background: '#FED7D7', color: '#C53030', padding: '6px 12px', fontSize: 13 }} onClick={() => { setNewIgnore(String(chat.chat_id)); handleAddIgnore(); }}>
+                    В игнор ИИ
+                  </button>
+                </div>
+
+                {expandedReport === chat.chat_id && (
+                  <div style={{ marginTop: 15, padding: 15, background: '#f7fafc', borderRadius: 8, fontSize: 13, color: '#2d3748', whiteSpace: 'pre-wrap', border: '1px solid #e2e8f0' }}>
+                    <p style={{fontStyle: 'italic', color: '#718096'}}>Отчет сохранен на сервере в {chat.report_path}</p>
+                    <p>Для просмотра полного содержимого отчета откройте файл {chat.report_path} на сервере. Вскоре здесь появится возможность скачивать файл напрямую.</p>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* AI Blacklist */}
+      <div className="glassPanel">
+        <h2 className="botAdminTitle" style={{ marginBottom: 15 }}>Игнор-лист ИИ</h2>
+        <p style={{ color: 'var(--text-light)', fontSize: 14, marginBottom: 20 }}>
+          Введите ID чата, чтобы ИИ больше никогда не анализировал его.
+        </p>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+          <input 
+            type="text" 
+            className="botInput" 
+            placeholder="ID чата (например: -1001234567)" 
+            value={newIgnore} 
+            onChange={(e) => setNewIgnore(e.target.value)} 
+            style={{ marginBottom: 0 }}
+          />
+          <button className="botBtn" onClick={handleAddIgnore} disabled={!newIgnore.trim()}>
+            <Plus size={20} />
+          </button>
+        </div>
+        <div>
+          {ignored.length === 0 ? (
+            <p style={{ color: 'var(--text-light)' }}>Игнор-лист пуст</p>
+          ) : (
+            ignored.map(chat_id => (
+              <div key={chat_id} className="reminderItem" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: 'var(--text-dark)' }}>Chat ID: {chat_id}</span>
+                <Trash2 size={20} color="#E53E3E" style={{ cursor: 'pointer' }} onClick={() => handleRemoveIgnore(chat_id)} />
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPage() {
   const { isAdmin, error } = useAdmin();
   const [activeTab, setActiveTab] = useState('reminders');
@@ -103,6 +252,12 @@ export default function AdminPage() {
           >
             Игнор-чаты
           </div>
+          <div 
+            className={`botTab ${activeTab === 'ai_analytics' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ai_analytics')}
+          >
+            AI Аналитика
+          </div>
         </div>
 
 
@@ -113,6 +268,7 @@ export default function AdminPage() {
         {activeTab === 'generator' && <Generator />}
         {activeTab === 'ignore' && <IgnoreRadar />}
         {activeTab === 'blacklist' && <Blacklist />}
+        {activeTab === 'ai_analytics' && <AiAnalytics />}
         
       </div>
     </div>
