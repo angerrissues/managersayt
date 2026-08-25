@@ -106,9 +106,29 @@ function AiAnalytics() {
                 </div>
 
                 {expandedReport === chat.chat_id && (
-                  <div style={{ marginTop: 15, padding: 15, background: '#f7fafc', borderRadius: 8, fontSize: 13, color: '#2d3748', whiteSpace: 'pre-wrap', border: '1px solid #e2e8f0' }}>
-                    <p style={{fontStyle: 'italic', color: '#718096'}}>Отчет сохранен на сервере в {chat.report_path}</p>
-                    <p>Для просмотра полного содержимого отчета откройте файл {chat.report_path} на сервере. Вскоре здесь появится возможность скачивать файл напрямую.</p>
+                  <div style={{ marginTop: 15, padding: 15, background: '#f7fafc', borderRadius: 8, fontSize: 13, color: '#2d3748', border: '1px solid #e2e8f0' }}>
+                    {chat.summary ? (
+                      <>
+                        <div style={{ marginBottom: 15 }}>
+                          <strong style={{ color: '#2b6cb0', display: 'block', marginBottom: 5 }}>📊 Анализ ситуации и причин остановки:</strong>
+                          <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.5, background: '#fff', padding: 10, borderRadius: 6, border: '1px solid #edf2f7' }}>
+                            {chat.summary}
+                          </div>
+                        </div>
+                        {chat.template && (
+                          <div>
+                            <strong style={{ color: '#2f855a', display: 'block', marginBottom: 5 }}>💬 Готовый шаблон для отправки клиенту:</strong>
+                            <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.5, background: '#f0fff4', padding: 10, borderRadius: 6, border: '1px solid #c6f6d5', color: '#22543d' }}>
+                              {chat.template}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <p style={{ margin: 0, color: '#718096', fontStyle: 'italic' }}>
+                        Отчет сформирован и сохранен на сервере: {chat.report_path}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

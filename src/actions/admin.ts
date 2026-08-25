@@ -188,7 +188,7 @@ export async function syncFolders() {
   if (!isAdmin) return { error: "Unauthorized" };
 
   try {
-    const BOT_API = process.env.NEXT_PUBLIC_BOT_API || "http://212.43.151.126:8080";
+    const BOT_API = process.env.NEXT_PUBLIC_BOT_API || "http://176.124.204.55:8080";
     const BOT_API_KEY = process.env.BOT_API_KEY || "SECURE_API_KEY_82AGENCY_9918231";
     
     const url = `${BOT_API}/api/sync_folders`;
